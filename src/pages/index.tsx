@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { Button } from '@mantine/core';
 
 export default function Home() {
   return (
