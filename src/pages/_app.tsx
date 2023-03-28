@@ -10,8 +10,7 @@ export default function App({ Component, pageProps }: AppProps) {
       withGlobalStyles
       withNormalizeCSS
       theme={{
-        colorScheme: 'dark',
-        fontFamily: 'Verdana, sans-serif',
+        colorScheme: 'light',
       }}
     >
       <NotificationsProvider limit={3}>
