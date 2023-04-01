@@ -296,12 +296,12 @@
     "@mantine/ssr" "5.5.6"
     "@mantine/styles" "5.5.6"
 
-"@mantine/notifications@5.6.1":
-  version "5.6.1"
-  resolved "https://registry.yarnpkg.com/@mantine/notifications/-/notifications-5.6.1.tgz#c517652615ebdacac2b457b79783092f07aaf340"
-  integrity sha512-0IYDRhlE0HAhQRUV6wxDWcuedlv2DNNGX/ACAaSiTwmvKNcnwACQ0/geuRPqEx3N3WAHT8nZ3PlmaSGM56CWWg==
+"@mantine/notifications@5.6.3":
+  version "5.6.3"
+  resolved "https://registry.yarnpkg.com/@mantine/notifications/-/notifications-5.6.3.tgz#add61c122c8679292a912f86b473731def8fd771"
+  integrity sha512-YL+gqKDCakQ2NCh16w8zkwxD80xUTCmpLEwYXvJoLZix0jmt62pmwG+n/kIcZL4Bn04YYmLROOXKga1aiIFF/A==
   dependencies:
-    "@mantine/utils" "5.6.1"
+    "@mantine/utils" "5.6.3"
     react-transition-group "4.4.2"
 
 "@mantine/ssr@5.5.6":
@@ -332,11 +332,6 @@
   version "5.5.6"
   resolved "https://registry.yarnpkg.com/@mantine/utils/-/utils-5.5.6.tgz#769fce79028ac6842b15753e0e9c16480be0b585"
   integrity sha512-uEeMwTPmt7HMdtdbu7pZQ3en5F3Dj7cavhWGRcokj7PluuzNM+79iR/g4bJ3C4SKhj5LdHi7KjX8+zp6GKyrBg==
-
-"@mantine/utils@5.6.1":
-  version "5.6.1"
-  resolved "https://registry.yarnpkg.com/@mantine/utils/-/utils-5.6.1.tgz#5ab75c2185b5f64e78c70e1d0a5cbf56c9c1c8e9"
-  integrity sha512-pu7ajDLJfW9oMVfzK6DKkhuaayRiCEZLfB6Be+wbL9joWrzMCZkc0tA3KxET7TGSO98d4NpjjmbEg2IsjT8Alw==
 
 "@mantine/utils@5.6.3":
   version "5.6.3"
@@ -2774,6 +2769,13 @@ react-dom@18.2.0:
   dependencies:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
+
+react-error-boundary@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/react-error-boundary/-/react-error-boundary-4.0.3.tgz#f811497c06d53ea1206817ee82c6e5c6a27becd9"
+  integrity sha512-IzNKP/ViHWp2QRDgsDMirEcf0XLsLueN6Wgzm1TVwgbAH+paX8Z42VyKvZcFFRHgd+rPK2P4TLrOrHC/dommew==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
 
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
