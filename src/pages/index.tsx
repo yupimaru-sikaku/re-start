@@ -1,4 +1,4 @@
-import { Button, Stack, Table } from '@mantine/core';
+import { Button, Grid, Paper, SimpleGrid, Stack, Table } from '@mantine/core';
 import type { CustomNextPage } from 'next';
 import { PageContent } from 'src/components/PageContent';
 import { PageContainer } from 'src/components/PageContainer';
@@ -8,14 +8,17 @@ const Index: CustomNextPage = () => {
   return (
     <DashboardLayout>
       <PageContainer title="ホーム" fluid>
-        <Stack spacing="xl">
-          <PageContent title="テーブル">
-            <SampleTable />
-          </PageContent>
-          <PageContent title="通知">
-            <Button>通知を表示</Button>
-          </PageContent>
-        </Stack>
+        <SimpleGrid
+          breakpoints={[
+            { minWidth: 'sm', cols: 2 },
+            { minWidth: 'md', cols: 3 },
+            { minWidth: 'xl', cols: 4 },
+          ]}
+        >
+          <Paper>1</Paper>
+          <Paper>2</Paper>
+          <Paper>3</Paper>
+        </SimpleGrid>
       </PageContainer>
     </DashboardLayout>
   );

@@ -130,7 +130,7 @@ export const SideNav: FC<{ className?: string }> = ({ className }) => {
           </Link>
         </Group>
         {ITEMS.map(({ label, href, Icon }) => (
-          <ActiveLink href={href} passHref>
+          <ActiveLink href={href} passHref key={label}>
             {(isActive) => {
               return (
                 <a
