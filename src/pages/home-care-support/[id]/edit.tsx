@@ -5,12 +5,7 @@ import { ReturnHomeCareSupport } from '@/ducks/home-care-support/slice';
 import { User } from '@/ducks/user/slice';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { Space } from '@mantine/core';
-import {
-  GetStaticPaths,
-  GetStaticProps,
-  GetStaticPropsContext,
-  NextPage,
-} from 'next';
+import { GetStaticPaths, GetStaticPropsContext, NextPage } from 'next';
 import React from 'react';
 
 type Props = {
@@ -69,7 +64,7 @@ export const getStaticProps = async (
     .order('updated_at', { ascending: false });
 
   return {
-    props: {},
+    props: { userData, userList },
   };
 };
 
