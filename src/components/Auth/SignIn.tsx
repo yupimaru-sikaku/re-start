@@ -62,7 +62,7 @@ export const SignIn = () => {
   }, [form]);
 
   return (
-    <AuthLayout>
+    <AuthLayout title="ログイン">
       <Title
         align="center"
         sx={(theme) => ({

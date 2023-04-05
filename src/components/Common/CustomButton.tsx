@@ -48,6 +48,7 @@ export const CustomButton: NextPage<Props> = ({
   return (
     <Button
       color={color}
+      variant={variant}
       disabled={disabled}
       gradient={gradient}
       leftIcon={leftIcon}
@@ -55,7 +56,6 @@ export const CustomButton: NextPage<Props> = ({
       loading={loading}
       radius={radius}
       size={size ? size : buttonSize}
-      variant={variant}
       onClick={onClick}
       fullWidth={fullWidth}
       type={type}

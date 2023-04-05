@@ -12,6 +12,7 @@ import {
   MediaQuery,
 } from '@mantine/core';
 import { Menu2 } from 'tabler-icons-react';
+import Head from 'next/head';
 
 import { LayoutErrorBoundary } from '../LayoutErrorBoundary';
 
@@ -25,45 +26,51 @@ const SideNav = dynamic(async () => {
   return SideNav;
 });
 
-export const DashboardLayout: CustomLayout = ({ children }) => {
+export const DashboardLayout: CustomLayout = ({ children, title }) => {
   const [opened, handlers] = useDisclosure(false);
 
   return (
-    <AppShell
-      padding="md"
-      styles={(theme) => ({
-        body: { minHeight: '100vh' },
-        main: { padding: 0, backgroundColor: theme.colors.gray[0] },
-      })}
-      navbar={
-        <>
-          <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
-            <SideNav />
-          </MediaQuery>
-          <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
-            <DrawerNav opened={opened} handleClose={handlers.close} />
-          </MediaQuery>
-        </>
-      }
-    >
-      <Header
-        left={
-          <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
-            <ActionIcon
-              // variant="hover"
-              radius="xl"
-              size={40}
-              onClick={handlers.open}
-            >
-              <Menu2 />
-            </ActionIcon>
-          </MediaQuery>
+    <>
+      <Head>
+        <title>{`${title} | リスタート`}</title>
+      </Head>
+
+      <AppShell
+        padding="md"
+        styles={(theme) => ({
+          body: { minHeight: '100vh' },
+          main: { padding: 0, backgroundColor: theme.colors.gray[0] },
+        })}
+        navbar={
+          <>
+            <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
+              <SideNav />
+            </MediaQuery>
+            <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+              <DrawerNav opened={opened} handleClose={handlers.close} />
+            </MediaQuery>
+          </>
         }
-      />
-      <Box py="xl" px="md">
-        <LayoutErrorBoundary>{children}</LayoutErrorBoundary>
-      </Box>
-    </AppShell>
+      >
+        <Header
+          left={
+            <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+              <ActionIcon
+                // variant="hover"
+                radius="xl"
+                size={40}
+                onClick={handlers.open}
+              >
+                <Menu2 />
+              </ActionIcon>
+            </MediaQuery>
+          }
+        />
+        <Box py="xl" px="md">
+          <LayoutErrorBoundary>{children}</LayoutErrorBoundary>
+        </Box>
+      </AppShell>
+    </>
   );
 };
 

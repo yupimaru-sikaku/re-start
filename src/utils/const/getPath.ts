@@ -4,6 +4,21 @@ const PATH = {
   SIGN_IN: '/auth/sign-in',
   CONFIRM_EMAIL: '/auth/confirm-email',
   FORGOT_PASSWORD: '/auth/forgot-password',
+  USER: '/user',
+  USER_REGISTER: '/user/register',
+  // 同行援護
+  ACCOMPANYING_SUPPPORT: '/accompanying-support',
+  ACCOMPANYING_SUPPPORT_CREATE: '/accompanying-support/create',
+  // 行動援護
+  BEHAVIOR_SUPPPORT: '/behavioral-support',
+  BEHAVIOR_SUPPPORT_CREATE: '/behavioral-support/create',
+  // 居宅介護
+  HOME_CARE_SUPPORT: '/home-care-support',
+  HOME_CARE_SUPPORT_CREATE: '/home-care-support/create',
+  HOME_CARE_SUPPORT_EDIT: '/home-care-support/[id]/edit',
+  // 移動支援
+  MOBILITY_SUPPORT: '/mobility-support',
+  MOBILITY_SUPPORT_CREATE: '/mobility-support/create',
 } as const;
 
 export const getPath = (pathKey: keyof typeof PATH, ...args: string[]) => {

@@ -10,6 +10,9 @@ export const GlobalStyleProvider: FC<{ children: ReactNode }> = ({
         styles={{
           '*': { wordBreak: 'break-all' },
           'button, *[type="button"]': { transform: 'none !important' },
+          a: {
+            textDecoration: 'none',
+          },
         }}
       />
       {children}

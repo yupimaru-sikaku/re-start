@@ -82,7 +82,7 @@ export const SignUp = () => {
   }, [form]);
 
   return (
-    <AuthLayout>
+    <AuthLayout title="登録画面">
       <Title
         align="center"
         sx={(theme) => ({

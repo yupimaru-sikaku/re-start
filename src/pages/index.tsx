@@ -1,12 +1,22 @@
-import { Button, Grid, Paper, SimpleGrid, Stack, Table } from '@mantine/core';
+import { Paper, SimpleGrid } from '@mantine/core';
 import type { CustomNextPage } from 'next';
-import { PageContent } from 'src/components/PageContent';
-import { PageContainer } from 'src/components/PageContainer';
 import { DashboardLayout } from 'src/components/Layout/DashboardLayout/DashboardLayout';
+import Link from 'next/link';
+import { getPath } from '@/utils/const/getPath';
+import { PageContainer } from '@/components/PageContainer';
+import Head from 'next/head';
+
+const SERVICE_LINK = [
+  { url: 'USER', title: '利用者情報' },
+  { url: 'ACCOMPANYING_SUPPPORT', title: '同行援護' },
+  { url: 'BEHAVIOR_SUPPPORT', title: '行動援護' },
+  { url: 'HOME_CARE_SUPPORT', title: '居宅介護' },
+  { url: 'MOBILITY_SUPPORT', title: '移動支援' },
+] as const;
 
 const Index: CustomNextPage = () => {
   return (
-    <DashboardLayout>
+    <DashboardLayout title="トップページ">
       <PageContainer title="ホーム" fluid>
         <SimpleGrid
           breakpoints={[
@@ -15,43 +25,16 @@ const Index: CustomNextPage = () => {
             { minWidth: 'xl', cols: 4 },
           ]}
         >
-          <Paper>1</Paper>
-          <Paper>2</Paper>
-          <Paper>3</Paper>
+          {SERVICE_LINK.map((service) => (
+            <Link href={getPath(service.url)} passHref key={service.url}>
+              <a>
+                <Paper>{service.title}</Paper>
+              </a>
+            </Link>
+          ))}
         </SimpleGrid>
       </PageContainer>
     </DashboardLayout>
-  );
-};
-
-const SampleTable = () => {
-  return (
-    <Table>
-      <thead>
-        <tr>
-          <th>Element position</th>
-          <th>Element name</th>
-          <th>Symbol</th>
-          <th>Atomic mass</th>
-        </tr>
-      </thead>
-      <tbody>
-        {[
-          { position: 6, mass: 12.011, symbol: 'C', name: 'Carbon' },
-          { position: 7, mass: 14.007, symbol: 'N', name: 'Nitrogen' },
-          { position: 39, mass: 88.906, symbol: 'Y', name: 'Yttrium' },
-          { position: 56, mass: 137.33, symbol: 'Ba', name: 'Barium' },
-          { position: 58, mass: 140.12, symbol: 'Ce', name: 'Cerium' },
-        ].map((element) => (
-          <tr key={element.name}>
-            <td>{element.position}</td>
-            <td>{element.name}</td>
-            <td>{element.symbol}</td>
-            <td>{element.mass}</td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
   );
 };
 

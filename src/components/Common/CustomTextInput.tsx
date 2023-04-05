@@ -9,6 +9,11 @@ type Props = {
   required: boolean;
   form: UseFormReturnType<any>;
   formValue: string;
+  disabled?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  defaultValue?: string;
+  onChange?: any;
 };
 export const CustomTextInput = ({
   idText,
@@ -17,6 +22,11 @@ export const CustomTextInput = ({
   required,
   form,
   formValue,
+  disabled = false,
+  minLength,
+  maxLength,
+  defaultValue,
+  onChange,
 }: Props) => {
   return (
     <TextInput
@@ -29,6 +39,11 @@ export const CustomTextInput = ({
       classNames={{
         input: 'rounded border-gray-300',
       }}
+      disabled={disabled}
+      minLength={minLength}
+      maxLength={maxLength}
+      defaultValue={defaultValue}
+      onChange={onChange}
       {...form.getInputProps(formValue)}
     />
   );

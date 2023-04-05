@@ -17,11 +17,12 @@ import {
   ArrowRight,
   DeviceAnalytics,
   Logout,
+  User,
 } from 'tabler-icons-react';
 import { getPath } from '@/utils/const/getPath';
 import { ActiveLink } from '@/utils/next/active-link';
-import { useAuth } from '@/ducks/user/slice';
 import { supabase } from '@/libs/supabase/supabase';
+import { useAuth } from '@/libs/mantine/useAuth';
 
 const useStyles = createStyles<string, { collapsed?: boolean }>(
   (theme, params, getRef) => {
@@ -31,7 +32,7 @@ const useStyles = createStyles<string, { collapsed?: boolean }>(
       navbar: {
         position: 'sticky',
         top: 0,
-        width: params?.collapsed ? 81 : 264,
+        width: params?.collapsed ? 81 : 200,
         transition: params?.collapsed ? 'width 0.1s linear' : 'none',
       },
 
@@ -106,6 +107,11 @@ const useStyles = createStyles<string, { collapsed?: boolean }>(
 
 const ITEMS = [
   { href: getPath('INDEX'), label: 'ホーム', Icon: Home },
+  { href: getPath('USER'), label: '利用者情報', Icon: User },
+  { href: getPath('ACCOMPANYING_SUPPPORT'), label: '同行援護', Icon: User },
+  { href: getPath('BEHAVIOR_SUPPPORT'), label: '行動援護', Icon: User },
+  { href: getPath('HOME_CARE_SUPPORT'), label: '居宅介護', Icon: User },
+  { href: getPath('MOBILITY_SUPPORT'), label: '移動支援', Icon: User },
   { href: getPath('SIGN_UP'), label: '設定', Icon: Settings },
 ];
 
@@ -125,7 +131,7 @@ export const SideNav: FC<{ className?: string }> = ({ className }) => {
           <Link href={getPath('INDEX')}>
             <a className={classes.logo}>
               <DeviceAnalytics />
-              <span className={classes.linkLabel}>管理画面</span>
+              <span className={classes.linkLabel}>事業所管理画面</span>
             </a>
           </Link>
         </Group>
