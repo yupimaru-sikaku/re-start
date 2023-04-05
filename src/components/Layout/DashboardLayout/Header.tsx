@@ -1,5 +1,12 @@
 import { FC, ReactNode } from 'react';
-import { Box, Container, createStyles, Paper, Space } from '@mantine/core';
+import {
+  Box,
+  Container,
+  createStyles,
+  Paper,
+  SimpleGrid,
+  Space,
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useAuth } from '@/libs/mantine/useAuth';
 import { useRouter } from 'next/router';
@@ -27,14 +34,16 @@ export const Header: FC<{ left: ReactNode }> = () => {
       sx={(theme) => ({ borderBottom: `1px solid ${theme.colors.gray[2]}` })}
     >
       <Space h="sm" />
-      <CustomBreadcrumbs items={items} />
-      {user ? (
-        <p>ログイン中</p>
-      ) : (
-        <p>
-          <br />
-        </p>
-      )}
+      <SimpleGrid cols={2}>
+        <CustomBreadcrumbs items={items} />
+        {user ? (
+          <p>ログイン中</p>
+        ) : (
+          <p>
+            <br />
+          </p>
+        )}
+      </SimpleGrid>
     </Container>
   );
 };

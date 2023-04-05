@@ -55,14 +55,14 @@ export const DashboardLayout: CustomLayout = ({ children, title }) => {
         <Header
           left={
             <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
-              <ActionIcon
-                // variant="hover"
+              {/* <ActionIcon
+                variant="hover"
                 radius="xl"
-                size={40}
+                // size={40}
                 onClick={handlers.open}
               >
                 <Menu2 />
-              </ActionIcon>
+              </ActionIcon> */}
             </MediaQuery>
           }
         />
