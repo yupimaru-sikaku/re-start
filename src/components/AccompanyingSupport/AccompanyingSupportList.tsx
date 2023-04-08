@@ -1,69 +1,62 @@
-import React, { useEffect, useState } from 'react';
+import { ReturnAccompanyingSupport } from '@/ducks/accompanying-support/slice';
+import { getDb, supabase } from '@/libs/supabase/supabase';
+import { convertSupabaseTime, PAGE_SIZE } from '@/utils';
+import { getPath } from '@/utils/const/getPath';
+import { ActionIcon, Group } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
 import { DataTable } from 'mantine-datatable';
 import { NextPage } from 'next';
-import { convertSupabaseTime, PAGE_SIZE } from '@/utils';
-import { ActionIcon, Box, Checkbox, Group, Text } from '@mantine/core';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import { CustomButton } from '../Common/CustomButton';
+import { CustomConfirm } from '../Common/CustomConfirm';
 import { IconCheckbox, IconEye, IconTrash } from '@tabler/icons';
 import { IconEdit } from '@tabler/icons';
-import { useRouter } from 'next/router';
-import { ReturnHomeCareSupport } from '@/ducks/home-care-support/slice';
-import { CustomButton } from '../Common/CustomButton';
 import { CreatePdf } from './CreatePdf';
-import { getPath } from '@/utils/const/getPath';
-import { getDb, supabase } from '@/libs/supabase/supabase';
-import { CustomConfirm } from '../Common/CustomConfirm';
-import { showNotification } from '@mantine/notifications';
 
 type Props = {
-  homeCareSupportList: ReturnHomeCareSupport[];
+  accompanyingSupportList: ReturnAccompanyingSupport[];
 };
 
-export const HomeCareSupportList: NextPage<Props> = ({
-  homeCareSupportList,
+export const AccompanyingSupportList: NextPage<Props> = ({
+  accompanyingSupportList,
 }) => {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [records, setRecords] = useState(
-    homeCareSupportList.slice(0, PAGE_SIZE)
+    accompanyingSupportList.slice(0, PAGE_SIZE)
   );
-
   useEffect(() => {
     const from = (page - 1) * PAGE_SIZE;
     const to = from + PAGE_SIZE;
-    setRecords(homeCareSupportList.slice(from, to));
+    setRecords(accompanyingSupportList.slice(from, to));
   }, [page]);
 
   const handleShow = () => {};
-  const handleEdit = (homeCare: ReturnHomeCareSupport) => {
-    router.push(`${getPath('HOME_CARE_SUPPORT_EDIT', homeCare.id)}`);
+  const handleEdit = (accompanying: ReturnAccompanyingSupport) => {
+    router.push(`${getPath('ACCOMPANYING_SUPPPORT_EDIT', accompanying.id)}`);
   };
-  const handleDelete = async (homeCare: ReturnHomeCareSupport) => {
+  const handleDelete = async (accompanying: ReturnAccompanyingSupport) => {
     const isOK = await CustomConfirm('本当に削除しますか？', '確認画面');
     if (!isOK) return;
     const { error } = await supabase
-      .from(getDb('HOME_CARE'))
+      .from(getDb('ACCOMPANYING'))
       .delete()
-      .eq('id', homeCare.id);
+      .eq('id', accompanying.id);
     showNotification({
       icon: <IconCheckbox />,
       message: '削除しました。',
     });
-    if (error) {
-      await CustomConfirm('削除に失敗しました。');
-      return;
-    }
     router.reload();
   };
-  const handlePDFDownload = async (homeCare: ReturnHomeCareSupport) => {
-    const pdfBytes = await CreatePdf('/home_care_records.pdf', homeCare);
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `${homeCare.name}.pdf`;
-    link.click();
+  const handlePDFDownload = async (accompanying: ReturnAccompanyingSupport) => {
+    // const pdfBytes = await CreatePdf('/home_care_records.pdf', accompanying);
+    // const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    // const link = document.createElement('a');
+    // link.href = URL.createObjectURL(blob);
+    // link.download = `${accompanying.name}.pdf`;
+    // link.click();
   };
-
   return (
     <DataTable
       sx={{ width: '1000px' }}
@@ -73,7 +66,7 @@ export const HomeCareSupportList: NextPage<Props> = ({
       withBorder
       records={records}
       recordsPerPage={PAGE_SIZE}
-      totalRecords={homeCareSupportList.length}
+      totalRecords={accompanyingSupportList.length}
       page={page}
       loaderVariant="oval"
       loaderSize="lg"
@@ -88,26 +81,30 @@ export const HomeCareSupportList: NextPage<Props> = ({
           textAlignment: 'center',
           title: '作成日時',
           width: 150,
-          render: (homeCare) =>
-            homeCare.created_at ? convertSupabaseTime(homeCare.created_at) : '',
+          render: (accompanying) =>
+            accompanying.created_at
+              ? convertSupabaseTime(accompanying.created_at)
+              : '',
         },
         {
           accessor: 'updatedAt',
           textAlignment: 'center',
           title: '更新日時',
           width: 150,
-          render: (homeCare) =>
-            homeCare.updated_at ? convertSupabaseTime(homeCare.updated_at) : '',
+          render: (accompanying) =>
+            accompanying.updated_at
+              ? convertSupabaseTime(accompanying.updated_at)
+              : '',
         },
         {
           accessor: 'download',
           title: 'ダウンロード',
           width: 150,
-          render: (homeCare) => (
+          render: (accompanying) => (
             <CustomButton
               color="cyan"
               variant="light"
-              onClick={() => handlePDFDownload(homeCare)}
+              onClick={() => handlePDFDownload(accompanying)}
             >
               ダウンロード
             </CustomButton>
@@ -117,15 +114,18 @@ export const HomeCareSupportList: NextPage<Props> = ({
           accessor: 'actions',
           title: 'アクション',
           width: 110,
-          render: (homeCare) => (
+          render: (accompanying) => (
             <Group spacing={4} position="right" noWrap>
               <ActionIcon color="green" onClick={() => handleShow()}>
                 <IconEye size={20} />
               </ActionIcon>
-              <ActionIcon color="blue" onClick={() => handleEdit(homeCare)}>
+              <ActionIcon color="blue" onClick={() => handleEdit(accompanying)}>
                 <IconEdit size={20} />
               </ActionIcon>
-              <ActionIcon color="red" onClick={() => handleDelete(homeCare)}>
+              <ActionIcon
+                color="red"
+                onClick={() => handleDelete(accompanying)}
+              >
                 <IconTrash size={20} />
               </ActionIcon>
             </Group>

@@ -7,8 +7,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const DB = {
   USER: 'users',
+  STAFF: 'staffs',
   PROVIDER: 'providers',
-  HOME_CARE_RECORD: 'home_care_records',
+  HOME_CARE: 'home_care_records',
   ACCOMPANYING: 'accompanying_records',
   BEHAVIOR: 'behavior_records',
   MOBILITY: 'mobility_records',

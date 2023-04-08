@@ -1,15 +1,11 @@
-type HomeCareSupport = {
+type AccompanyingSupport = {
   id: string;
   year: number; // 作成する西暦
   month: number; // 作成する月
   name: string; // 利用者名
   identification: string; // 受給者証番号
-  amount_title_1: string; // 契約支給量
-  amount_value_1: number; // 契約支給量
-  amount_title_2: string; // 契約支給量
-  amount_value_2: number; // 契約支給量
-  amount_title_3: string; // 契約支給量
-  amount_value_3: number; // 契約支給量
+  amount_title: string; // 契約支給量
+  amount_value: number; // 契約支給量
   content_arr: {
     work_date: number; // サービス提供日
     service_content: string; // サービス内容
@@ -23,27 +19,19 @@ type HomeCareSupport = {
   updated_at: string; // 更新日時
 };
 
-export type CreateHomeCareSupport = Omit<
-  HomeCareSupport,
+export type CreateAccompanyingSupport = Omit<
+  AccompanyingSupport,
   | 'id'
   | 'year'
   | 'month'
-  | 'amount_value_1'
-  | 'amount_title_2'
-  | 'amount_value_2'
-  | 'amount_title_3'
-  | 'amount_value_3'
+  | 'amount_value'
   | 'content_arr'
   | 'created_at'
   | 'updated_at'
 > & {
   year: number | null;
   month: number | null;
-  amount_value_1: number | null;
-  amount_title_2: string | null;
-  amount_value_2: number | null;
-  amount_title_3: string | null;
-  amount_value_3: number | null;
+  amount_value: number | null;
   content_arr: {
     work_date: number | null;
     service_content: string;
@@ -53,18 +41,10 @@ export type CreateHomeCareSupport = Omit<
   }[];
 };
 
-export type ReturnHomeCareSupport = Omit<
-  HomeCareSupport,
-  | 'amount_title_2'
-  | 'amount_value_2'
-  | 'amount_title_3'
-  | 'amount_value_3'
-  | 'content_arr'
+export type ReturnAccompanyingSupport = Omit<
+  AccompanyingSupport,
+  'content_arr'
 > & {
-  amount_title_2: string | null;
-  amount_value_2: number | null;
-  amount_title_3: string | null;
-  amount_value_3: number | null;
   content_arr: {
     work_date: number;
     service_content: string;
@@ -74,20 +54,10 @@ export type ReturnHomeCareSupport = Omit<
   }[];
 };
 
-export type UpdateHomeCareSupport = Omit<
-  HomeCareSupport,
-  | 'amount_title_2'
-  | 'amount_value_2'
-  | 'amount_title_3'
-  | 'amount_value_3'
-  | 'content_arr'
-  | 'created_at'
-  | 'updated_at'
+export type UpdateAccompanyingSupport = Omit<
+  AccompanyingSupport,
+  'content_arr' | 'created_at' | 'updated_at'
 > & {
-  amount_title_2: string | null;
-  amount_value_2: number | null;
-  amount_title_3: string | null;
-  amount_value_3: number | null;
   content_arr: {
     work_date: number;
     service_content: string;
@@ -97,17 +67,13 @@ export type UpdateHomeCareSupport = Omit<
   }[];
 };
 
-export const initialState: CreateHomeCareSupport = {
+export const initialState: CreateAccompanyingSupport = {
   year: null,
   month: null,
   name: '',
   identification: '',
-  amount_title_1: '',
-  amount_value_1: null,
-  amount_title_2: '',
-  amount_value_2: null,
-  amount_title_3: '',
-  amount_value_3: null,
+  amount_title: '',
+  amount_value: null,
   content_arr: [
     {
       work_date: null,

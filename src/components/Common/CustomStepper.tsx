@@ -11,7 +11,7 @@ export const CustomStepper: NextPage<Props> = ({ statusStep = 0 }) => {
 
   return (
     <>
-      <Stepper active={active} onStepClick={setActive} breakpoint="sm">
+      <Stepper active={active} breakpoint="sm">
         <Stepper.Step
           label="記録票作成"
           description="記録票の作成・編集"

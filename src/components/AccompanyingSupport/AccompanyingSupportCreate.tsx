@@ -1,8 +1,14 @@
-import { useFocusTrap } from '@mantine/hooks';
-import { useRouter } from 'next/router';
-import React, { useState } from 'react';
-import { useForm } from '@mantine/form';
-import { initialState } from '@/ducks/home-care-support/slice';
+import { initialState } from '@/ducks/accompanying-support/slice';
+import { User } from '@/ducks/user/slice';
+import { useAuth } from '@/libs/mantine/useAuth';
+import { getDb, supabase } from '@/libs/supabase/supabase';
+import { calcWorkTime, convertWeekItem } from '@/utils';
+import { getPath } from '@/utils/const/getPath';
+import {
+  validateMonth,
+  validateName,
+  validateYear,
+} from '@/utils/validate/home-care-support';
 import {
   Divider,
   Grid,
@@ -14,30 +20,24 @@ import {
   Text,
   TextInput,
 } from '@mantine/core';
-import { CustomTextInput } from '../Common/CustomTextInput';
-import { CustomButton } from '../Common/CustomButton';
 import { TimeRangeInput } from '@mantine/dates';
-import { IconCheckbox, IconClock } from '@tabler/icons';
-import { useAuth } from '@/libs/mantine/useAuth';
-import { calcEachWorkTime, calcWorkTime, convertWeekItem } from '@/utils';
-import { getDb, supabase } from '@/libs/supabase/supabase';
-import { User } from '@/ducks/user/slice';
-import { NextPage } from 'next';
-import { CustomConfirm } from '../Common/CustomConfirm';
-import {
-  validateMonth,
-  validateName,
-  validateYear,
-} from '@/utils/validate/home-care-support';
-import { CustomStepper } from '../Common/CustomStepper';
+import { useForm } from '@mantine/form';
+import { useFocusTrap } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
-import { getPath } from '@/utils/const/getPath';
+import { IconCheckbox, IconClock } from '@tabler/icons';
+import { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import React, { useState } from 'react';
+import { CustomButton } from '../Common/CustomButton';
+import { CustomConfirm } from '../Common/CustomConfirm';
+import { CustomStepper } from '../Common/CustomStepper';
+import { CustomTextInput } from '../Common/CustomTextInput';
 
 type Props = {
   userList: User[];
 };
 
-export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
+export const AccompanyingSupportCreate: NextPage<Props> = ({ userList }) => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -69,29 +69,16 @@ export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
       },
     },
   });
-  const { kaziAmount, shintaiAmount, withTsuinAmount, tsuinAmount } =
-    calcEachWorkTime(form.values.content_arr);
   const man = userList.filter((user) => user.name === form.values.name)[0];
-  const serviceArr = userList
-    .filter((user) => user.name === form.values.name)
-    .map((x) => {
-      let arr: string[] = [];
-      x.is_kazi && arr.unshift('家事援助');
-      x.is_shintai && arr.unshift('身体介護');
-      x.is_with_tsuin && arr.unshift('通院等介助（伴う）');
-      x.is_tsuin && arr.unshift('通院等介助（伴わない）');
-      return arr;
-    })[0];
-  const serviceAmountArr = userList
-    .filter((user) => user.name === form.values.name)
-    .map((x) => {
-      let arr: number[] = [];
-      x.is_kazi && arr.unshift(man.kazi_amount);
-      x.is_shintai && arr.unshift(man.shintai_amount);
-      x.is_with_tsuin && arr.unshift(man.with_tsuin_amount);
-      x.is_tsuin && arr.unshift(man.tsuin_amount);
-      return arr;
-    })[0];
+  const dokoAmount = form.values.content_arr.reduce(
+    (sum, content) =>
+      sum +
+      Number(
+        calcWorkTime(new Date(content.start_time!), new Date(content.end_time!))
+      ),
+    0
+  );
+
   const handleSubmit = async () => {
     setIsLoading(true);
     const isOK = await CustomConfirm(
@@ -113,23 +100,18 @@ export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
         );
       })
       .sort((a, b) => a.work_date! - b.work_date!);
-
     if (formatArr.length === 0) {
       await CustomConfirm('記録は、少なくとも一行は作成ください。', 'Caution');
       return;
     }
     try {
-      const { error } = await supabase.from(getDb('HOME_CARE')).insert({
+      const { error } = await supabase.from(getDb('ACCOMPANYING')).insert({
         year: form.values.year,
         month: form.values.month,
         name: form.values.name,
         identification: man.identification,
-        amount_title_1: serviceArr[0] ? serviceArr[0] : null,
-        amount_value_1: serviceAmountArr[0] ? serviceAmountArr[0] : null,
-        amount_title_2: serviceArr[1] ? serviceArr[1] : null,
-        amount_value_2: serviceAmountArr[1] ? serviceAmountArr[1] : null,
-        amount_title_3: serviceArr[2] ? serviceArr[2] : null,
-        amount_value_3: serviceAmountArr[2] ? serviceAmountArr[2] : null,
+        amount_title: '同行（初任者等）',
+        amount_value: man.doko_amount,
         content_arr: formatArr,
         status: 0,
         user_id: user?.id,
@@ -138,7 +120,7 @@ export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
         icon: <IconCheckbox />,
         message: '登録に成功しました！',
       });
-      router.push(getPath('HOME_CARE_SUPPORT'));
+      router.push(getPath('ACCOMPANYING_SUPPPORT'));
 
       console.log(error);
       if (error) {
@@ -157,19 +139,13 @@ export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
     const newContentArr = form.values.content_arr.map(
       (content, contentIndex) => {
         return contentIndex === index
-          ? { ...content, work_date: Number(e.target.value) }
-          : content;
-      }
-    );
-    form.setFieldValue('content_arr', newContentArr);
-  };
-
-  const handleChangeService = (service: string | null, index: number) => {
-    if (!service) return;
-    const newContentArr = form.values.content_arr.map(
-      (content, contentIndex) => {
-        return contentIndex === index
-          ? { ...content, service_content: service }
+          ? {
+              ...content,
+              work_date: Number(e.target.value),
+              service_content: `${
+                e.target.value !== '' ? '同行（初任者等）' : ''
+              }`,
+            }
           : content;
       }
     );
@@ -240,134 +216,36 @@ export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
           </SimpleGrid>
           <Space h="lg" />
           <SimpleGrid cols={4}>
-            {man?.is_kazi && (
-              <Paper>
-                <Text size="sm">家事援助</Text>
-                <SimpleGrid cols={3}>
-                  <TextInput
-                    value={kaziAmount}
-                    variant="filled"
-                    disabled
-                    sx={{
-                      '& input:disabled': {
-                        ...(Number(kaziAmount) > man?.kazi_amount
-                          ? {
-                              color: 'red',
-                              fontWeight: 'bold',
-                            }
-                          : {
-                              color: 'black',
-                              fontWeight: 'normal',
-                            }),
-                      },
-                    }}
-                  />
-                  <TextInput
-                    value={man?.kazi_amount}
-                    variant="filled"
-                    disabled
-                    sx={{ '& input:disabled': { color: 'black' } }}
-                  />
-                  <Text size="sm">時間/月</Text>
-                </SimpleGrid>
-              </Paper>
-            )}
-            {man?.is_shintai && (
-              <Paper>
-                <Text size="sm">身体介護</Text>
-                <SimpleGrid cols={3}>
-                  <TextInput
-                    value={shintaiAmount}
-                    variant="filled"
-                    disabled
-                    sx={{
-                      '& input:disabled': {
-                        ...(Number(shintaiAmount) > man?.shintai_amount
-                          ? {
-                              color: 'red',
-                              fontWeight: 'bold',
-                            }
-                          : {
-                              color: 'black',
-                              fontWeight: 'normal',
-                            }),
-                      },
-                    }}
-                  />
-                  <TextInput
-                    value={man?.shintai_amount}
-                    variant="filled"
-                    disabled
-                    sx={{ '& input:disabled': { color: 'black' } }}
-                  />
-                  <Text size="sm">時間/月</Text>
-                </SimpleGrid>
-              </Paper>
-            )}
-            {man?.is_with_tsuin && (
-              <Paper>
-                <Text size="sm">通院等介助（伴う）</Text>
-                <SimpleGrid cols={3}>
-                  <TextInput
-                    value={withTsuinAmount}
-                    variant="filled"
-                    disabled
-                    sx={{
-                      '& input:disabled': {
-                        ...(Number(withTsuinAmount) > man?.with_tsuin_amount
-                          ? {
-                              color: 'red',
-                              fontWeight: 'bold',
-                            }
-                          : {
-                              color: 'black',
-                              fontWeight: 'normal',
-                            }),
-                      },
-                    }}
-                  />
-                  <TextInput
-                    value={man?.with_tsuin_amount}
-                    variant="filled"
-                    disabled
-                    sx={{ '& input:disabled': { color: 'black' } }}
-                  />
-                  <Text size="sm">時間/月</Text>
-                </SimpleGrid>
-              </Paper>
-            )}
-            {man?.is_tsuin && (
-              <Paper>
-                <Text size="sm">通院等介助（伴わない）</Text>
-                <SimpleGrid cols={3}>
-                  <TextInput
-                    value={tsuinAmount}
-                    variant="filled"
-                    disabled
-                    sx={{
-                      '& input:disabled': {
-                        ...(Number(tsuinAmount) > man?.tsuin_amount
-                          ? {
-                              color: 'red',
-                              fontWeight: 'bold',
-                            }
-                          : {
-                              color: 'black',
-                              fontWeight: 'normal',
-                            }),
-                      },
-                    }}
-                  />
-                  <TextInput
-                    value={man?.tsuin_amount}
-                    variant="filled"
-                    disabled
-                    sx={{ '& input:disabled': { color: 'black' } }}
-                  />
-                  <Text size="sm">時間/月</Text>
-                </SimpleGrid>
-              </Paper>
-            )}
+            <Paper>
+              <Text size="sm">同行（初任者等）</Text>
+              <SimpleGrid cols={3}>
+                <TextInput
+                  variant="filled"
+                  disabled
+                  value={dokoAmount}
+                  sx={{
+                    '& input:disabled': {
+                      ...(Number(dokoAmount) > man?.doko_amount
+                        ? {
+                            color: 'red',
+                            fontWeight: 'bold',
+                          }
+                        : {
+                            color: 'black',
+                            fontWeight: 'normal',
+                          }),
+                    },
+                  }}
+                />
+                <TextInput
+                  value={man?.doko_amount}
+                  variant="filled"
+                  disabled
+                  sx={{ '& input:disabled': { color: 'black' } }}
+                />
+                <Text size="sm">時間/月</Text>
+              </SimpleGrid>
+            </Paper>
           </SimpleGrid>
           <Space h="lg" />
           <Divider variant="dotted" />
@@ -415,13 +293,11 @@ export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
                   />
                 </Grid.Col>
                 <Grid.Col span={3}>
-                  <Select
+                  <TextInput
+                    value={form.values.content_arr[index].service_content}
                     variant="filled"
-                    label=""
-                    searchable
-                    nothingFound="No Data"
-                    data={serviceArr || []}
-                    onChange={(e) => handleChangeService(e, index)}
+                    disabled
+                    sx={{ '& input:disabled': { color: 'black' } }}
                   />
                 </Grid.Col>
                 <Grid.Col span={3}>

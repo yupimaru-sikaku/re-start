@@ -4,11 +4,17 @@ const PATH = {
   SIGN_IN: '/auth/sign-in',
   CONFIRM_EMAIL: '/auth/confirm-email',
   FORGOT_PASSWORD: '/auth/forgot-password',
+  // 利用者
   USER: '/user',
   USER_REGISTER: '/user/register',
+  // スタッフ
+  STAFF: '/staff',
+  STAFF_REGISTER: '/staff/register',
+  STAFF_EDIT: '/staff/[id]/edit',
   // 同行援護
   ACCOMPANYING_SUPPPORT: '/accompanying-support',
   ACCOMPANYING_SUPPPORT_CREATE: '/accompanying-support/create',
+  ACCOMPANYING_SUPPPORT_EDIT: '/accompanying-support/[id]/edit',
   // 行動援護
   BEHAVIOR_SUPPPORT: '/behavioral-support',
   BEHAVIOR_SUPPPORT_CREATE: '/behavioral-support/create',

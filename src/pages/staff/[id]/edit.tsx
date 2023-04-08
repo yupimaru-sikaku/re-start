@@ -1,31 +1,29 @@
-import { HomeCareSupportEdit } from '@/components/HomeCareSupport/HomeCareSupportEdit';
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
-import { ReturnHomeCareSupport } from '@/ducks/home-care-support/slice';
-import { User } from '@/ducks/user/slice';
+import { StaffEditForm } from '@/components/Staff/StaffEditForm';
+import { ReturnStaff } from '@/ducks/staff/slice';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { Space } from '@mantine/core';
 import { GetStaticPaths, GetStaticPropsContext, NextPage } from 'next';
 import React from 'react';
 
 type Props = {
-  userData: ReturnHomeCareSupport;
-  userList: User[];
+  staffData: ReturnStaff;
 };
 
-const HomeCareSupportEditPage: NextPage<Props> = ({ userData, userList }) => {
+const StaffEditPage: NextPage<Props> = ({ staffData }) => {
   return (
-    <DashboardLayout title="記録票編集">
-      <PageContainer title="実績記録票編集" fluid>
+    <DashboardLayout title="スタッフ情報編集">
+      <PageContainer title="情報編集" fluid>
         <Space h="md" />
-        <HomeCareSupportEdit userData={userData} userList={userList} />
+        <StaffEditForm staffData={staffData} />
       </PageContainer>
     </DashboardLayout>
   );
 };
 
 export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-  const { data, error } = await supabase.from(getDb('HOME_CARE')).select('id');
+  const { data, error } = await supabase.from(getDb('STAFF')).select('id');
 
   if (error || !data) {
     return {
@@ -49,23 +47,19 @@ export const getStaticProps = async (
   if (!ctx.params) {
     return { notFound: true };
   }
-  const { data: userData, error } = await supabase
-    .from(getDb('HOME_CARE'))
+  const { data: staffData, error } = await supabase
+    .from(getDb('STAFF'))
     .select('*')
     .eq('id', ctx.params.id)
     .single();
 
-  if (error || !userData) {
+  if (error || !staffData) {
     return { notFound: true };
   }
-  const { data: userList } = await supabase
-    .from(getDb('USER'))
-    .select('*')
-    .order('updated_at', { ascending: false });
 
   return {
-    props: { userData, userList },
+    props: { staffData },
   };
 };
 
-export default HomeCareSupportEditPage;
+export default StaffEditPage;

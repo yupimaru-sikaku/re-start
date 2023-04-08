@@ -3,6 +3,8 @@ import {
   ReturnHomeCareSupport,
 } from '@/ducks/home-care-support/slice';
 
+export const PAGE_SIZE = 5;
+
 // Supabaseから取得した日付（String）をフォーマット（String）
 export const convertSupabaseTime = (supabaseTime: string): string => {
   const pad2 = (n: number) => {
@@ -61,7 +63,7 @@ export const formatServiceContent = (serviceContent: string): string => {
   return serviceContent;
 };
 
-// 記録票のオブジェクトから各サービスの合計算定時間を算出
+// （居宅介護専用）記録票のオブジェクトから各サービスの合計算定時間を算出
 export const calcEachWorkTime = (
   contentArr:
     | CreateHomeCareSupport['content_arr']

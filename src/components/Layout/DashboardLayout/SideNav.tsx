@@ -108,8 +108,8 @@ const useStyles = createStyles<string, { collapsed?: boolean }>(
 const ITEMS = [
   { href: getPath('INDEX'), label: 'ホーム', Icon: Home },
   { href: getPath('USER'), label: '利用者情報', Icon: User },
+  { href: getPath('STAFF'), label: 'スタッフ情報', Icon: User },
   { href: getPath('ACCOMPANYING_SUPPPORT'), label: '同行援護', Icon: User },
-  { href: getPath('BEHAVIOR_SUPPPORT'), label: '行動援護', Icon: User },
   { href: getPath('HOME_CARE_SUPPORT'), label: '居宅介護', Icon: User },
   { href: getPath('MOBILITY_SUPPORT'), label: '移動支援', Icon: User },
   { href: getPath('SIGN_UP'), label: '設定', Icon: Settings },

@@ -1,31 +1,36 @@
-import { HomeCareSupportEdit } from '@/components/HomeCareSupport/HomeCareSupportEdit';
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
-import { ReturnHomeCareSupport } from '@/ducks/home-care-support/slice';
+import { ReturnAccompanyingSupport } from '@/ducks/accompanying-support/slice';
 import { User } from '@/ducks/user/slice';
-import { getDb, supabase } from '@/libs/supabase/supabase';
 import { Space } from '@mantine/core';
-import { GetStaticPaths, GetStaticPropsContext, NextPage } from 'next';
 import React from 'react';
+import { GetStaticPaths, GetStaticPropsContext, NextPage } from 'next';
+import { getDb, supabase } from '@/libs/supabase/supabase';
+import { AccompanyingSupportEdit } from '@/components/AccompanyingSupport/AccompanyingSupportEdit';
 
 type Props = {
-  userData: ReturnHomeCareSupport;
+  userData: ReturnAccompanyingSupport;
   userList: User[];
 };
 
-const HomeCareSupportEditPage: NextPage<Props> = ({ userData, userList }) => {
+const AccompanyingSupportEditPage: NextPage<Props> = ({
+  userData,
+  userList,
+}) => {
   return (
     <DashboardLayout title="記録票編集">
       <PageContainer title="実績記録票編集" fluid>
         <Space h="md" />
-        <HomeCareSupportEdit userData={userData} userList={userList} />
+        <AccompanyingSupportEdit userData={userData} userList={userList} />
       </PageContainer>
     </DashboardLayout>
   );
 };
 
 export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-  const { data, error } = await supabase.from(getDb('HOME_CARE')).select('id');
+  const { data, error } = await supabase
+    .from(getDb('ACCOMPANYING'))
+    .select('id');
 
   if (error || !data) {
     return {
@@ -50,7 +55,7 @@ export const getStaticProps = async (
     return { notFound: true };
   }
   const { data: userData, error } = await supabase
-    .from(getDb('HOME_CARE'))
+    .from(getDb('ACCOMPANYING'))
     .select('*')
     .eq('id', ctx.params.id)
     .single();
@@ -68,4 +73,4 @@ export const getStaticProps = async (
   };
 };
 
-export default HomeCareSupportEditPage;
+export default AccompanyingSupportEditPage;
