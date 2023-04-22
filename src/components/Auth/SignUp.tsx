@@ -9,7 +9,7 @@ import { useFocusTrap } from '@mantine/hooks';
 import { CustomTextInput } from 'src/components/Common/CustomTextInput';
 import { CustomPasswordInput } from '../Common/CustomPasswordInput';
 import { CustomButton } from 'src/components/Common/CustomButton';
-import { supabase } from 'src/libs/supabase/supabase';
+import { getDb, supabase } from 'src/libs/supabase/supabase';
 import {
   validateCorporateName,
   validateOfficeName,
@@ -17,6 +17,9 @@ import {
 } from '@/utils/validate/provider';
 import { validateEmail } from 'src/utils/validate/common';
 import { useRouter } from 'next/router';
+import { showNotification } from '@mantine/notifications';
+import { IconCheckbox } from '@tabler/icons';
+import { generateRandomAccountId } from '@/utils';
 
 export const SignUp = () => {
   const router = useRouter();
@@ -25,11 +28,11 @@ export const SignUp = () => {
   const form = useForm({
     initialValues: initialState,
     validate: {
-      corporateName: (value) => {
+      corporate_name: (value) => {
         const { error, text } = validateCorporateName(value);
         return error ? text : null;
       },
-      officeName: (value) => {
+      office_name: (value) => {
         const { error, text } = validateOfficeName(value);
         return error ? text : null;
       },
@@ -41,7 +44,7 @@ export const SignUp = () => {
         const { error, text } = validatePassword(value);
         return error ? text : null;
       },
-      passwordConfirmation: (value: string, values: Provider) =>
+      password_confirmation: (value: string, values: Provider) =>
         value !== values.password && 'パスワードが一致しません',
     },
     // },
@@ -62,11 +65,15 @@ export const SignUp = () => {
         return;
       }
       // 法人登録
+      const corporate_id = generateRandomAccountId();
       const { error: createProviderError } = await supabase
-        .from('providers')
+        .from(getDb('PROVIDER'))
         .update({
-          corporate_name: form.values.corporateName,
-          office_name: form.values.officeName,
+          corporate_id,
+          corporate_name: form.values.corporate_name,
+          office_name: form.values.office_name,
+          role: 'user',
+          user_id: signUpData.user.id,
         })
         .eq('id', signUpData.user.id);
       if (createProviderError) {
@@ -74,6 +81,10 @@ export const SignUp = () => {
         setIsLoading(false);
         return;
       }
+      showNotification({
+        icon: <IconCheckbox />,
+        message: '登録に成功しました！',
+      });
       router.push(getPath('CONFIRM_EMAIL'));
     } catch (err) {
       console.log(err);
@@ -102,20 +113,20 @@ export const SignUp = () => {
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
           <CustomTextInput
-            idText="corporateName"
+            idText="corporate_name"
             label="法人名"
             description="例）株式会社リスタート"
             required={true}
             form={form}
-            formValue="corporateName"
+            formValue="corporate_name"
           />
           <CustomTextInput
-            idText="officeName"
+            idText="office_name"
             label="事業所"
             description="例）リスタート事業所"
             required={true}
             form={form}
-            formValue="officeName"
+            formValue="office_name"
           />
           <CustomTextInput
             idText="email"
@@ -134,12 +145,12 @@ export const SignUp = () => {
             formValue="password"
           />
           <CustomPasswordInput
-            idText="passwordConfirmation"
+            idText="password_confirmation"
             label="パスワード（確認用）"
             description="半角英数字8文字以上"
             required={true}
             form={form}
-            formValue="passwordConfirmation"
+            formValue="password_confirmation"
           />
           <Space h="xl" />
           <CustomButton type="submit" fullWidth loading={isLoading}>

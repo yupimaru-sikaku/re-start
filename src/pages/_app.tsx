@@ -2,8 +2,9 @@ import { createContext, useEffect, useState } from 'react';
 import { AppMantineProvider } from 'src/libs/mantine/AppMantineProvider';
 import { GlobalStyleProvider } from 'src/libs/mantine/GlobalStyleProvider';
 import type { CustomAppPage } from 'next/app';
-import { supabase } from '@/libs/supabase/supabase';
+import { getDb, supabase } from '@/libs/supabase/supabase';
 import { Session, AuthChangeEvent } from '@supabase/supabase-js';
+import { ReturnProvider } from '@/ducks/provider/slice';
 
 type User = {
   id: string | null;
@@ -11,19 +12,32 @@ type User = {
 
 type AuthContextType = {
   user: User | null;
+  provider: ReturnProvider | null;
   supabase: typeof supabase;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
+  provider: null,
   supabase: supabase,
 });
 
 const App: CustomAppPage = ({ Component, pageProps }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [provider, setProvider] = useState<ReturnProvider | null>(null);
 
   const setUserFromSession = (session: Session | null) => {
     setUser(session ? { id: session.user?.id ?? null } : null);
+  };
+
+  const setProviderSession = async (session: Session | null) => {
+    if (!session) return;
+    const { data } = await supabase
+      .from(getDb('PROVIDER'))
+      .select('*')
+      .eq('id', session.user?.id);
+      console.log(session.user?.id);
+    setProvider(data[0]);
   };
 
   useEffect(() => {
@@ -35,6 +49,7 @@ const App: CustomAppPage = ({ Component, pageProps }) => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event: AuthChangeEvent, session: Session | null) => {
         setUserFromSession(session);
+        setProviderSession(session);
       }
     );
 
@@ -45,7 +60,7 @@ const App: CustomAppPage = ({ Component, pageProps }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, supabase }}>
+    <AuthContext.Provider value={{ user, provider, supabase }}>
       <GlobalStyleProvider>
         <AppMantineProvider>
           <Component {...pageProps} />

@@ -41,7 +41,7 @@ export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { user } = useAuth();
+  const { user, provider } = useAuth();
   const userNameList = (userList || []).map((user) => user.name);
   const currentDate = new Date();
   const form = useForm({
@@ -69,6 +69,7 @@ export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
       },
     },
   });
+  console.log(provider);
   const { kaziAmount, shintaiAmount, withTsuinAmount, tsuinAmount } =
     calcEachWorkTime(form.values.content_arr);
   const man = userList.filter((user) => user.name === form.values.name)[0];
@@ -385,6 +386,9 @@ export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
               </Grid.Col>
               <Grid.Col span={3}>
                 <Text size="sm">開始-終了時間</Text>
+              </Grid.Col>
+              <Grid.Col span={2}>
+                <Text size="sm">算定時間数</Text>
               </Grid.Col>
               <Grid.Col span={2}>
                 <Text size="sm">算定時間数</Text>

@@ -9,29 +9,53 @@ import { Box, Group, Space } from '@mantine/core';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import React, { useCallback } from 'react';
+import { GetStaticPaths, GetStaticPropsContext, NextPage } from 'next';
 
 type Props = {
   staffList: ReturnStaff[];
 };
 
-const StaffPage: NextPage<Props> = ({ staffList }) => {
+const StaffPersonalSchedulePage: NextPage<Props> = ({ staffList }) => {
   const router = useRouter();
   const moveToRegister = useCallback(() => {
     router.push(getPath('STAFF_REGISTER'));
   }, []);
+  const moveToSchedule = useCallback(() => {
+    router.push(getPath('STAFF_SCHEDULE'));
+  }, []);
 
   return (
-    <DashboardLayout title="スタッフ情報">
-      <PageContainer title="スタッフ情報" fluid>
+    <DashboardLayout title="勤怠状況">
+      <PageContainer title="勤怠状況" fluid>
         <Space h="md" />
         <Group>
           <CustomButton onClick={moveToRegister}>スタッフ情報登録</CustomButton>
+          <CustomButton onClick={moveToSchedule}>勤務状況</CustomButton>
         </Group>
         <Space h="md" />
         <StaffList staffList={staffList} />
       </PageContainer>
     </DashboardLayout>
   );
+};
+
+export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
+  const { data, error } = await supabase.from(getDb('STAFF')).select('id');
+
+  if (error || !data) {
+    return {
+      paths: [],
+      fallback: false,
+    };
+  }
+
+  const paths = data.map((record) => ({
+    params: { id: record.id.toString() },
+  }));
+  return {
+    paths,
+    fallback: false,
+  };
 };
 
 export const getStaticProps = async () => {
@@ -46,4 +70,4 @@ export const getStaticProps = async () => {
   };
 };
 
-export default StaffPage;
+export default StaffPersonalSchedulePage;

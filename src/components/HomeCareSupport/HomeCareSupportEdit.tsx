@@ -1,8 +1,10 @@
 import { useFocusTrap } from '@mantine/hooks';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useForm } from '@mantine/form';
 import {
+  CreateHomeCareSupport,
+  HomeCareSupportContentArr,
   initialState,
   ReturnHomeCareSupport,
 } from '@/ducks/home-care-support/slice';
@@ -24,7 +26,7 @@ import { TimeRangeInput } from '@mantine/dates';
 import { IconCheckbox, IconClock, IconRefresh } from '@tabler/icons';
 import { useAuth } from '@/libs/mantine/useAuth';
 import { calcEachWorkTime, calcWorkTime, convertWeekItem } from '@/utils';
-import { supabase } from '@/libs/supabase/supabase';
+import { getDb, supabase } from '@/libs/supabase/supabase';
 import { User } from '@/ducks/user/slice';
 import { NextPage } from 'next';
 import { CustomConfirm } from '../Common/CustomConfirm';
@@ -36,20 +38,29 @@ import {
 import { CustomStepper } from '../Common/CustomStepper';
 import { showNotification } from '@mantine/notifications';
 import { getPath } from '@/utils/const/getPath';
+import { ReturnStaff } from '@/ducks/staff/slice';
+import {
+  ReturnStaffSchedule,
+  StaffScheduleContentArr,
+} from '@/ducks/staff-schedule/slice';
+import { format } from 'path';
 
 type Props = {
   userData: ReturnHomeCareSupport;
   userList: User[];
+  staffList: ReturnStaff[];
 };
 
 export const HomeCareSupportEdit: NextPage<Props> = ({
   userData,
   userList,
+  staffList,
 }) => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { user } = useAuth();
+  const { user, provider } = useAuth();
+  const staffArr = staffList.map((staff) => staff.name);
   // const userNameList = (userData || []).map((user) => user.name);
   // const currentDate = new Date();
   const form = useForm({
@@ -92,6 +103,12 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
     calcEachWorkTime(form.values.content_arr);
   const man = userList.filter((user) => user.name === form.values.name)[0];
 
+  // 編集時の初期値をmemo化（不要かも）
+  // const oldArr = useMemo(() => {
+  //   return userData.content_arr;
+  // }, [userData.content_arr]);
+  // console.log('oldArr', oldArr);
+
   const serviceArr = userList
     .filter((user) => user.name === form.values.name)
     .map((x) => {
@@ -114,50 +131,201 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
     })[0];
   const handleSubmit = async () => {
     setIsLoading(true);
+
     const isOK = await CustomConfirm('編集を完了しますか？', '確認画面');
     if (!isOK) {
       setIsLoading(false);
       return;
     }
-    // データ整形（空欄がある場合に無視、日付順にソート）
-    const formatArr = form.values.content_arr
-      .filter((content) => {
-        return (
-          content.work_date &&
-          content.service_content !== '' &&
-          content.start_time &&
-          content.end_time
-        );
-      })
-      .sort((a, b) => a.work_date! - b.work_date!);
 
-    if (formatArr.length === 0) {
-      await CustomConfirm('記録は、少なくとも一行は作成ください。', 'Caution');
-      setIsLoading(false);
-      return;
-    }
     try {
-      const { error } = await supabase
+      const staff_schedule_content_arr = form.values.content_arr.map(
+        (content) => {
+          return { ...content, user_name: form.values.name };
+        }
+      );
+      // content_arrを整形（nullを除外、work_dateでソート）
+      const nonNullableAndSortArr = form.values.content_arr
+        .filter((content) => {
+          return (
+            content.work_date &&
+            content.service_content !== '' &&
+            content.start_time &&
+            content.end_time
+          );
+        })
+        .sort((a, b) => a.work_date! - b.work_date!);
+
+      if (nonNullableAndSortArr.length === 0) {
+        await CustomConfirm(
+          '記録は、少なくとも一行は作成ください。',
+          'Caution'
+        );
+        setIsLoading(false);
+        return;
+      }
+      // リスタートのみ実行
+      if (provider?.role === 'super_admin') {
+        // 初期値の配列を元に該当をリセット
+        // 最初に入力していたデータは一旦削除（不要かも）
+        // const oldFormatArr = Object.values(
+        //   oldArr.reduce<{
+        //     [key: string]: CreateHomeCareSupport['content_arr'];
+        //   }>((result, currentValue) => {
+        //     if (
+        //       currentValue['staff_name'] !== null &&
+        //       currentValue['staff_name'] !== undefined
+        //     ) {
+        //       (result[currentValue['staff_name']] =
+        //         result[currentValue['staff_name']] || []).push(currentValue);
+        //     }
+        //     return result;
+        //   }, {})
+        // );
+        // oldFormatArr.map(async (contentList) => {
+        //   const staffName = contentList[0].staff_name;
+        //   const { data: getOldData, error: getOldError } = await supabase
+        //     .from(getDb('STAFF_SCHEDULE'))
+        //     .select('*')
+        //     .eq('year', form.values.year)
+        //     .eq('month', form.values.month)
+        //     .eq('staff_name', staffName);
+
+        //   if (getOldError) {
+        //     console.log('getOldError', getOldError);
+        //     await CustomConfirm(
+        //       'スタッフの過去の勤務状況の取得に失敗しました',
+        //       'Caution'
+        //     );
+        //     setIsLoading(false);
+        //     return;
+        //   }
+
+        //   const newArr = getOldData[0].content_arr.filter(
+        //     (content: StaffScheduleContentArr) => {
+        //       return !oldArr.some((oldContent) => {
+        //         return (
+        //           oldContent.service_content === content.service_content &&
+        //           form.values.name === content.user_name
+        //         );
+        //       });
+        //     }
+        //   );
+        // });
+
+        // 名前毎に配列を作成した新しいcontent_arr配列を作成[][]
+        const formatArr = Object.values(
+          nonNullableAndSortArr.reduce<{
+            [key: string]: CreateHomeCareSupport['content_arr'];
+          }>((result, currentValue) => {
+            if (
+              currentValue['staff_name'] !== null &&
+              currentValue['staff_name'] !== undefined
+            ) {
+              (result[currentValue['staff_name']] =
+                result[currentValue['staff_name']] || []).push(currentValue);
+            }
+            return result;
+          }, {})
+        );
+        formatArr.map(async (contentList) => {
+          const staffName = contentList[0].staff_name;
+          const { data: getData, error: getError } = await supabase
+            .from(getDb('STAFF_SCHEDULE'))
+            .select('*')
+            .eq('year', form.values.year)
+            .eq('month', form.values.month)
+            .eq('staff_name', staffName);
+          if (getError) {
+            console.log('getError', getError);
+            await CustomConfirm(
+              'スタッフの勤務状況の取得に失敗しました',
+              'Caution'
+            );
+            setIsLoading(false);
+            return;
+          }
+          if (getData.length) {
+            const removeArr = getData[0].content_arr.filter(
+              (content: StaffScheduleContentArr) => {
+                const isDuplicateUserName =
+                  content.user_name === form.values.name;
+                const isDuplicateServiceContent =
+                  content.service_content === '家事援助' ||
+                  content.service_content === '身体介護' ||
+                  content.service_content === '通院等介助（伴う）' ||
+                  content.service_content === '通院等介助（伴わない）';
+                return !(isDuplicateUserName && isDuplicateServiceContent);
+              }
+            );
+            console.log(removeArr, contentList);
+            const newArr = [...removeArr, ...contentList]
+              .sort((a, b) => a.work_date! - b.work_date!)
+              .map((content) => {
+                return { ...content, user_name: form.values.name };
+              });
+            const { error: updateError } = await supabase
+              .from(getDb('STAFF_SCHEDULE'))
+              .update({
+                content_arr: newArr,
+              })
+              .eq('id', getData[0].id);
+
+            if (updateError) {
+              console.log('updateError', updateError);
+              await CustomConfirm(
+                'スタッフの勤務状況の更新に失敗しました',
+                'Caution'
+              );
+              setIsLoading(false);
+              return;
+            }
+          } else {
+            const newArr = contentList.map((content) => {
+              return { ...content, user_name: form.values.name };
+            });
+            const { error: createError } = await supabase
+              .from(getDb('STAFF_SCHEDULE'))
+              .insert({
+                year: form.values.year,
+                month: form.values.month,
+                staff_name: staffName,
+                content_arr: newArr,
+              });
+            if (createError) {
+              console.log('createError', createError);
+              await CustomConfirm(
+                'スタッフの勤務状況の新規作成に失敗しました',
+                'Caution'
+              );
+              setIsLoading(false);
+              return;
+            }
+          }
+        });
+      }
+      const { error: updateError } = await supabase
         .from('home_care_records')
         .update({
           year: form.values.year,
           month: form.values.month,
-          content_arr: formatArr,
+          content_arr: nonNullableAndSortArr,
         })
         .eq('id', userData.id);
       showNotification({
         icon: <IconCheckbox />,
-        message: '編集に成功しました！',
+        message: '更新に成功しました！',
       });
       router.push(getPath('HOME_CARE_SUPPORT'));
 
-      if (error) {
-        console.log(error);
-        alert('実績記録表の登録に失敗しました。');
+      if (updateError) {
+        console.log(updateError);
+        alert('実績記録表の更新に失敗しました。');
       }
     } catch (err) {
       console.log(err);
     }
+
     setIsLoading(false);
   };
 
@@ -217,6 +385,15 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
               staff_name: null,
             }
           : content;
+      }
+    );
+    form.setFieldValue('content_arr', newContentArr);
+  };
+  const handleChangeStaff = (staff_name: string | null, index: number) => {
+    if (!staff_name) return;
+    const newContentArr = (form.values.content_arr || []).map(
+      (content, contentIndex) => {
+        return contentIndex === index ? { ...content, staff_name } : content;
       }
     );
     form.setFieldValue('content_arr', newContentArr);
@@ -482,6 +659,20 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
                     disabled
                   />
                 </Grid.Col>
+                {provider?.role === 'super_admin' && (
+                  <Grid.Col span={1}>
+                    <Select
+                      variant="filled"
+                      label=""
+                      searchable
+                      nothingFound="No Data"
+                      data={staffArr || []}
+                      value={form.values.content_arr[index].staff_name}
+                      onChange={(e) => handleChangeStaff(e, index)}
+                    />
+                  </Grid.Col>
+                )}
+                <Grid.Col span={1}></Grid.Col>
                 <Grid.Col span={1}>
                   <ActionIcon onClick={() => handleRefresh(index)}>
                     <IconRefresh />

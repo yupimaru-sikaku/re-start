@@ -11,6 +11,7 @@ const PATH = {
   STAFF: '/staff',
   STAFF_REGISTER: '/staff/register',
   STAFF_EDIT: '/staff/[id]/edit',
+  STAFF_SCHEDULE: '/staff/schedule/[id]',
   // 同行援護
   ACCOMPANYING_SUPPPORT: '/accompanying-support',
   ACCOMPANYING_SUPPPORT_CREATE: '/accompanying-support/create',

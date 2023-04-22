@@ -8,6 +8,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const DB = {
   USER: 'users',
   STAFF: 'staffs',
+  STAFF_SCHEDULE: 'staff_schedules',
   PROVIDER: 'providers',
   HOME_CARE: 'home_care_records',
   ACCOMPANYING: 'accompanying_records',

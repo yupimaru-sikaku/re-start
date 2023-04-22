@@ -9,6 +9,7 @@ import { IconEdit } from '@tabler/icons';
 import { useRouter } from 'next/router';
 import { ReturnStaff } from '@/ducks/staff/slice';
 import { getPath } from '@/utils/const/getPath';
+import { CustomButton } from '../Common/CustomButton';
 
 type Props = {
   staffList: ReturnStaff[];
@@ -32,6 +33,9 @@ export const StaffList: NextPage<Props> = ({ staffList }) => {
     router.push(`${getPath('STAFF_EDIT', staff.id)}`);
   };
   const handleDelete = async () => {};
+  const moveToPersonalSchedule = (id: string) => {
+    router.push(getPath('STAFF_SCHEDULE', id));
+  };
 
   return (
     <DataTable
@@ -111,6 +115,20 @@ export const StaffList: NextPage<Props> = ({ staffList }) => {
           textAlignment: 'center',
           title: '介護福祉士',
           render: (staff) => <Checkbox readOnly checked={staff.is_kaigo} />,
+        },
+        {
+          accessor: 'move',
+          title: '勤怠状況',
+          width: 100,
+          render: (staff) => (
+            <CustomButton
+              color="cyan"
+              variant="light"
+              onClick={() => moveToPersonalSchedule(staff.id)}
+            >
+              勤怠状況
+            </CustomButton>
+          ),
         },
         {
           accessor: 'created_at',

@@ -2,6 +2,7 @@ import { HomeCareSupportEdit } from '@/components/HomeCareSupport/HomeCareSuppor
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
 import { ReturnHomeCareSupport } from '@/ducks/home-care-support/slice';
+import { ReturnStaff } from '@/ducks/staff/slice';
 import { User } from '@/ducks/user/slice';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { Space } from '@mantine/core';
@@ -11,14 +12,23 @@ import React from 'react';
 type Props = {
   userData: ReturnHomeCareSupport;
   userList: User[];
+  staffList: ReturnStaff[];
 };
 
-const HomeCareSupportEditPage: NextPage<Props> = ({ userData, userList }) => {
+const HomeCareSupportEditPage: NextPage<Props> = ({
+  userData,
+  userList,
+  staffList,
+}) => {
   return (
     <DashboardLayout title="記録票編集">
       <PageContainer title="実績記録票編集" fluid>
         <Space h="md" />
-        <HomeCareSupportEdit userData={userData} userList={userList} />
+        <HomeCareSupportEdit
+          userData={userData}
+          userList={userList}
+          staffList={staffList}
+        />
       </PageContainer>
     </DashboardLayout>
   );
@@ -63,8 +73,13 @@ export const getStaticProps = async (
     .select('*')
     .order('updated_at', { ascending: false });
 
+  const { data: staffList } = await supabase
+    .from(getDb('STAFF'))
+    .select('*')
+    .or('is_kaigo.eq.true,is_syoninsya.eq.true,is_zitsumusya.eq.true');
+
   return {
-    props: { userData, userList },
+    props: { userData, userList, staffList },
   };
 };
 

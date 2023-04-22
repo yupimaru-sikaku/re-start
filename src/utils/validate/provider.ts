@@ -35,7 +35,7 @@ export const validatePassword = (value: string): ReturnType => {
       error: true,
       text: 'パスワードを入力してください',
     };
-  } else if (value.length <= 8) {
+  } else if (value.length <= 7) {
     return {
       error: true,
       text: 'パスワードは8文字以上で入力してください',

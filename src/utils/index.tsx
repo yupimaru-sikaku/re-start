@@ -5,6 +5,21 @@ import {
 
 export const PAGE_SIZE = 5;
 
+// アカウントIDを自動生成
+export const generateRandomAccountId = () => {
+  const characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const accountIdLength = 7;
+  let accountId = '';
+
+  for (let i = 0; i < accountIdLength; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    accountId += characters.charAt(randomIndex);
+  }
+
+  return accountId;
+};
+
 // Supabaseから取得した日付（String）をフォーマット（String）
 export const convertSupabaseTime = (supabaseTime: string): string => {
   const pad2 = (n: number) => {
