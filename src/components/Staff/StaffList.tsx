@@ -39,8 +39,6 @@ export const StaffList: NextPage<Props> = ({ staffList }) => {
 
   return (
     <DataTable
-      sx={{ width: '1000px' }}
-      verticalSpacing="lg"
       striped
       highlightOnHover
       withBorder

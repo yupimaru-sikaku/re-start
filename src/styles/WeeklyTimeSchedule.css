@@ -1,0 +1,4 @@
+/* WeeklyTimeSchedule.css */
+.rbc-time-view .rbc-time-content {
+  overflow-y: hidden !important;
+}

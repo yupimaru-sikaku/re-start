@@ -11,7 +11,6 @@ import {
   Drawer,
   MediaQuery,
 } from '@mantine/core';
-import { Menu2 } from 'tabler-icons-react';
 import Head from 'next/head';
 
 import { LayoutErrorBoundary } from '../LayoutErrorBoundary';
@@ -36,10 +35,9 @@ export const DashboardLayout: CustomLayout = ({ children, title }) => {
       </Head>
 
       <AppShell
-        padding="md"
         styles={(theme) => ({
           body: { minHeight: '100vh' },
-          main: { padding: 0, backgroundColor: theme.colors.gray[0] },
+          main: { backgroundColor: theme.colors.gray[0], padding: 0 },
         })}
         navbar={
           <>

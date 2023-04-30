@@ -24,7 +24,7 @@ export const AuthContext = createContext<AuthContextType>({
 
 const App: CustomAppPage = ({ Component, pageProps }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [provider, setProvider] = useState<ReturnProvider | null>(null);
+  const [provider, setProvider] = useState<any>(null);
 
   const setUserFromSession = (session: Session | null) => {
     setUser(session ? { id: session.user?.id ?? null } : null);
@@ -36,8 +36,9 @@ const App: CustomAppPage = ({ Component, pageProps }) => {
       .from(getDb('PROVIDER'))
       .select('*')
       .eq('id', session.user?.id);
-      console.log(session.user?.id);
-    setProvider(data[0]);
+    if (data) {
+      setProvider(data[0]);
+    }
   };
 
   useEffect(() => {

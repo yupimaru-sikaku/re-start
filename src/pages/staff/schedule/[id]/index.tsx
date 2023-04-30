@@ -6,68 +6,108 @@ import { ReturnStaff } from '@/ducks/staff/slice';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { getPath } from '@/utils/const/getPath';
 import { Box, Group, Space } from '@mantine/core';
-import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import React, { useCallback } from 'react';
 import { GetStaticPaths, GetStaticPropsContext, NextPage } from 'next';
 
-type Props = {
-  staffList: ReturnStaff[];
+import { useEffect, useState } from 'react';
+import moment, { Moment } from 'moment';
+import {
+  Calendar,
+  DateLocalizer,
+  Formats,
+  momentLocalizer,
+} from 'react-big-calendar';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import 'moment/locale/ja';
+import { CustomToolbar } from '@/components/StaffSchedule/CustomToolbar';
+import { ReturnStaffSchedule } from '@/ducks/staff-schedule/slice';
+import { title } from 'process';
+
+type EventStyleGetter = {
+  color: string;
 };
 
-const StaffPersonalSchedulePage: NextPage<Props> = ({ staffList }) => {
-  const router = useRouter();
-  const moveToRegister = useCallback(() => {
-    router.push(getPath('STAFF_REGISTER'));
-  }, []);
-  const moveToSchedule = useCallback(() => {
-    router.push(getPath('STAFF_SCHEDULE'));
-  }, []);
+moment.locale('ja');
+const localizer = momentLocalizer(moment);
 
+const StaffPersonalSchedulePage: NextPage = () => {
+  const currentDate = new Date();
+  const [year, setYeart] = useState(currentDate.getFullYear());
+  const [month, setMonth] = useState(currentDate.getMonth());
+  const [staffName, setStaffName] = useState('渡辺真由美');
+  const [scheduleList, setScheduleList] = useState<any>();
+  const getScheduleList = async () => {
+    const { data, error } = await supabase
+      .from(getDb('STAFF_SCHEDULE'))
+      .select('*')
+      .eq('year', year)
+      .eq('month', month)
+      .eq('staff_name', staffName);
+    if (data) {
+      setScheduleList(data[0]);
+    }
+  };
+
+  useEffect(() => {
+    getScheduleList();
+  }, [year, month]);
+
+  const eventStyleGetter = (event: EventStyleGetter) => ({
+    style: {
+      backgroundColor: event.color,
+    },
+  });
+
+  const formats: Formats = {
+    dateFormat: 'DD',
+    dayFormat: 'D(ddd)',
+    monthHeaderFormat: 'YYYY年M月',
+    dayHeaderFormat: 'M月D日(ddd)',
+    dayRangeHeaderFormat: ({ start, end }, culture, local) => {
+      const startDate = moment.isMoment(start) ? start.toDate() : start;
+      const endDate = moment.isMoment(end) ? end.toDate() : end;
+      return `${local!.format(startDate, 'MMMD日')} - ${local!.format(
+        endDate,
+        'MMMD日'
+      )}`;
+    },
+  };
+
+  const formatScheduleArr = (
+    content_arr: ReturnStaffSchedule['content_arr']
+  ) => {
+    if (!content_arr) return [];
+    return content_arr.map((content) => {
+      return {
+        title: `${content.user_name}[${content.service_content}]`,
+        start: new Date(content.start_time),
+        end: new Date(content.end_time),
+        color: '#F00',
+      };
+    });
+  };
   return (
     <DashboardLayout title="勤怠状況">
       <PageContainer title="勤怠状況" fluid>
         <Space h="md" />
-        <Group>
-          <CustomButton onClick={moveToRegister}>スタッフ情報登録</CustomButton>
-          <CustomButton onClick={moveToSchedule}>勤務状況</CustomButton>
-        </Group>
-        <Space h="md" />
-        <StaffList staffList={staffList} />
+        {scheduleList && (
+          <Calendar
+            localizer={localizer}
+            events={formatScheduleArr(scheduleList.content_arr)}
+            defaultView="week"
+            views={['week']}
+            formats={formats}
+            style={{ height: '100%' }}
+            min={moment('07:00', 'HH:mm').toDate()}
+            max={moment('23:00', 'HH:mm').toDate()}
+            eventPropGetter={eventStyleGetter}
+            components={{ toolbar: CustomToolbar }}
+          />
+        )}
       </PageContainer>
     </DashboardLayout>
   );
-};
-
-export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-  const { data, error } = await supabase.from(getDb('STAFF')).select('id');
-
-  if (error || !data) {
-    return {
-      paths: [],
-      fallback: false,
-    };
-  }
-
-  const paths = data.map((record) => ({
-    params: { id: record.id.toString() },
-  }));
-  return {
-    paths,
-    fallback: false,
-  };
-};
-
-export const getStaticProps = async () => {
-  const { data: staffList } = await supabase
-    .from(getDb('STAFF'))
-    .select('*')
-    .order('updated_at', { ascending: false });
-  return {
-    props: {
-      staffList,
-    },
-  };
 };
 
 export default StaffPersonalSchedulePage;

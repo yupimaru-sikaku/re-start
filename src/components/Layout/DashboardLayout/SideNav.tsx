@@ -18,11 +18,13 @@ import {
   DeviceAnalytics,
   Logout,
   User,
+  Login,
 } from 'tabler-icons-react';
 import { getPath } from '@/utils/const/getPath';
 import { ActiveLink } from '@/utils/next/active-link';
 import { supabase } from '@/libs/supabase/supabase';
 import { useAuth } from '@/libs/mantine/useAuth';
+import { IconLogout } from '@tabler/icons';
 
 const useStyles = createStyles<string, { collapsed?: boolean }>(
   (theme, params, getRef) => {
@@ -113,6 +115,7 @@ const ITEMS = [
   { href: getPath('HOME_CARE_SUPPORT'), label: '居宅介護', Icon: User },
   { href: getPath('MOBILITY_SUPPORT'), label: '移動支援', Icon: User },
   { href: getPath('SIGN_UP'), label: '設定', Icon: Settings },
+  { href: getPath('SIGN_IN'), label: 'ログイン', Icon: Login },
 ];
 
 export const SideNav: FC<{ className?: string }> = ({ className }) => {
