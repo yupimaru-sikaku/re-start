@@ -1,3 +1,5 @@
+import { PostgrestError } from '@supabase/supabase-js';
+
 type Staff = {
   id: string;
   name: string; // 名前
@@ -10,6 +12,7 @@ type Staff = {
   is_doko_apply: boolean; //同行援護応用の資格
   is_zitsumusya: boolean; //介護福祉士の資格
   is_kaigo: boolean; //実務者研修の資格
+  is_display: boolean; // 表示の有無
   created_at: string; // 作成日時
   updated_at: string; // 更新日時
   user_id: string; // 作成した法人
@@ -17,18 +20,29 @@ type Staff = {
 
 export type CreateStaff = Omit<
   Staff,
-  'id' | 'work_time_per_week' | 'created_at' | 'updated_at'
-> & {
-  work_time_per_week: number | null;
-};
+  'id' | 'is_display' | 'created_at' | 'updated_at'
+>;
+
+export type UpdateStaffParams = Omit<
+  Staff,
+  'is_display' | 'created_at' | 'updated_at'
+>;
 
 export type ReturnStaff = Staff;
+
+export type UpdateStaffResult = {
+  error: PostgrestError | null;
+};
+
+export type DeleteStaffResult = {
+  error: PostgrestError | null;
+};
 
 export const initialState: CreateStaff = {
   name: '',
   furigana: '',
   gender: '',
-  work_time_per_week: null,
+  work_time_per_week: 0,
   is_syoninsya: false,
   is_kodo: false,
   is_doko_normal: false,

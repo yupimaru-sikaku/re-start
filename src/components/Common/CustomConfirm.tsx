@@ -31,6 +31,7 @@ const AlertDialog: React.FC<Props> = ({
 
   return (
     <Modal
+      centered
       opened={open}
       onClose={handleCancel}
       title={title}

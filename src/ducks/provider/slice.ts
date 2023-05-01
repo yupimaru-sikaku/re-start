@@ -10,7 +10,11 @@ export type Provider = {
   password_confirmation?: string; // パスワード（確認用）
 };
 
-export type ReturnProvider = Provider;
+// export type ReturnProvider = Provider;
+export type ReturnProvider = Omit<
+  Provider,
+  'password' | 'password_confirmation'
+>;
 
 export const initialState: Provider = {
   id: '',

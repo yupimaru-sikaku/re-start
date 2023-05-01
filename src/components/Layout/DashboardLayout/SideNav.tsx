@@ -25,6 +25,7 @@ import { ActiveLink } from '@/utils/next/active-link';
 import { supabase } from '@/libs/supabase/supabase';
 import { useAuth } from '@/libs/mantine/useAuth';
 import { IconLogout } from '@tabler/icons';
+import Image from 'next/image';
 
 const useStyles = createStyles<string, { collapsed?: boolean }>(
   (theme, params, getRef) => {
@@ -133,8 +134,14 @@ export const SideNav: FC<{ className?: string }> = ({ className }) => {
         <Group className={classes.header} position="apart">
           <Link href={getPath('INDEX')}>
             <a className={classes.logo}>
-              <DeviceAnalytics />
-              <span className={classes.linkLabel}>事業所管理画面</span>
+              <Image
+                src="/icon.webp"
+                alt="icon"
+                width={50}
+                height={50}
+                className="rounded-xl"
+              />
+              <span className={classes.linkLabel}>管理画面</span>
             </a>
           </Link>
         </Group>

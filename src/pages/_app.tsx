@@ -5,9 +5,11 @@ import type { CustomAppPage } from 'next/app';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { ReturnProvider } from '@/ducks/provider/slice';
+import { Provider } from 'react-redux';
+import { store } from '@/ducks/store';
 
 type User = {
-  id: string | null;
+  id: string;
 };
 
 type AuthContextType = {
@@ -61,13 +63,15 @@ const App: CustomAppPage = ({ Component, pageProps }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, provider, supabase }}>
-      <GlobalStyleProvider>
-        <AppMantineProvider>
-          <Component {...pageProps} />
-        </AppMantineProvider>
-      </GlobalStyleProvider>
-    </AuthContext.Provider>
+    <Provider store={store}>
+      <AuthContext.Provider value={{ user, provider, supabase }}>
+        <GlobalStyleProvider>
+          <AppMantineProvider>
+            <Component {...pageProps} />
+          </AppMantineProvider>
+        </GlobalStyleProvider>
+      </AuthContext.Provider>
+    </Provider>
   );
 };
 

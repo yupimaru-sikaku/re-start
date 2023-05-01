@@ -4,9 +4,9 @@ import { DashboardLayout } from 'src/components/Layout/DashboardLayout/Dashboard
 import Link from 'next/link';
 import { getPath } from '@/utils/const/getPath';
 import { PageContainer } from '@/components/PageContainer';
-import Head from 'next/head';
 import { User } from 'tabler-icons-react';
 import { IconFriends, IconToolsKitchen2, IconWalk } from '@tabler/icons';
+import { useGetProviderByIdQuery } from '@/ducks/provider/query';
 
 const SERVICE_LINK = [
   { url: 'USER', title: '利用者情報', icon: <User /> },

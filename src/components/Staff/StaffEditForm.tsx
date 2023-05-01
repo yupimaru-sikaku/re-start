@@ -1,6 +1,6 @@
 import {
   Box,
-  Grid,
+  LoadingOverlay,
   Paper,
   SegmentedControl,
   SimpleGrid,
@@ -10,41 +10,40 @@ import {
 } from '@mantine/core';
 import { useFocusTrap } from '@mantine/hooks';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { useForm } from '@mantine/form';
 import { CustomButton } from '../Common/CustomButton';
-import { getDb, supabase } from '@/libs/supabase/supabase';
 import { useAuth } from '@/libs/mantine/useAuth';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
-// import { validateName } from '@/utils/validate/user';
-import { initialState, ReturnStaff } from '@/ducks/staff/slice';
-import { NextPage } from 'next';
+import {
+  initialState,
+  UpdateStaffParams,
+  UpdateStaffResult,
+} from '@/ducks/staff/slice';
+import {
+  useGetStaffByIdQuery,
+  useUpdateStaffMutation,
+} from '@/ducks/staff/query';
+import { CustomConfirm } from '../Common/CustomConfirm';
+import { skipToken } from '@reduxjs/toolkit/dist/query';
 
-type Props = {
-  staffData: ReturnStaff;
-};
-
-export const StaffEditForm: NextPage<Props> = ({ staffData }) => {
+export const StaffEditForm = () => {
+  const [updateStaff] = useUpdateStaffMutation();
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
+  const staffId = router.query.id as string;
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { user } = useAuth();
+  const { data: staffData } = useGetStaffByIdQuery(staffId || skipToken);
+  useEffect(() => {
+    if (!staffData) return;
+    form.setValues(staffData);
+  }, [staffData]);
   const form = useForm({
-    initialValues: {
-      name: staffData.name,
-      furigana: staffData.furigana,
-      gender: staffData.gender,
-      work_time_per_week: staffData.work_time_per_week,
-      is_syoninsya: staffData.is_syoninsya,
-      is_kodo: staffData.is_kodo,
-      is_doko_normal: staffData.is_doko_normal,
-      is_doko_apply: staffData.is_doko_apply,
-      is_zitsumusya: staffData.is_zitsumusya,
-      is_kaigo: staffData.is_kaigo,
-    },
+    initialValues: initialState,
     validate: {
       // name: (value) => {
       //   const { error, text } = validateName(value);
@@ -52,37 +51,36 @@ export const StaffEditForm: NextPage<Props> = ({ staffData }) => {
       // },
     },
   });
-
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      //   const genderSpecification = form.values.isGenderSpecification
-      //     ? form.values.gender_specification
-      //     : '無し';
-      const { error } = await supabase
-        .from(getDb('STAFF'))
-        .update({
-          name: form.values.name,
-          furigana: form.values.furigana,
-          gender: form.values.gender,
-          work_time_per_week: form.values.work_time_per_week,
-          is_syoninsya: form.values.is_syoninsya,
-          is_kodo: form.values.is_kodo,
-          is_doko_normal: form.values.is_doko_normal,
-          is_doko_apply: form.values.is_doko_apply,
-          is_zitsumusya: form.values.is_zitsumusya,
-          is_kaigo: form.values.is_kaigo,
-          user_id: user?.id,
-        })
-        .eq('id', staffData.id);
+      if (!staffData || !user) return;
+      const params: UpdateStaffParams = {
+        id: staffData.id,
+        name: form.values.name,
+        furigana: form.values.furigana,
+        gender: form.values.gender,
+        work_time_per_week: form.values.work_time_per_week,
+        is_syoninsya: form.values.is_syoninsya,
+        is_kodo: form.values.is_kodo,
+        is_doko_normal: form.values.is_doko_normal,
+        is_doko_apply: form.values.is_doko_apply,
+        is_zitsumusya: form.values.is_zitsumusya,
+        is_kaigo: form.values.is_kaigo,
+        user_id: user.id,
+      };
+
+      const { error } = (await updateStaff(params)) as UpdateStaffResult;
 
       if (error) {
-        console.log(error);
-        setIsLoading(false);
-        return;
+        throw new Error(error.message);
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      await CustomConfirm(
+        `スタッフの情報更新に失敗しました。${error}`,
+        'Caution'
+      );
+      setIsLoading(false);
       return;
     }
     showNotification({
@@ -125,7 +123,6 @@ export const StaffEditForm: NextPage<Props> = ({ staffData }) => {
       formValue: form.values.is_kaigo,
     },
   ];
-
   return (
     <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
@@ -196,7 +193,7 @@ export const StaffEditForm: NextPage<Props> = ({ staffData }) => {
                 size="md"
                 onLabel="ON"
                 offLabel="OFF"
-                defaultChecked={qualification.formValue}
+                checked={qualification.formValue}
                 {...form.getInputProps(qualification.formTitle)}
               />
             </Box>
@@ -204,7 +201,7 @@ export const StaffEditForm: NextPage<Props> = ({ staffData }) => {
         </SimpleGrid>
         <Space h="xl" />
         <CustomButton type="submit" fullWidth loading={isLoading}>
-          登録
+          更新
         </CustomButton>
       </Paper>
     </form>

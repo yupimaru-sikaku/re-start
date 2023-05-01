@@ -2,19 +2,13 @@ import { CustomButton } from '@/components/Common/CustomButton';
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
 import { StaffList } from '@/components/Staff/StaffList';
-import { ReturnStaff } from '@/ducks/staff/slice';
-import { getDb, supabase } from '@/libs/supabase/supabase';
 import { getPath } from '@/utils/const/getPath';
-import { Box, Group, Space } from '@mantine/core';
+import { Group, Space } from '@mantine/core';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import React, { useCallback } from 'react';
 
-type Props = {
-  staffList: ReturnStaff[];
-};
-
-const StaffPage: NextPage<Props> = ({ staffList }) => {
+const StaffPage: NextPage = () => {
   const router = useRouter();
   const moveToRegister = useCallback(() => {
     router.push(getPath('STAFF_REGISTER'));
@@ -28,22 +22,10 @@ const StaffPage: NextPage<Props> = ({ staffList }) => {
           <CustomButton onClick={moveToRegister}>スタッフ情報登録</CustomButton>
         </Group>
         <Space h="md" />
-        <StaffList staffList={staffList} />
+        <StaffList />
       </PageContainer>
     </DashboardLayout>
   );
-};
-
-export const getStaticProps = async () => {
-  const { data: staffList } = await supabase
-    .from(getDb('STAFF'))
-    .select('*')
-    .order('updated_at', { ascending: false });
-  return {
-    props: {
-      staffList,
-    },
-  };
 };
 
 export default StaffPage;
