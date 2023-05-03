@@ -13,6 +13,7 @@ import { CustomConfirm } from '../Common/CustomConfirm';
 import { IconCheckbox, IconEye, IconTrash } from '@tabler/icons';
 import { IconEdit } from '@tabler/icons';
 import { CreatePdf } from './CreatePdf';
+import Link from 'next/link';
 
 type Props = {
   accompanyingSupportList: ReturnAccompanyingSupport[];
@@ -33,9 +34,6 @@ export const AccompanyingSupportList: NextPage<Props> = ({
   }, [page]);
 
   const handleShow = () => {};
-  const handleEdit = (accompanying: ReturnAccompanyingSupport) => {
-    router.push(`${getPath('ACCOMPANYING_SUPPPORT_EDIT', accompanying.id)}`);
-  };
   const handleDelete = async (accompanying: ReturnAccompanyingSupport) => {
     const isOK = await CustomConfirm('本当に削除しますか？', '確認画面');
     if (!isOK) return;
@@ -118,9 +116,15 @@ export const AccompanyingSupportList: NextPage<Props> = ({
               <ActionIcon color="green" onClick={() => handleShow()}>
                 <IconEye size={20} />
               </ActionIcon>
-              <ActionIcon color="blue" onClick={() => handleEdit(accompanying)}>
-                <IconEdit size={20} />
-              </ActionIcon>
+              <Link
+                href={getPath('ACCOMPANYING_SUPPPORT_EDIT', accompanying.id)}
+              >
+                <a>
+                  <ActionIcon color="blue">
+                    <IconEdit size={20} />
+                  </ActionIcon>
+                </a>
+              </Link>
               <ActionIcon
                 color="red"
                 onClick={() => handleDelete(accompanying)}

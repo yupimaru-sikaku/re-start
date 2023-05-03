@@ -7,8 +7,9 @@ import { getDb, supabase } from '@/libs/supabase/supabase';
 import { getPath } from '@/utils/const/getPath';
 import { Space } from '@mantine/core';
 import { NextPage } from 'next';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useCallback } from 'react';
+import React from 'react';
 
 type Props = {
   accompanyingSupportList: ReturnAccompanyingSupport[];
@@ -17,16 +18,15 @@ type Props = {
 const AccompanyingSupportPage: NextPage<Props> = ({
   accompanyingSupportList,
 }) => {
-  const router = useRouter();
-  const moveToCreate = useCallback(() => {
-    router.push(getPath('ACCOMPANYING_SUPPPORT_CREATE'));
-  }, []);
-
   return (
     <DashboardLayout title="同行援護">
       <PageContainer title="同行援護" fluid>
         <Space h="md" />
-        <CustomButton onClick={moveToCreate}>実績記録票を作成する</CustomButton>
+        <Link href={getPath('ACCOMPANYING_SUPPPORT_CREATE')}>
+          <a>
+            <CustomButton>実績記録票を作成する</CustomButton>
+          </a>
+        </Link>
         <Space h="md" />
         <AccompanyingSupportList
           accompanyingSupportList={accompanyingSupportList}

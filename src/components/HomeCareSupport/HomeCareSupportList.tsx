@@ -13,6 +13,7 @@ import { getPath } from '@/utils/const/getPath';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { showNotification } from '@mantine/notifications';
+import Link from 'next/link';
 
 type Props = {
   homeCareSupportList: ReturnHomeCareSupport[];
@@ -34,9 +35,6 @@ export const HomeCareSupportList: NextPage<Props> = ({
   }, [page]);
 
   const handleShow = () => {};
-  const handleEdit = (homeCare: ReturnHomeCareSupport) => {
-    router.push(`${getPath('HOME_CARE_SUPPORT_EDIT', homeCare.id)}`);
-  };
   const handleDelete = async (homeCare: ReturnHomeCareSupport) => {
     const isOK = await CustomConfirm('本当に削除しますか？', '確認画面');
     if (!isOK) return;
@@ -121,9 +119,13 @@ export const HomeCareSupportList: NextPage<Props> = ({
               <ActionIcon color="green" onClick={() => handleShow()}>
                 <IconEye size={20} />
               </ActionIcon>
-              <ActionIcon color="blue" onClick={() => handleEdit(homeCare)}>
-                <IconEdit size={20} />
-              </ActionIcon>
+              <Link href={getPath('HOME_CARE_SUPPORT_EDIT', homeCare.id)}>
+                <a>
+                  <ActionIcon color="blue">
+                    <IconEdit size={20} />
+                  </ActionIcon>
+                </a>
+              </Link>
               <ActionIcon color="red" onClick={() => handleDelete(homeCare)}>
                 <IconTrash size={20} />
               </ActionIcon>

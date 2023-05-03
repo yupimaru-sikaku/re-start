@@ -5,21 +5,20 @@ import { StaffList } from '@/components/Staff/StaffList';
 import { getPath } from '@/utils/const/getPath';
 import { Group, Space } from '@mantine/core';
 import { NextPage } from 'next';
-import { useRouter } from 'next/router';
-import React, { useCallback } from 'react';
+import Link from 'next/link';
+import React from 'react';
 
 const StaffPage: NextPage = () => {
-  const router = useRouter();
-  const moveToRegister = useCallback(() => {
-    router.push(getPath('STAFF_REGISTER'));
-  }, []);
-
   return (
     <DashboardLayout title="スタッフ情報">
       <PageContainer title="スタッフ情報" fluid>
         <Space h="md" />
         <Group>
-          <CustomButton onClick={moveToRegister}>スタッフ情報登録</CustomButton>
+          <Link href={getPath('STAFF_REGISTER')}>
+            <a>
+              <CustomButton>スタッフ情報登録</CustomButton>
+            </a>
+          </Link>
         </Group>
         <Space h="md" />
         <StaffList />

@@ -7,17 +7,26 @@ import { UserListRecords } from 'src/components/User/UserListRecords';
 import {
   useDeleteUserMutation,
   useGetUserListByLoginIdQuery,
+  useGetUserListQuery,
 } from '@/ducks/user/query';
 import { useLoginUser } from '@/libs/mantine/useLoginUser';
 
 export const UserList: NextPage = () => {
   const [page, setPage] = useState(1);
-  const { loginUser } = useLoginUser();
+  const { loginUser, provider } = useLoginUser();
   const {
-    data: userList,
-    isLoading: useGetStaffLoading,
-    refetch,
+    data: userListByLoginId,
+    isLoading: userListByLoginIdLoading,
+    refetch: userListByLoginIdRefetch,
   } = useGetUserListByLoginIdQuery(loginUser?.id || '');
+  const {
+    data: userListAll,
+    isLoading: userListAllLoading,
+    refetch: userListAllRefetch,
+  } = useGetUserListQuery();
+  const userList = provider?.role === 'admin' ? userListAll : userListByLoginId;
+  const useListLoading =
+    provider?.role === 'admin' ? userListAllLoading : userListByLoginIdLoading;
   const [deleteUser] = useDeleteUserMutation();
   const from = useMemo(() => {
     return (page - 1) * PAGE_SIZE;
@@ -35,12 +44,14 @@ export const UserList: NextPage = () => {
       '確認画面'
     );
     isOK && (await deleteUser(id));
-    refetch();
+    provider?.role === 'admin'
+      ? userListAllRefetch()
+      : userListByLoginIdRefetch();
   };
 
   return (
     <DataTable
-      fetching={useGetStaffLoading}
+      fetching={useListLoading}
       striped
       highlightOnHover
       withBorder

@@ -11,6 +11,23 @@ export const userApi = createApi({
   tagTypes: ['User'],
   endpoints: (builder) => ({
     /**
+     * GET/全利用者のリストを取得
+     * @param {}
+     * @return {ReturnUser[]}
+     */
+    getUserList: builder.query<ReturnUser[], void>({
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from(getDb('USER'))
+          .select('*')
+          .eq('is_display', true)
+          .order('updated_at', { ascending: false });
+        return data
+          ? { data: data as ReturnUser[] }
+          : { error: error as PostgrestError };
+      },
+    }),
+    /**
      * GET/ログインユーザに属する全利用者のリストを取得
      * @param {string} loginUserId
      * @return {ReturnUser[]}
@@ -88,6 +105,7 @@ export const userApi = createApi({
 });
 
 export const {
+  useGetUserListQuery,
   useGetUserListByLoginIdQuery,
   useGetStaffByIdQuery,
   useUpdateStaffMutation,
