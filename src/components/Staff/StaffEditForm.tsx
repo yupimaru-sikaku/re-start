@@ -14,7 +14,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { useForm } from '@mantine/form';
 import { CustomButton } from '../Common/CustomButton';
-import { useAuth } from '@/libs/mantine/useAuth';
+import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
@@ -25,6 +25,7 @@ import {
 } from '@/ducks/staff/slice';
 import {
   useGetStaffByIdQuery,
+  useGetStaffListByLoginIdQuery,
   useUpdateStaffMutation,
 } from '@/ducks/staff/query';
 import { CustomConfirm } from '../Common/CustomConfirm';
@@ -36,8 +37,13 @@ export const StaffEditForm = () => {
   const router = useRouter();
   const staffId = router.query.id as string;
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { user } = useAuth();
-  const { data: staffData } = useGetStaffByIdQuery(staffId || skipToken);
+  const { loginUser } = useLoginUser();
+  const { data: staffData, refetch: getStaffByIdRefetch } =
+    useGetStaffByIdQuery(staffId || skipToken);
+  const { refetch: getStaffListRefetch } = useGetStaffListByLoginIdQuery(
+    loginUser?.id || ''
+  );
+
   useEffect(() => {
     if (!staffData) return;
     form.setValues(staffData);
@@ -54,7 +60,7 @@ export const StaffEditForm = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      if (!staffData || !user) return;
+      if (!staffData || !loginUser) return;
       const params: UpdateStaffParams = {
         id: staffData.id,
         name: form.values.name,
@@ -67,7 +73,7 @@ export const StaffEditForm = () => {
         is_doko_apply: form.values.is_doko_apply,
         is_zitsumusya: form.values.is_zitsumusya,
         is_kaigo: form.values.is_kaigo,
-        user_id: user.id,
+        user_id: loginUser.id,
       };
 
       const { error } = (await updateStaff(params)) as UpdateStaffResult;
@@ -83,6 +89,8 @@ export const StaffEditForm = () => {
       setIsLoading(false);
       return;
     }
+    getStaffListRefetch();
+    getStaffByIdRefetch();
     showNotification({
       icon: <IconCheckbox />,
       message: '更新に成功しました！',

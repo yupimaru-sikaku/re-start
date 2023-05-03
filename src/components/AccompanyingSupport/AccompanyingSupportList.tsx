@@ -59,7 +59,6 @@ export const AccompanyingSupportList: NextPage<Props> = ({
   };
   return (
     <DataTable
-      sx={{ width: '1000px' }}
       verticalSpacing="lg"
       striped
       highlightOnHover

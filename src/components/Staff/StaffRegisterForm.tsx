@@ -15,7 +15,7 @@ import { CustomTextInput } from '../Common/CustomTextInput';
 import { useForm } from '@mantine/form';
 import { CustomButton } from '../Common/CustomButton';
 import { getDb, supabase } from '@/libs/supabase/supabase';
-import { useAuth } from '@/libs/mantine/useAuth';
+import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
@@ -26,7 +26,7 @@ export const StaffRegisterForm = () => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { user } = useAuth();
+  const { loginUser } = useLoginUser();
   const form = useForm({
     initialValues: { ...initialState },
     validate: {
@@ -54,7 +54,7 @@ export const StaffRegisterForm = () => {
         is_doko_apply: form.values.is_doko_apply,
         is_zitsumusya: form.values.is_zitsumusya,
         is_kaigo: form.values.is_kaigo,
-        user_id: user?.id,
+        user_id: loginUser?.id,
       });
 
       if (error) {

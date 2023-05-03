@@ -2,21 +2,24 @@ import React, { useMemo, useState } from 'react';
 import { DataTable } from 'mantine-datatable';
 import { NextPage } from 'next';
 import { PAGE_SIZE } from '@/utils';
-import { useRouter } from 'next/router';
-import { ReturnStaff } from '@/ducks/staff/slice';
-import { getPath } from '@/utils/const/getPath';
 import {
   useDeleteStaffMutation,
-  useGetStaffListQuery,
+  useGetStaffListByLoginIdQuery,
 } from '@/ducks/staff/query';
 import { CustomConfirm } from 'src/components/Common/CustomConfirm';
 import { StaffListRecords } from './StaffListRecords';
+import { useLoginUser } from '@/libs/mantine/useLoginUser';
 
 export const StaffList: NextPage = () => {
-  const router = useRouter();
   const [page, setPage] = useState(1);
-  const { data: staffList, isLoading } = useGetStaffListQuery();
+  const { loginUser } = useLoginUser();
+  const {
+    data: staffList,
+    isLoading: getStaffListLoading,
+    refetch,
+  } = useGetStaffListByLoginIdQuery(loginUser?.id || '');
   const [deleteStaff] = useDeleteStaffMutation();
+
   const from = useMemo(() => {
     return (page - 1) * PAGE_SIZE;
   }, [page]);
@@ -27,23 +30,18 @@ export const StaffList: NextPage = () => {
     return staffList?.slice(from, to);
   }, [staffList, page]);
 
-  const handleEdit = (staff: ReturnStaff) => {
-    router.push(`${getPath('STAFF_EDIT', staff.id)}`);
-  };
   const handleDelete = async (id: string) => {
     const isOK = await CustomConfirm(
       '削除します。よろしいですか？',
       '確認画面'
     );
     isOK && (await deleteStaff(id));
-  };
-  const moveToPersonalSchedule = (id: string) => {
-    router.push(getPath('STAFF_SCHEDULE', id));
+    refetch();
   };
 
   return (
     <DataTable
-      fetching={isLoading}
+      fetching={getStaffListLoading}
       striped
       highlightOnHover
       withBorder
@@ -54,9 +52,7 @@ export const StaffList: NextPage = () => {
       loaderBackgroundBlur={1}
       onPageChange={(p) => setPage(p)}
       columns={StaffListRecords({
-        handleEdit,
         handleDelete,
-        moveToPersonalSchedule,
       })}
     />
   );

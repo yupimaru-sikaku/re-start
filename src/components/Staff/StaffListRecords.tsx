@@ -5,18 +5,14 @@ import { IconTrash } from '@tabler/icons';
 import { IconEdit } from '@tabler/icons';
 import { CustomButton } from '../Common/CustomButton';
 import { ReturnStaff } from '@/ducks/staff/slice';
+import Link from 'next/link';
+import { getPath } from '@/utils/const/getPath';
 
 type Props = {
-  handleEdit: (staff: ReturnStaff) => void;
   handleDelete: (id: string) => Promise<void>;
-  moveToPersonalSchedule: (id: string) => void;
 };
 
-export const StaffListRecords = ({
-  handleEdit,
-  handleDelete,
-  moveToPersonalSchedule,
-}: Props) => {
+export const StaffListRecords = ({ handleDelete }: Props) => {
   return [
     { accessor: 'name', title: '名前', width: 110 },
     { accessor: 'gender', title: '性別', width: 50 },
@@ -86,13 +82,13 @@ export const StaffListRecords = ({
       title: '勤怠状況',
       width: 100,
       render: (staff: ReturnStaff) => (
-        <CustomButton
-          color="cyan"
-          variant="light"
-          onClick={() => moveToPersonalSchedule(staff.id)}
-        >
-          勤怠状況
-        </CustomButton>
+        <Link href={getPath('STAFF_SCHEDULE', staff.id)}>
+          <a>
+            <CustomButton color="cyan" variant="light">
+              勤怠状況
+            </CustomButton>
+          </a>
+        </Link>
       ),
     },
     {
@@ -101,9 +97,13 @@ export const StaffListRecords = ({
       width: 90,
       render: (staff: ReturnStaff) => (
         <Group spacing={4} noWrap>
-          <ActionIcon color="blue" onClick={() => handleEdit(staff)}>
-            <IconEdit size={20} />
-          </ActionIcon>
+          <Link href={getPath('STAFF_EDIT', staff.id)}>
+            <a>
+              <ActionIcon color="blue">
+                <IconEdit size={20} />
+              </ActionIcon>
+            </a>
+          </Link>
           <ActionIcon color="red" onClick={() => handleDelete(staff.id)}>
             <IconTrash size={20} />
           </ActionIcon>
@@ -118,3 +118,4 @@ export const StaffListRecords = ({
     },
   ];
 };
+

@@ -15,7 +15,7 @@ import { CustomTextInput } from '../Common/CustomTextInput';
 import { useForm } from '@mantine/form';
 import { CustomButton } from '../Common/CustomButton';
 import { supabase } from '@/libs/supabase/supabase';
-import { useAuth } from '@/libs/mantine/useAuth';
+import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
@@ -29,7 +29,7 @@ export const UserRegisterForm = () => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { user } = useAuth();
+  const { loginUser } = useLoginUser();
   const form = useForm({
     initialValues: { ...initialState, isGenderSpecification: false },
     validate: {
@@ -58,7 +58,7 @@ export const UserRegisterForm = () => {
         ? form.values.gender_specification
         : '無し';
       const { error } = await supabase.from('users').insert({
-        user_id: user?.id,
+        user_id: loginUser?.id,
         name: form.values.name,
         identification: form.values.identification,
         gender: form.values.gender,

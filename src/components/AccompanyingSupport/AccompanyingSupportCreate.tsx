@@ -1,6 +1,6 @@
 import { initialState } from '@/ducks/accompanying-support/slice';
 import { User } from '@/ducks/user/slice';
-import { useAuth } from '@/libs/mantine/useAuth';
+import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { calcWorkTime, convertWeekItem } from '@/utils';
 import { getPath } from '@/utils/const/getPath';
@@ -41,7 +41,7 @@ export const AccompanyingSupportCreate: NextPage<Props> = ({ userList }) => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { user } = useAuth();
+  const { loginUser } = useLoginUser();
   const userNameList = (userList || []).map((user) => user.name);
   const currentDate = new Date();
   const form = useForm({
@@ -114,7 +114,7 @@ export const AccompanyingSupportCreate: NextPage<Props> = ({ userList }) => {
         amount_value: man.doko_amount,
         content_arr: formatArr,
         status: 0,
-        user_id: user?.id,
+        user_id: loginUser?.id,
       });
       showNotification({
         icon: <IconCheckbox />,

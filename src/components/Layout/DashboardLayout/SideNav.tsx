@@ -23,7 +23,7 @@ import {
 import { getPath } from '@/utils/const/getPath';
 import { ActiveLink } from '@/utils/next/active-link';
 import { supabase } from '@/libs/supabase/supabase';
-import { useAuth } from '@/libs/mantine/useAuth';
+import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { IconLogout } from '@tabler/icons';
 import Image from 'next/image';
 
@@ -122,7 +122,7 @@ const ITEMS = [
 export const SideNav: FC<{ className?: string }> = ({ className }) => {
   const [collapsed, handlers] = useDisclosure(false);
   const { classes, cx } = useStyles({ collapsed });
-  const { user } = useAuth();
+  const { loginUser } = useLoginUser();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -161,7 +161,7 @@ export const SideNav: FC<{ className?: string }> = ({ className }) => {
             }}
           </ActiveLink>
         ))}
-        {user && (
+        {loginUser && (
           <Paper className={cx(classes.link)} onClick={handleLogout}>
             <Logout className={classes.linkIcon} />
             <span className={classes.linkLabel}>ログアウト</span>

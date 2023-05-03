@@ -8,28 +8,28 @@ import { ReturnProvider } from '@/ducks/provider/slice';
 import { Provider } from 'react-redux';
 import { store } from '@/ducks/store';
 
-type User = {
+type LoginUser = {
   id: string;
 };
 
 type AuthContextType = {
-  user: User | null;
+  loginUser: LoginUser | null;
   provider: ReturnProvider | null;
   supabase: typeof supabase;
 };
 
 export const AuthContext = createContext<AuthContextType>({
-  user: null,
+  loginUser: { id: '' },
   provider: null,
   supabase: supabase,
 });
 
 const App: CustomAppPage = ({ Component, pageProps }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [loginUser, setLoginUser] = useState<LoginUser | null>(null);
   const [provider, setProvider] = useState<any>(null);
 
   const setUserFromSession = (session: Session | null) => {
-    setUser(session ? { id: session.user?.id ?? null } : null);
+    setLoginUser(session ? { id: session.user?.id ?? null } : null);
   };
 
   const setProviderSession = async (session: Session | null) => {
@@ -64,7 +64,7 @@ const App: CustomAppPage = ({ Component, pageProps }) => {
 
   return (
     <Provider store={store}>
-      <AuthContext.Provider value={{ user, provider, supabase }}>
+      <AuthContext.Provider value={{ loginUser, provider, supabase }}>
         <GlobalStyleProvider>
           <AppMantineProvider>
             <Component {...pageProps} />

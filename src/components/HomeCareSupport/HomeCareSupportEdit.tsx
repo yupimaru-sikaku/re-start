@@ -24,7 +24,7 @@ import { CustomTextInput } from '../Common/CustomTextInput';
 import { CustomButton } from '../Common/CustomButton';
 import { TimeRangeInput } from '@mantine/dates';
 import { IconCheckbox, IconClock, IconRefresh } from '@tabler/icons';
-import { useAuth } from '@/libs/mantine/useAuth';
+import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { calcEachWorkTime, calcWorkTime, convertWeekItem } from '@/utils';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { User } from '@/ducks/user/slice';
@@ -59,7 +59,7 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { user, provider } = useAuth();
+  const { loginUser, provider } = useLoginUser();
   const staffArr = staffList.map((staff) => staff.name);
   // const userNameList = (userData || []).map((user) => user.name);
   // const currentDate = new Date();

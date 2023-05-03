@@ -66,7 +66,6 @@ export const HomeCareSupportList: NextPage<Props> = ({
 
   return (
     <DataTable
-      sx={{ width: '1000px' }}
       verticalSpacing="lg"
       striped
       highlightOnHover

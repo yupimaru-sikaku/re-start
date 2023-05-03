@@ -1,4 +1,6 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PostgrestError } from '@supabase/supabase-js';
+import { staffApi } from './query';
 
 type Staff = {
   id: string;
@@ -38,7 +40,8 @@ export type DeleteStaffResult = {
   error: PostgrestError | null;
 };
 
-export const initialState: CreateStaff = {
+export const initialState = {
+  staffList: [] as ReturnStaff[],
   name: '',
   furigana: '',
   gender: '',
@@ -51,3 +54,31 @@ export const initialState: CreateStaff = {
   is_kaigo: false,
   user_id: '',
 };
+
+const staffSlice = createSlice({
+  name: 'staff',
+  initialState,
+  reducers: {
+    setStaffList: (state, action: PayloadAction<ReturnStaff[]>) => {
+      state.staffList = action.payload;
+    },
+  },
+  // extraReducers: (builder) => {
+  //   builder.addMatcher(
+  //     staffApi.endpoints.getStaffList.matchFulfilled,
+  //     (state, action) => {
+  //       console.log('Action payload:', action.payload);
+  //       state.staffList = action.payload;
+  //     }
+  //   );
+  // },
+  // extraReducers: (builder) => {
+  //   builder.addCase(getStaffList.fulfilled, (state, action) => {
+  //     state.staffList = action.payload.staffList;
+  //   })
+  // },
+});
+
+export default staffSlice.reducer;
+
+export const { setStaffList } = staffSlice.actions;

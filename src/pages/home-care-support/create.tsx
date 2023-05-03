@@ -3,7 +3,7 @@ import { HomeCareSupportCreate } from '@/components/HomeCareSupport/HomeCareSupp
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
 import { User } from '@/ducks/user/slice';
-import { useAuth } from '@/libs/mantine/useAuth';
+import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { supabase } from '@/libs/supabase/supabase';
 import { Space } from '@mantine/core';
 import { NextPage } from 'next';

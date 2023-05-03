@@ -1,12 +1,12 @@
 import { FC, ReactNode } from 'react';
 import { Container, SimpleGrid, Space } from '@mantine/core';
-import { useAuth } from '@/libs/mantine/useAuth';
+import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { useRouter } from 'next/router';
 import { getBreadcrumbs } from '@/libs/breadcrumbs';
 import { CustomBreadcrumbs } from '@/components/Common/CustomBreadcrumbs';
 
 export const Header: FC<{ left: ReactNode }> = () => {
-  const { user } = useAuth();
+  const { loginUser } = useLoginUser();
   const router = useRouter();
   const items = getBreadcrumbs(router.asPath);
 
@@ -22,7 +22,7 @@ export const Header: FC<{ left: ReactNode }> = () => {
       <Space h="sm" />
       <SimpleGrid cols={2}>
         <CustomBreadcrumbs items={items} />
-        {user ? (
+        {loginUser ? (
           <p>ログイン中</p>
         ) : (
           <p>

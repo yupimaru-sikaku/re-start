@@ -18,7 +18,7 @@ import { CustomTextInput } from '../Common/CustomTextInput';
 import { CustomButton } from '../Common/CustomButton';
 import { TimeRangeInput } from '@mantine/dates';
 import { IconCheckbox, IconClock } from '@tabler/icons';
-import { useAuth } from '@/libs/mantine/useAuth';
+import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { calcEachWorkTime, calcWorkTime, convertWeekItem } from '@/utils';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { User } from '@/ducks/user/slice';
@@ -41,7 +41,7 @@ export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { user, provider } = useAuth();
+  const { loginUser, provider } = useLoginUser();
   const userNameList = (userList || []).map((user) => user.name);
   const currentDate = new Date();
   const form = useForm({
@@ -133,7 +133,7 @@ export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
         amount_value_3: serviceAmountArr[2] ? serviceAmountArr[2] : null,
         content_arr: formatArr,
         status: 0,
-        user_id: user?.id,
+        user_id: loginUser?.id,
       });
       showNotification({
         icon: <IconCheckbox />,
