@@ -15,11 +15,6 @@ import Head from 'next/head';
 
 import { LayoutErrorBoundary } from '../LayoutErrorBoundary';
 
-const Header = dynamic(async () => {
-  const { Header } = await import('./Header');
-  return Header;
-});
-
 const SideNav = dynamic(async () => {
   const { SideNav } = await import('./SideNav');
   return SideNav;
@@ -50,20 +45,6 @@ export const DashboardLayout: CustomLayout = ({ children, title }) => {
           </>
         }
       >
-        <Header
-          left={
-            <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
-              {/* <ActionIcon
-                variant="hover"
-                radius="xl"
-                // size={40}
-                onClick={handlers.open}
-              >
-                <Menu2 />
-              </ActionIcon> */}
-            </MediaQuery>
-          }
-        />
         <Box py="xl" px="md">
           <LayoutErrorBoundary>{children}</LayoutErrorBoundary>
         </Box>

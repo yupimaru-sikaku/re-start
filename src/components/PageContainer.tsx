@@ -32,9 +32,9 @@ export const PageContainer: FC<PageContainerProps> = ({
           ))}
         </Breadcrumbs>
       ) : null}
-
-      <Title order={1} color="gray">{title}</Title>
-
+      <Title order={1} color="gray" pb="md">
+        {title}
+      </Title>
       {children}
     </Container>
   );

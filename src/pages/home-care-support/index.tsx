@@ -7,24 +7,22 @@ import { getDb, supabase } from '@/libs/supabase/supabase';
 import { getPath } from '@/utils/const/getPath';
 import { Space } from '@mantine/core';
 import { NextPage } from 'next';
-import { useRouter } from 'next/router';
-import React, { useCallback } from 'react';
+import Link from 'next/link';
+import React from 'react';
 
 type Props = {
   homeCareSupportList: ReturnHomeCareSupport[];
 };
 
 const HomeCareSupportPage: NextPage<Props> = ({ homeCareSupportList }) => {
-  const router = useRouter();
-  const moveToCreate = useCallback(() => {
-    router.push(getPath('HOME_CARE_SUPPORT_CREATE'));
-  }, []);
-
   return (
     <DashboardLayout title="居宅介護">
       <PageContainer title="居宅介護" fluid>
-        <Space h="md" />
-        <CustomButton onClick={moveToCreate}>実績記録票を作成する</CustomButton>
+        <Link href={getPath('HOME_CARE_SUPPORT_CREATE')}>
+          <a>
+            <CustomButton>実績記録票を作成する</CustomButton>
+          </a>
+        </Link>
         <Space h="md" />
         <HomeCareSupportList homeCareSupportList={homeCareSupportList} />
       </PageContainer>

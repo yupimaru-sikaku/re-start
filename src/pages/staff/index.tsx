@@ -12,7 +12,6 @@ const StaffPage: NextPage = () => {
   return (
     <DashboardLayout title="スタッフ情報">
       <PageContainer title="スタッフ情報" fluid>
-        <Space h="md" />
         <Group>
           <Link href={getPath('STAFF_REGISTER')}>
             <a>

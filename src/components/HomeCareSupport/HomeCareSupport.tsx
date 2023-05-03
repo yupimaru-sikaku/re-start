@@ -2,6 +2,7 @@ import { getPath } from '@/utils/const/getPath';
 import React from 'react';
 import { CustomButton } from '../Common/CustomButton';
 import { DashboardLayout } from '../Layout/DashboardLayout/DashboardLayout';
+import Link from 'next/link';
 
 export const HomeCareSupport = () => {
   return (
