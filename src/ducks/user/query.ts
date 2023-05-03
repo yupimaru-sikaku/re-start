@@ -2,8 +2,14 @@ import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 import { PostgrestError } from '@supabase/supabase-js';
-import { DeleteUserResult, ReturnUser, UpdateUserResult } from './slice';
-import { UpdateStaffParams } from '../staff/slice';
+import {
+  CreateUserParams,
+  CreateUserResult,
+  DeleteUserResult,
+  ReturnUser,
+  UpdateUserParams,
+  UpdateUserResult,
+} from './slice';
 
 export const userApi = createApi({
   reducerPath: 'userApi',
@@ -51,7 +57,7 @@ export const userApi = createApi({
      * @param {string} id
      * @return {ReturnUser}
      */
-    getStaffById: builder.query<ReturnUser, string>({
+    getUserById: builder.query<ReturnUser, string>({
       queryFn: async (id: string) => {
         const { data, error } = await supabase
           .from(getDb('USER'))
@@ -60,28 +66,67 @@ export const userApi = createApi({
         return data ? { data: data[0] as ReturnUser } : { error };
       },
     }),
-
+    /**
+     * POST/スタッフの情報を作成
+     * @param {CreateUserParams} params
+     * @return {CreateUserParams}
+     */
+    createUser: builder.mutation<CreateUserResult, CreateUserParams>({
+      queryFn: async (params: CreateUserParams) => {
+        const { error } = await supabase.from(getDb('USER')).insert({
+          user_id: params.user_id,
+          name: params.name,
+          identification: params.identification,
+          gender: params.gender,
+          is_gender_specification: params.is_gender_specification,
+          gender_specification: params.gender_specification,
+          ido_amount: params.ido_amount,
+          is_ido: params.is_ido,
+          kodo_amount: params.kodo_amount,
+          is_kodo: params.is_kodo,
+          doko_amount: params.doko_amount,
+          is_doko: params.is_doko,
+          is_kazi: params.is_kazi,
+          kazi_amount: params.kazi_amount,
+          is_shintai: params.is_shintai,
+          shintai_amount: params.shintai_amount,
+          is_with_tsuin: params.is_with_tsuin,
+          with_tsuin_amount: params.with_tsuin_amount,
+          is_tsuin: params.is_tsuin,
+          tsuin_amount: params.tsuin_amount,
+        });
+        return { error };
+      },
+    }),
     /**
      * PUT/スタッフの情報を更新
-     * @param {UpdateStaffParams[]} params
+     * @param {UpdateUserParams} params
      * @return {ReturnUser[]}
      */
-    updateStaff: builder.mutation<UpdateUserResult, UpdateStaffParams>({
-      queryFn: async (params: UpdateStaffParams) => {
+    updateUser: builder.mutation<UpdateUserResult, UpdateUserParams>({
+      queryFn: async (params: UpdateUserParams) => {
         const { error } = await supabase
           .from(getDb('USER'))
           .update({
             name: params.name,
-            furigana: params.furigana,
+            identification: params.identification,
             gender: params.gender,
-            work_time_per_week: params.work_time_per_week,
-            is_syoninsya: params.is_syoninsya,
+            is_gender_specification: params.is_gender_specification,
+            gender_specification: params.gender_specification,
+            ido_amount: params.ido_amount,
+            is_ido: params.is_ido,
+            kodo_amount: params.kodo_amount,
             is_kodo: params.is_kodo,
-            is_doko_normal: params.is_doko_normal,
-            is_doko_apply: params.is_doko_apply,
-            is_zitsumusya: params.is_zitsumusya,
-            is_kaigo: params.is_kaigo,
-            user_id: params.user_id,
+            doko_amount: params.doko_amount,
+            is_doko: params.is_doko,
+            is_kazi: params.is_kazi,
+            kazi_amount: params.kazi_amount,
+            is_shintai: params.is_shintai,
+            shintai_amount: params.shintai_amount,
+            is_with_tsuin: params.is_with_tsuin,
+            with_tsuin_amount: params.with_tsuin_amount,
+            is_tsuin: params.is_tsuin,
+            tsuin_amount: params.tsuin_amount,
           })
           .eq('id', params.id);
         return { error };
@@ -107,7 +152,8 @@ export const userApi = createApi({
 export const {
   useGetUserListQuery,
   useGetUserListByLoginIdQuery,
-  useGetStaffByIdQuery,
-  useUpdateStaffMutation,
+  useGetUserByIdQuery,
+  useCreateUserMutation,
+  useUpdateUserMutation,
   useDeleteUserMutation,
 } = userApi;

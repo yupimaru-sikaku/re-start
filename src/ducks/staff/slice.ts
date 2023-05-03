@@ -6,7 +6,7 @@ type Staff = {
   id: string;
   name: string; // 名前
   furigana: string; // ふりがな
-  gender: string; // 性別
+  gender: '男性' | '女性'; // 性別
   work_time_per_week: number; // 勤務時間/週
   is_syoninsya: boolean; //初任者研修の資格
   is_kodo: boolean; //行動援護の資格
@@ -20,10 +20,14 @@ type Staff = {
   user_id: string; // 作成した法人
 };
 
-export type CreateStaff = Omit<
+export type CreateStaffParams = Omit<
   Staff,
   'id' | 'is_display' | 'created_at' | 'updated_at'
 >;
+
+export type CreateStaffResult = {
+  error: PostgrestError | null;
+};
 
 export type UpdateStaffParams = Omit<
   Staff,
@@ -41,10 +45,11 @@ export type DeleteStaffResult = {
 };
 
 export const initialState = {
+  id: '',
   staffList: [] as ReturnStaff[],
   name: '',
   furigana: '',
-  gender: '',
+  gender: '男性' as Staff['gender'],
   work_time_per_week: 0,
   is_syoninsya: false,
   is_kodo: false,

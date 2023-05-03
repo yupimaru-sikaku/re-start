@@ -16,7 +16,7 @@ type Props = {
 export const UserListRecords = ({ handleDelete }: Props) => {
   return [
     { accessor: 'name', title: '名前', width: 110 },
-    { accessor: 'gender', title: '性別' },
+    { accessor: 'gender', title: '性別', width: 50 },
     {
       accessor: 'gender_specification',
       title: (
@@ -26,10 +26,11 @@ export const UserListRecords = ({ handleDelete }: Props) => {
           指定
         </>
       ),
+      width: 50,
     },
     {
       accessor: 'ido',
-      width: 70,
+      width: 50,
       title: (
         <>
           移動
@@ -41,7 +42,7 @@ export const UserListRecords = ({ handleDelete }: Props) => {
     },
     {
       accessor: 'kodo',
-      width: 70,
+      width: 50,
       title: (
         <>
           行動
@@ -55,7 +56,7 @@ export const UserListRecords = ({ handleDelete }: Props) => {
     },
     {
       accessor: 'doko',
-      width: 70,
+      width: 50,
       title: (
         <>
           同行
@@ -69,7 +70,7 @@ export const UserListRecords = ({ handleDelete }: Props) => {
     },
     {
       accessor: 'kazi',
-      width: 70,
+      width: 50,
       title: (
         <>
           家事
@@ -83,7 +84,7 @@ export const UserListRecords = ({ handleDelete }: Props) => {
     },
     {
       accessor: 'shintai',
-      width: 70,
+      width: 50,
       title: (
         <>
           身体
@@ -104,6 +105,7 @@ export const UserListRecords = ({ handleDelete }: Props) => {
           （伴う）
         </>
       ),
+      width: 60,
       render: (user: ReturnUser) => (
         <Checkbox readOnly checked={user.is_with_tsuin} />
       ),
@@ -117,6 +119,7 @@ export const UserListRecords = ({ handleDelete }: Props) => {
           （伴わない）
         </>
       ),
+      width: 60,
       render: (user: ReturnUser) => (
         <Checkbox readOnly checked={user.is_tsuin} />
       ),
@@ -124,14 +127,14 @@ export const UserListRecords = ({ handleDelete }: Props) => {
     {
       accessor: 'created_at',
       title: '作成日時',
-      width: 150,
+      width: 70,
       render: (user: ReturnUser) =>
         user.created_at ? convertSupabaseTime(user.created_at) : '',
     },
     {
       accessor: 'updatedAt',
       title: '更新日時',
-      width: 150,
+      width: 70,
       render: (user: ReturnUser) =>
         user.updated_at ? convertSupabaseTime(user.updated_at) : '',
     },

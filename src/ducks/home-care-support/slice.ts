@@ -1,3 +1,5 @@
+import { PostgrestError } from '@supabase/supabase-js';
+
 export type HomeCareSupportContentArr = {
   work_date: number; // サービス提供日
   service_content: string; // サービス内容
@@ -76,7 +78,7 @@ export type ReturnHomeCareSupport = Omit<
   }[];
 };
 
-export type UpdateHomeCareSupport = Omit<
+export type UpdateHomeCareSupportParams = Omit<
   HomeCareSupport,
   | 'amount_title_2'
   | 'amount_value_2'
@@ -99,24 +101,32 @@ export type UpdateHomeCareSupport = Omit<
   }[];
 };
 
+export type UpdateHomeCareSupportResult = {
+  error: PostgrestError | null;
+};
+
+export type DeleteHomeCareSupportResult = {
+  error: PostgrestError | null;
+};
+
 export const initialState: CreateHomeCareSupport = {
-  year: null,
-  month: null,
+  year: 0,
+  month: 0,
   name: '',
   identification: '',
   amount_title_1: '',
-  amount_value_1: null,
+  amount_value_1: 0,
   amount_title_2: '',
-  amount_value_2: null,
+  amount_value_2: 0,
   amount_title_3: '',
-  amount_value_3: null,
+  amount_value_3: 0,
   content_arr: [
     {
-      work_date: null,
+      work_date: 0,
       service_content: '',
-      start_time: null,
-      end_time: null,
-      staff_name: null,
+      start_time: '',
+      end_time: '',
+      staff_name: '',
     },
   ],
   status: 0,

@@ -19,7 +19,7 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
     { accessor: 'work_time_per_week', title: '勤務時間/週', width: 70 },
     {
       accessor: 'syoninsya',
-      width: 70,
+      width: 50,
       title: '初任者',
       render: (staff: ReturnStaff) => (
         <Checkbox readOnly checked={staff.is_syoninsya} />
@@ -27,8 +27,14 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
     },
     {
       accessor: 'kodo',
-      width: 70,
-      title: '行動援護',
+      width: 50,
+      title: (
+        <>
+          行動
+          <br />
+          援護
+        </>
+      ),
       render: (staff: ReturnStaff) => (
         <Checkbox readOnly checked={staff.is_kodo} />
       ),
@@ -63,7 +69,7 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
     },
     {
       accessor: 'iitsumusya',
-      width: 70,
+      width: 50,
       title: '実務者',
       render: (staff: ReturnStaff) => (
         <Checkbox readOnly checked={staff.is_zitsumusya} />
@@ -72,7 +78,13 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
     {
       accessor: 'kaigo',
       width: 70,
-      title: '介護福祉士',
+      title: (
+        <>
+          介護
+          <br />
+          福祉士
+        </>
+      ),
       render: (staff: ReturnStaff) => (
         <Checkbox readOnly checked={staff.is_kaigo} />
       ),
@@ -94,7 +106,7 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
     {
       accessor: 'actions',
       title: 'アクション',
-      width: 90,
+      width: 50,
       render: (staff: ReturnStaff) => (
         <Group spacing={4} noWrap>
           <Link href={getPath('STAFF_EDIT', staff.id)}>
@@ -113,9 +125,8 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
     {
       accessor: 'updatedAt',
       title: '更新日時',
-      width: 150,
+      width: 80,
       render: (staff: ReturnStaff) => convertSupabaseTime(staff.updated_at),
     },
   ];
 };
-

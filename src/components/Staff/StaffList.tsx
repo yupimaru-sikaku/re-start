@@ -5,30 +5,22 @@ import { PAGE_SIZE } from '@/utils';
 import {
   useDeleteStaffMutation,
   useGetStaffListByLoginIdQuery,
+  useGetStaffListQuery,
 } from '@/ducks/staff/query';
 import { CustomConfirm } from 'src/components/Common/CustomConfirm';
 import { StaffListRecords } from './StaffListRecords';
 import { useLoginUser } from '@/libs/mantine/useLoginUser';
+import { useGetTablePage } from '@/hooks/useGetTablePage';
 
 export const StaffList: NextPage = () => {
   const [page, setPage] = useState(1);
-  const { loginUser } = useLoginUser();
   const {
     data: staffList,
     isLoading: getStaffListLoading,
     refetch,
-  } = useGetStaffListByLoginIdQuery(loginUser?.id || '');
+  } = useGetStaffListQuery();
   const [deleteStaff] = useDeleteStaffMutation();
-
-  const from = useMemo(() => {
-    return (page - 1) * PAGE_SIZE;
-  }, [page]);
-  const to = useMemo(() => {
-    return from + PAGE_SIZE;
-  }, [from]);
-  const records = useMemo(() => {
-    return staffList?.slice(from, to);
-  }, [staffList, page]);
+  const { records, PAGE_SIZE } = useGetTablePage(page, staffList);
 
   const handleDelete = async (id: string) => {
     const isOK = await CustomConfirm(

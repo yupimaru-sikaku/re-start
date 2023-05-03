@@ -23,7 +23,6 @@ const HomeCareSupportEditPage: NextPage<Props> = ({
   return (
     <DashboardLayout title="記録票編集">
       <PageContainer title="実績記録票編集" fluid>
-        <Space h="md" />
         <HomeCareSupportEdit
           userData={userData}
           userList={userList}

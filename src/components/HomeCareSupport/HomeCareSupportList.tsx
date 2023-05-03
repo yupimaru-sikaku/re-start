@@ -1,57 +1,51 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { DataTable } from 'mantine-datatable';
-import { NextPage } from 'next';
-import { convertSupabaseTime, PAGE_SIZE } from '@/utils';
-import { ActionIcon, Box, Checkbox, Group, Text } from '@mantine/core';
-import { IconCheckbox, IconEye, IconTrash } from '@tabler/icons';
-import { IconEdit } from '@tabler/icons';
-import { useRouter } from 'next/router';
-import { ReturnHomeCareSupport } from '@/ducks/home-care-support/slice';
-import { CustomButton } from '../Common/CustomButton';
 import { CreatePdf } from './CreatePdf';
-import { getPath } from '@/utils/const/getPath';
-import { getDb, supabase } from '@/libs/supabase/supabase';
 import { CustomConfirm } from '../Common/CustomConfirm';
-import { showNotification } from '@mantine/notifications';
-import Link from 'next/link';
+import { useLoginUser } from '@/libs/mantine/useLoginUser';
+import {
+  useDeleteHomeCareSupportMutation,
+  useGetHomeCareSupportListByCoroprateIdQuery,
+  useGetHomeCareSupportListByLoginIdQuery,
+  useGetHomeCareSupportListQuery,
+} from '@/ducks/home-care-support/query';
+import { HomeCareListRecords } from './HomeCareListRecords';
+import { useGetTablePage } from '@/hooks/useGetTablePage';
+import { ReturnHomeCareSupport } from '@/ducks/home-care-support/slice';
 
-type Props = {
-  homeCareSupportList: ReturnHomeCareSupport[];
-};
-
-export const HomeCareSupportList: NextPage<Props> = ({
-  homeCareSupportList,
-}) => {
-  const router = useRouter();
+export const HomeCareSupportList = () => {
   const [page, setPage] = useState(1);
-  const [records, setRecords] = useState(
-    homeCareSupportList.slice(0, PAGE_SIZE)
+  const { loginUser, provider } = useLoginUser();
+  const data1 = useGetHomeCareSupportListQuery();
+  const data2 = useGetHomeCareSupportListByCoroprateIdQuery(
+    provider?.corporate_id || ''
   );
-
-  useEffect(() => {
-    const from = (page - 1) * PAGE_SIZE;
-    const to = from + PAGE_SIZE;
-    setRecords(homeCareSupportList.slice(from, to));
-  }, [page]);
-
-  const handleShow = () => {};
-  const handleDelete = async (homeCare: ReturnHomeCareSupport) => {
-    const isOK = await CustomConfirm('本当に削除しますか？', '確認画面');
-    if (!isOK) return;
-    const { error } = await supabase
-      .from(getDb('HOME_CARE'))
-      .delete()
-      .eq('id', homeCare.id);
-    showNotification({
-      icon: <IconCheckbox />,
-      message: '削除しました。',
-    });
-    if (error) {
-      await CustomConfirm('削除に失敗しました。');
-      return;
+  const data3 = useGetHomeCareSupportListByLoginIdQuery(loginUser?.id || '');
+  const {
+    data: homeCareSupportList,
+    isLoading: homeCareSupportListLoading,
+    refetch,
+  } = useMemo(() => {
+    if (provider?.role === 'super_admin') {
+      return data1;
+    } else if (provider?.role === 'admin') {
+      return data2;
+    } else {
+      return data3;
     }
-    router.reload();
+  }, [data1, data2, data3]);
+  const [deleteHomeCareSupport] = useDeleteHomeCareSupportMutation();
+  const { records, PAGE_SIZE } = useGetTablePage(page, homeCareSupportList);
+
+  const handleDelete = async (id: string) => {
+    const isOK = await CustomConfirm(
+      '削除します。よろしいですか？',
+      '確認画面'
+    );
+    isOK && (await deleteHomeCareSupport(id));
+    refetch();
   };
+
   const handlePDFDownload = async (homeCare: ReturnHomeCareSupport) => {
     const pdfBytes = await CreatePdf('/home_care_records.pdf', homeCare);
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
@@ -64,75 +58,19 @@ export const HomeCareSupportList: NextPage<Props> = ({
 
   return (
     <DataTable
-      verticalSpacing="lg"
+      fetching={homeCareSupportListLoading}
       striped
       highlightOnHover
       withBorder
-      records={records}
+      records={records || []}
       recordsPerPage={PAGE_SIZE}
-      totalRecords={homeCareSupportList.length}
+      totalRecords={homeCareSupportList?.length || 0}
       page={page}
-      loaderVariant="oval"
-      loaderSize="lg"
-      loaderBackgroundBlur={1}
       onPageChange={(p) => setPage(p)}
-      columns={[
-        { accessor: 'year', title: '西暦', width: 110 },
-        { accessor: 'month', title: '月', width: 110 },
-        { accessor: 'name', title: '利用者名' },
-        {
-          accessor: 'created_at',
-          textAlignment: 'center',
-          title: '作成日時',
-          width: 150,
-          render: (homeCare) =>
-            homeCare.created_at ? convertSupabaseTime(homeCare.created_at) : '',
-        },
-        {
-          accessor: 'updatedAt',
-          textAlignment: 'center',
-          title: '更新日時',
-          width: 150,
-          render: (homeCare) =>
-            homeCare.updated_at ? convertSupabaseTime(homeCare.updated_at) : '',
-        },
-        {
-          accessor: 'download',
-          title: 'ダウンロード',
-          width: 150,
-          render: (homeCare) => (
-            <CustomButton
-              color="cyan"
-              variant="light"
-              onClick={() => handlePDFDownload(homeCare)}
-            >
-              ダウンロード
-            </CustomButton>
-          ),
-        },
-        {
-          accessor: 'actions',
-          title: 'アクション',
-          width: 110,
-          render: (homeCare) => (
-            <Group spacing={4} position="right" noWrap>
-              <ActionIcon color="green" onClick={() => handleShow()}>
-                <IconEye size={20} />
-              </ActionIcon>
-              <Link href={getPath('HOME_CARE_SUPPORT_EDIT', homeCare.id)}>
-                <a>
-                  <ActionIcon color="blue">
-                    <IconEdit size={20} />
-                  </ActionIcon>
-                </a>
-              </Link>
-              <ActionIcon color="red" onClick={() => handleDelete(homeCare)}>
-                <IconTrash size={20} />
-              </ActionIcon>
-            </Group>
-          ),
-        },
-      ]}
+      columns={HomeCareListRecords({
+        handleDelete,
+        handlePDFDownload,
+      })}
     />
   );
 };

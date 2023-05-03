@@ -14,6 +14,7 @@ import { IconCheckbox, IconEye, IconTrash } from '@tabler/icons';
 import { IconEdit } from '@tabler/icons';
 import { CreatePdf } from './CreatePdf';
 import Link from 'next/link';
+import { useGetTablePage } from '@/hooks/useGetTablePage';
 
 type Props = {
   accompanyingSupportList: ReturnAccompanyingSupport[];
@@ -24,14 +25,7 @@ export const AccompanyingSupportList: NextPage<Props> = ({
 }) => {
   const router = useRouter();
   const [page, setPage] = useState(1);
-  const [records, setRecords] = useState(
-    accompanyingSupportList.slice(0, PAGE_SIZE)
-  );
-  useEffect(() => {
-    const from = (page - 1) * PAGE_SIZE;
-    const to = from + PAGE_SIZE;
-    setRecords(accompanyingSupportList.slice(from, to));
-  }, [page]);
+  const { records, PAGE_SIZE } = useGetTablePage(page, accompanyingSupportList);
 
   const handleShow = () => {};
   const handleDelete = async (accompanying: ReturnAccompanyingSupport) => {

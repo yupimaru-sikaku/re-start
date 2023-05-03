@@ -1,6 +1,5 @@
 import {
   Box,
-  LoadingOverlay,
   Paper,
   SegmentedControl,
   SimpleGrid,
@@ -10,7 +9,7 @@ import {
 } from '@mantine/core';
 import { useFocusTrap } from '@mantine/hooks';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { useForm } from '@mantine/form';
 import { CustomButton } from '../Common/CustomButton';
@@ -18,18 +17,20 @@ import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
-import {
-  initialState,
-  UpdateStaffParams,
-  UpdateStaffResult,
-} from '@/ducks/staff/slice';
+import { initialState, UpdateStaffResult } from '@/ducks/staff/slice';
 import {
   useGetStaffByIdQuery,
-  useGetStaffListByLoginIdQuery,
+  useGetStaffListQuery,
   useUpdateStaffMutation,
 } from '@/ducks/staff/query';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
+import {
+  validateFurigana,
+  validateName,
+  validateWorkTimePerWeek,
+} from '@/utils/validate/staff';
+import { useGetQualificationList } from '@/hooks/staff/useGetQualificationList';
 
 export const StaffEditForm = () => {
   const [updateStaff] = useUpdateStaffMutation();
@@ -40,42 +41,36 @@ export const StaffEditForm = () => {
   const { loginUser } = useLoginUser();
   const { data: staffData, refetch: getStaffByIdRefetch } =
     useGetStaffByIdQuery(staffId || skipToken);
-  const { refetch: getStaffListRefetch } = useGetStaffListByLoginIdQuery(
-    loginUser?.id || ''
-  );
-
+  const { refetch: getStaffListRefetch } = useGetStaffListQuery();
+  const form = useForm({
+    initialValues: initialState,
+    validate: {
+      name: (value) => {
+        const { error, text } = validateName(value);
+        return error ? text : null;
+      },
+      furigana: (value) => {
+        const { error, text } = validateFurigana(value);
+        return error ? text : null;
+      },
+      work_time_per_week: (value) => {
+        const { error, text } = validateWorkTimePerWeek(value);
+        return error ? text : null;
+      },
+    },
+  });
+  const qualificationList = useGetQualificationList(form);
+  // useFormは再レンダリングされないため
   useEffect(() => {
     if (!staffData) return;
     form.setValues(staffData);
   }, [staffData]);
-  const form = useForm({
-    initialValues: initialState,
-    validate: {
-      // name: (value) => {
-      //   const { error, text } = validateName(value);
-      //   return error ? text : null;
-      // },
-    },
-  });
+
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
       if (!staffData || !loginUser) return;
-      const params: UpdateStaffParams = {
-        id: staffData.id,
-        name: form.values.name,
-        furigana: form.values.furigana,
-        gender: form.values.gender,
-        work_time_per_week: form.values.work_time_per_week,
-        is_syoninsya: form.values.is_syoninsya,
-        is_kodo: form.values.is_kodo,
-        is_doko_normal: form.values.is_doko_normal,
-        is_doko_apply: form.values.is_doko_apply,
-        is_zitsumusya: form.values.is_zitsumusya,
-        is_kaigo: form.values.is_kaigo,
-        user_id: loginUser.id,
-      };
-
+      const params = form.values;
       const { error } = (await updateStaff(params)) as UpdateStaffResult;
 
       if (error) {
@@ -99,41 +94,9 @@ export const StaffEditForm = () => {
     setIsLoading(false);
   };
 
-  const qualificationList = [
-    {
-      title: '初任者研修',
-      formTitle: 'is_syoninsya',
-      formValue: form.values.is_syoninsya,
-    },
-    {
-      title: '行動援護',
-      formTitle: 'is_kodo',
-      formValue: form.values.is_kodo,
-    },
-    {
-      title: '同行援護一般',
-      formTitle: 'is_doko_normal',
-      formValue: form.values.is_doko_normal,
-    },
-    {
-      title: '同行援護応用',
-      formTitle: 'is_doko_apply',
-      formValue: form.values.is_doko_apply,
-    },
-    {
-      title: '実務者研修',
-      formTitle: 'is_zitsumusya',
-      formValue: form.values.is_zitsumusya,
-    },
-    {
-      title: '介護福祉士',
-      formTitle: 'is_kaigo',
-      formValue: form.values.is_kaigo,
-    },
-  ];
   return (
     <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+      <Paper withBorder shadow="md" p={30} radius="md">
         <CustomTextInput
           idText="name"
           label="スタッフ名"

@@ -1,6 +1,5 @@
 import {
   Box,
-  Grid,
   Paper,
   SegmentedControl,
   SimpleGrid,
@@ -14,92 +13,75 @@ import React, { useState } from 'react';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { useForm } from '@mantine/form';
 import { CustomButton } from '../Common/CustomButton';
-import { getDb, supabase } from '@/libs/supabase/supabase';
 import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
-// import { validateName } from '@/utils/validate/user';
-import { initialState } from '@/ducks/staff/slice';
+import { CreateStaffResult, initialState } from '@/ducks/staff/slice';
+import {
+  validateFurigana,
+  validateName,
+  validateWorkTimePerWeek,
+} from '@/utils/validate/staff';
+import {
+  useCreateStaffMutation,
+  useGetStaffListQuery,
+} from '@/ducks/staff/query';
+import { CustomConfirm } from '../Common/CustomConfirm';
+import { useGetQualificationList } from '@/hooks/staff/useGetQualificationList';
 
 export const StaffRegisterForm = () => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [createStaff] = useCreateStaffMutation();
+  const { refetch } = useGetStaffListQuery();
   const { loginUser } = useLoginUser();
   const form = useForm({
-    initialValues: { ...initialState },
+    initialValues: initialState,
     validate: {
-      // name: (value) => {
-      //   const { error, text } = validateName(value);
-      //   return error ? text : null;
-      // },
+      name: (value) => {
+        const { error, text } = validateName(value);
+        return error ? text : null;
+      },
+      furigana: (value) => {
+        const { error, text } = validateFurigana(value);
+        return error ? text : null;
+      },
+      work_time_per_week: (value) => {
+        const { error, text } = validateWorkTimePerWeek(value);
+        return error ? text : null;
+      },
     },
   });
+  const qualificationList = useGetQualificationList(form);
 
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      //   const genderSpecification = form.values.isGenderSpecification
-      //     ? form.values.gender_specification
-      //     : '無し';
-      const { error } = await supabase.from(getDb('STAFF')).insert({
-        name: form.values.name,
-        furigana: form.values.furigana,
-        gender: form.values.gender,
-        work_time_per_week: form.values.work_time_per_week,
-        is_syoninsya: form.values.is_syoninsya,
-        is_kodo: form.values.is_kodo,
-        is_doko_normal: form.values.is_doko_normal,
-        is_doko_apply: form.values.is_doko_apply,
-        is_zitsumusya: form.values.is_zitsumusya,
-        is_kaigo: form.values.is_kaigo,
-        user_id: loginUser?.id,
-      });
+      if (!loginUser) return;
+      const params = { ...form.values, user_id: loginUser!.id };
+      const { error } = (await createStaff(params)) as CreateStaffResult;
 
       if (error) {
-        console.log(error);
-        setIsLoading(false);
-        return;
+        throw new Error(error.message);
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      await CustomConfirm(
+        `スタッフの情報登録に失敗しました。${error}`,
+        'Caution'
+      );
+      setIsLoading(false);
       return;
     }
     showNotification({
       icon: <IconCheckbox />,
       message: '登録に成功しました！',
     });
+    refetch();
     router.push(getPath('STAFF'));
     setIsLoading(false);
   };
-
-  const qualificationList = [
-    {
-      title: '初任者研修',
-      formTitle: 'is_syoninsya',
-    },
-    {
-      title: '行動援護',
-      formTitle: 'is_kodo',
-    },
-    {
-      title: '同行援護一般',
-      formTitle: 'is_doko_normal',
-    },
-    {
-      title: '同行援護応用',
-      formTitle: 'is_doko_apply',
-    },
-    {
-      title: '実務者研修',
-      formTitle: 'is_zitsumusya',
-    },
-    {
-      title: '介護福祉士',
-      formTitle: 'is_kaigo',
-    },
-  ];
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>

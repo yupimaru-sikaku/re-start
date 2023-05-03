@@ -24,7 +24,6 @@ import { getPath } from '@/utils/const/getPath';
 import { ActiveLink } from '@/utils/next/active-link';
 import { supabase } from '@/libs/supabase/supabase';
 import { useLoginUser } from '@/libs/mantine/useLoginUser';
-import { IconLogout } from '@tabler/icons';
 import Image from 'next/image';
 
 const useStyles = createStyles<string, { collapsed?: boolean }>(
@@ -167,6 +166,7 @@ export const SideNav: FC<{ className?: string }> = ({ className }) => {
             <span className={classes.linkLabel}>ログアウト</span>
           </Paper>
         )}
+        {loginUser && <p>ログイン中</p>}
       </Navbar.Section>
 
       <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>

@@ -1,17 +1,16 @@
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
-import { StaffEditForm } from '@/components/Staff/StaffEditForm';
-import { Space } from '@mantine/core';
+import { UserEditForm } from '@/components/User/UserEditForm';
 import React from 'react';
 
-const StaffEditPage = () => {
+const UserEditPage = () => {
   return (
-    <DashboardLayout title="スタッフ情報編集">
+    <DashboardLayout title="利用者情報編集">
       <PageContainer title="情報編集" fluid>
-        <StaffEditForm />
+        <UserEditForm />
       </PageContainer>
     </DashboardLayout>
   );
 };
 
-export default StaffEditPage;
+export default UserEditPage;

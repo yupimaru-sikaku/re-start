@@ -5,7 +5,7 @@ import React from 'react';
 
 const UserRegisterPage = () => {
   return (
-    <DashboardLayout>
+    <DashboardLayout title="利用者情報登録">
       <PageContainer title="利用者情報登録" fluid>
         <UserRegisterForm />
       </PageContainer>

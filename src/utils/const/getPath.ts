@@ -7,7 +7,7 @@ const PATH = {
   // 利用者
   USER: '/user',
   USER_REGISTER: '/user/register',
-  USER_EDIT: '/user/edit',
+  USER_EDIT: '/user/[id]/edit',
   // スタッフ
   STAFF: '/staff',
   STAFF_REGISTER: '/staff/register',

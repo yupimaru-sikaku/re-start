@@ -1,17 +1,16 @@
-import { CreateUserResult, initialState } from '@/ducks/user/slice';
 import {
   Box,
-  Grid,
   Paper,
   SegmentedControl,
   SimpleGrid,
+  Grid,
   Space,
   Switch,
   Text,
 } from '@mantine/core';
 import { useFocusTrap } from '@mantine/hooks';
 import { useRouter } from 'next/router';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { useForm } from '@mantine/form';
 import { CustomButton } from '../Common/CustomButton';
@@ -19,30 +18,41 @@ import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
-import { validateIdentification, validateName } from '@/utils/validate/user';
+import { initialState, UpdateUserResult } from '@/ducks/user/slice';
 import {
-  useCreateUserMutation,
+  useGetUserByIdQuery,
   useGetUserListByLoginIdQuery,
   useGetUserListQuery,
+  useUpdateUserMutation,
 } from '@/ducks/user/query';
 import { CustomConfirm } from '../Common/CustomConfirm';
+import { skipToken } from '@reduxjs/toolkit/dist/query';
+import { validateIdentification, validateName } from '@/utils/validate/user';
 import { useGetServiceList } from '@/hooks/user/useGetServiceList';
 
-export const UserRegisterForm = () => {
+export const UserEditForm = () => {
+  const { provider } = useLoginUser();
+  const [updateUser] = useUpdateUserMutation();
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
+  const userId = router.query.id as string;
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { loginUser, provider } = useLoginUser();
-  const [createUser] = useCreateUserMutation();
+  const { loginUser } = useLoginUser();
+  const { data: userData, refetch: getUserByIdRefetch } = useGetUserByIdQuery(
+    userId || skipToken
+  );
   const data1 = useGetUserListQuery();
   const data2 = useGetUserListByLoginIdQuery(loginUser?.id || '');
-  const { refetch } = useMemo(() => {
+  const {
+    refetch,
+  } = useMemo(() => {
     if (provider?.role === 'super_admin') {
       return data1;
     } else {
       return data2;
     }
   }, [data1, data2]);
+
   const form = useForm({
     initialValues: initialState,
     validate: {
@@ -58,40 +68,45 @@ export const UserRegisterForm = () => {
   });
   const serviceList = useGetServiceList(form);
 
+  // useFormは再レンダリングされないため、useEffectを使用
+  useEffect(() => {
+    userData && form.setValues(userData);
+  }, [userData]);
+
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      if (!loginUser) return;
+      if (!userData || !loginUser) return;
       const genderSpecification = form.values.is_gender_specification
         ? form.values.gender_specification
         : '無し';
       const params = {
         ...form.values,
-        user_id: loginUser!.id,
         gender_specification: genderSpecification,
       };
-      const { error } = (await createUser(params)) as CreateUserResult;
+
+      const { error } = (await updateUser(params)) as UpdateUserResult;
 
       if (error) {
         throw new Error(error.message);
       }
     } catch (error) {
       await CustomConfirm(
-        `利用者の情報登録に失敗しました。${error}`,
+        `利用者の情報更新に失敗しました。${error}`,
         'Caution'
       );
       setIsLoading(false);
       return;
     }
     refetch();
+    getUserByIdRefetch();
     showNotification({
       icon: <IconCheckbox />,
-      message: '登録に成功しました！',
+      message: '更新に成功しました！',
     });
     router.push(getPath('USER'));
     setIsLoading(false);
   };
-
   return (
     <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
       <Paper withBorder shadow="md" p={30} radius="md">
@@ -123,6 +138,9 @@ export const UserRegisterForm = () => {
           id="gender"
           color="blue"
           aria-required
+          classNames={{
+            root: '',
+          }}
           data={[
             { label: '男性', value: '男性' },
             { label: '女性', value: '女性' },
@@ -136,6 +154,7 @@ export const UserRegisterForm = () => {
           size="md"
           onLabel="ON"
           offLabel="OFF"
+          checked={form.values.is_gender_specification}
           value={form.values.is_gender_specification}
           {...form.getInputProps('is_gender_specification')}
         />
@@ -166,6 +185,7 @@ export const UserRegisterForm = () => {
                 size="md"
                 onLabel="ON"
                 offLabel="OFF"
+                checked={service.form}
                 {...form.getInputProps(service.formTitle)}
               />
               <Grid align="center" gutter="xs">
@@ -190,7 +210,7 @@ export const UserRegisterForm = () => {
         </SimpleGrid>
         <Space h="xl" />
         <CustomButton type="submit" fullWidth loading={isLoading}>
-          登録
+          更新
         </CustomButton>
       </Paper>
     </form>
