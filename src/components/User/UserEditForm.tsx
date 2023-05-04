@@ -14,7 +14,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { useForm } from '@mantine/form';
 import { CustomButton } from '../Common/CustomButton';
-import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
@@ -29,24 +28,25 @@ import { CustomConfirm } from '../Common/CustomConfirm';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
 import { validateIdentification, validateName } from '@/utils/validate/user';
 import { useGetServiceList } from '@/hooks/user/useGetServiceList';
+import { useSelector } from '@/ducks/store';
+import { RootState } from '@/ducks/root-reducer';
 
 export const UserEditForm = () => {
-  const { provider } = useLoginUser();
   const [updateUser] = useUpdateUserMutation();
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
+  const loginProviderInfo = useSelector(
+    (state: RootState) => state.provider.loginProviderInfo
+  );
   const userId = router.query.id as string;
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { loginUser } = useLoginUser();
   const { data: userData, refetch: getUserByIdRefetch } = useGetUserByIdQuery(
     userId || skipToken
   );
   const data1 = useGetUserListQuery();
-  const data2 = useGetUserListByLoginIdQuery(loginUser?.id || '');
-  const {
-    refetch,
-  } = useMemo(() => {
-    if (provider?.role === 'super_admin') {
+  const data2 = useGetUserListByLoginIdQuery(loginProviderInfo.id || '');
+  const { refetch } = useMemo(() => {
+    if (loginProviderInfo.role === 'admin') {
       return data1;
     } else {
       return data2;
@@ -76,7 +76,7 @@ export const UserEditForm = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      if (!userData || !loginUser) return;
+      if (!userData || !loginProviderInfo.id) return;
       const genderSpecification = form.values.is_gender_specification
         ? form.values.gender_specification
         : '無し';

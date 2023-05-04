@@ -3,7 +3,6 @@ import {
   ReturnAccompanyingSupport,
 } from '@/ducks/accompanying-support/slice';
 import { User } from '@/ducks/user/slice';
-import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { calcWorkTime, convertWeekItem } from '@/utils';
 import { getPath } from '@/utils/const/getPath';
@@ -49,7 +48,6 @@ export const AccompanyingSupportEdit: NextPage<Props> = ({
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { loginUser } = useLoginUser();
   const form = useForm({
     initialValues: {
       year: userData.year,

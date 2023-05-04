@@ -12,7 +12,6 @@ import { CustomButton } from '../Common/CustomButton';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { IconCheckbox, IconEye, IconTrash } from '@tabler/icons';
 import { IconEdit } from '@tabler/icons';
-import { CreatePdf } from './CreatePdf';
 import Link from 'next/link';
 import { useGetTablePage } from '@/hooks/useGetTablePage';
 

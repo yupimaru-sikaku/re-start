@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { DataTable } from 'mantine-datatable';
 import { CreatePdf } from './CreatePdf';
 import { CustomConfirm } from '../Common/CustomConfirm';
-import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import {
   useDeleteHomeCareSupportMutation,
   useGetHomeCareSupportListByCoroprateIdQuery,
@@ -12,23 +11,29 @@ import {
 import { HomeCareListRecords } from './HomeCareListRecords';
 import { useGetTablePage } from '@/hooks/useGetTablePage';
 import { ReturnHomeCareSupport } from '@/ducks/home-care-support/slice';
+import { useSelector } from '@/ducks/store';
+import { RootState } from '@/ducks/root-reducer';
 
 export const HomeCareSupportList = () => {
   const [page, setPage] = useState(1);
-  const { loginUser, provider } = useLoginUser();
+  const loginProviderInfo = useSelector(
+    (state: RootState) => state.provider.loginProviderInfo
+  );
   const data1 = useGetHomeCareSupportListQuery();
   const data2 = useGetHomeCareSupportListByCoroprateIdQuery(
-    provider?.corporate_id || ''
+    loginProviderInfo.id
   );
-  const data3 = useGetHomeCareSupportListByLoginIdQuery(loginUser?.id || '');
+  const data3 = useGetHomeCareSupportListByLoginIdQuery(
+    loginProviderInfo.id || ''
+  );
   const {
     data: homeCareSupportList,
     isLoading: homeCareSupportListLoading,
     refetch,
   } = useMemo(() => {
-    if (provider?.role === 'super_admin') {
+    if (loginProviderInfo.role === 'admin') {
       return data1;
-    } else if (provider?.role === 'admin') {
+    } else if (loginProviderInfo.role === 'corporate') {
       return data2;
     } else {
       return data3;

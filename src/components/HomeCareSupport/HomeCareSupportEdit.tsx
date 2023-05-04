@@ -24,7 +24,6 @@ import { CustomTextInput } from '../Common/CustomTextInput';
 import { CustomButton } from '../Common/CustomButton';
 import { TimeRangeInput } from '@mantine/dates';
 import { IconCheckbox, IconClock, IconRefresh } from '@tabler/icons';
-import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { calcEachWorkTime, calcWorkTime, convertWeekItem } from '@/utils';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { User } from '@/ducks/user/slice';
@@ -44,6 +43,8 @@ import {
   StaffScheduleContentArr,
 } from '@/ducks/staff-schedule/slice';
 import { format } from 'path';
+import { useSelector } from '@/ducks/store';
+import { RootState } from '@/ducks/root-reducer';
 
 type Props = {
   userData: ReturnHomeCareSupport;
@@ -58,8 +59,10 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
 }) => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
+  const loginProviderInfo = useSelector(
+    (state: RootState) => state.provider.loginProviderInfo
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { loginUser, provider } = useLoginUser();
   const staffArr = staffList.map((staff) => staff.name);
   // const userNameList = (userData || []).map((user) => user.name);
   // const currentDate = new Date();
@@ -165,7 +168,7 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
         return;
       }
       // リスタートのみ実行
-      if (provider?.role === 'super_admin') {
+      if (loginProviderInfo.role === 'admin') {
         // 初期値の配列を元に該当をリセット
         // 最初に入力していたデータは一旦削除（不要かも）
         // const oldFormatArr = Object.values(
@@ -659,7 +662,7 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
                     disabled
                   />
                 </Grid.Col>
-                {provider?.role === 'super_admin' && (
+                {loginProviderInfo.role === 'admin' && (
                   <Grid.Col span={1}>
                     <Select
                       variant="filled"

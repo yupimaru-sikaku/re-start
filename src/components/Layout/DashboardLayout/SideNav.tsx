@@ -23,7 +23,6 @@ import {
 import { getPath } from '@/utils/const/getPath';
 import { ActiveLink } from '@/utils/next/active-link';
 import { supabase } from '@/libs/supabase/supabase';
-import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import Image from 'next/image';
 
 const useStyles = createStyles<string, { collapsed?: boolean }>(
@@ -59,7 +58,7 @@ const useStyles = createStyles<string, { collapsed?: boolean }>(
         textDecoration: 'none',
         fontSize: theme.fontSizes.sm,
         color: theme.colors.gray[7],
-        padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+        // padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
         borderRadius: theme.radius.sm,
         fontWeight: 700,
       },
@@ -121,7 +120,6 @@ const ITEMS = [
 export const SideNav: FC<{ className?: string }> = ({ className }) => {
   const [collapsed, handlers] = useDisclosure(false);
   const { classes, cx } = useStyles({ collapsed });
-  const { loginUser } = useLoginUser();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -160,13 +158,6 @@ export const SideNav: FC<{ className?: string }> = ({ className }) => {
             }}
           </ActiveLink>
         ))}
-        {loginUser && (
-          <Paper className={cx(classes.link)} onClick={handleLogout}>
-            <Logout className={classes.linkIcon} />
-            <span className={classes.linkLabel}>ログアウト</span>
-          </Paper>
-        )}
-        {loginUser && <p>ログイン中</p>}
       </Navbar.Section>
 
       <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>

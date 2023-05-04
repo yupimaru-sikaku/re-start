@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   Anchor,
@@ -12,7 +12,11 @@ import {
 import { getPath } from '@/utils/const/getPath';
 import { AuthLayout } from 'src/components/Layout/AuthLayout/AuthLayout';
 import { useForm } from '@mantine/form';
-import { initialState } from 'src/ducks/provider/slice';
+import {
+  LoginResult,
+  loginInitialState,
+  setLoginProviderInfo,
+} from 'src/ducks/provider/slice';
 import { useFocusTrap } from '@mantine/hooks';
 import { CustomTextInput } from 'src/components/Common/CustomTextInput';
 import { CustomPasswordInput } from '../Common/CustomPasswordInput';
@@ -22,13 +26,27 @@ import { validateEmail } from '@/utils/validate/common';
 import { useRouter } from 'next/router';
 import { IconCheck } from '@tabler/icons';
 import { showNotification } from '@mantine/notifications';
+import {
+  useGetProviderByIdQuery,
+  useLoginMutation,
+} from '@/ducks/provider/query';
+import { CustomConfirm } from '../Common/CustomConfirm';
+import { useAppDispatch } from '@/ducks/store';
+import { skipToken } from '@reduxjs/toolkit/dist/query';
 
 export const SignIn = () => {
+  const [id, setId] = useState('');
+  const [corporateId, setCorporateId] = useState('');
+  const [corporateName, setCorporateName] = useState('');
+  const [officeName, setOfficeName] = useState('');
+  const [email, setEmail] = useState('');
+  const [role, setRole] = useState('corpoate');
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const focusTrapRef = useFocusTrap();
   const [isLoading, setIsLoading] = useState(false);
   const form = useForm({
-    initialValues: initialState,
+    initialValues: loginInitialState,
     validate: {
       email: (value) => {
         const { error, text } = validateEmail(value);
@@ -36,27 +54,33 @@ export const SignIn = () => {
       },
     },
   });
+  const [login] = useLoginMutation();
 
   const handleSubmit = useCallback(async () => {
     setIsLoading(true);
     try {
       // ログイン
-      const { error } = await supabase.auth.signInWithPassword({
-        email: form.values.email,
-        password: form.values.password,
-      });
+      const params = form.values;
+      const { data, error } = (await login(params)) as LoginResult;
+      //{session: {...}, user: {...}}
+      // user: {id}
       if (error) {
-        alert('Eメールアドレスかパスワードが間違っています');
-        setIsLoading(false);
-        return;
+        throw new Error('Eメールアドレスかパスワードが間違っています');
       }
+      const loginProviderParams = {
+        id: data.user.id,
+        email: data.user.email,
+      };
+      dispatch(setLoginProviderInfo(loginProviderParams));
       showNotification({
         icon: <IconCheck />,
         message: 'ログインに成功しました！',
       });
       router.push(getPath('INDEX'));
-    } catch (err) {
-      console.log(err);
+    } catch (error: any) {
+      await CustomConfirm(error.message, 'Caution');
+      setIsLoading(false);
+      return;
     }
     setIsLoading(false);
   }, [form]);

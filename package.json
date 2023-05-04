@@ -47,6 +47,7 @@
     "react-error-boundary": "^4.0.3",
     "react-pdf": "^6.2.2",
     "react-redux": "^8.0.5",
+    "redux-persist": "^6.0.0",
     "supabase": "^1.45.2",
     "tabler-icons-react": "1.55.0",
     "typescript": "5.0.2"

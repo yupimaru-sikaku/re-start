@@ -15,7 +15,6 @@ import React, { useMemo, useState } from 'react';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { useForm } from '@mantine/form';
 import { CustomButton } from '../Common/CustomButton';
-import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
@@ -27,17 +26,21 @@ import {
 } from '@/ducks/user/query';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { useGetServiceList } from '@/hooks/user/useGetServiceList';
+import { useSelector } from '@/ducks/store';
+import { RootState } from '@/ducks/root-reducer';
 
 export const UserRegisterForm = () => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
+  const loginProviderInfo = useSelector(
+    (state: RootState) => state.provider.loginProviderInfo
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { loginUser, provider } = useLoginUser();
   const [createUser] = useCreateUserMutation();
   const data1 = useGetUserListQuery();
-  const data2 = useGetUserListByLoginIdQuery(loginUser?.id || '');
+  const data2 = useGetUserListByLoginIdQuery(loginProviderInfo.id || '');
   const { refetch } = useMemo(() => {
-    if (provider?.role === 'super_admin') {
+    if (loginProviderInfo.role === 'admin') {
       return data1;
     } else {
       return data2;
@@ -61,13 +64,13 @@ export const UserRegisterForm = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      if (!loginUser) return;
+      if (!loginProviderInfo.id) return;
       const genderSpecification = form.values.is_gender_specification
         ? form.values.gender_specification
         : '無し';
       const params = {
         ...form.values,
-        user_id: loginUser!.id,
+        user_id: loginProviderInfo.id,
         gender_specification: genderSpecification,
       };
       const { error } = (await createUser(params)) as CreateUserResult;

@@ -1,4 +1,3 @@
-import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 import { PostgrestError } from '@supabase/supabase-js';
@@ -27,6 +26,25 @@ export const userApi = createApi({
           .from(getDb('USER'))
           .select('*')
           .eq('is_display', true)
+          .order('updated_at', { ascending: false });
+        return data
+          ? { data: data as ReturnUser[] }
+          : { error: error as PostgrestError };
+      },
+    }),
+    /**
+     * GET/法人IDに属する全利用者のリストを取得
+     * @param {string} corporateId
+     * @return {ReturnUser[]}
+     */
+    getUserListByCorporateId: builder.query<ReturnUser[], string>({
+      queryFn: async (corporateId: string) => {
+        if (!corporateId) return { data: [] };
+        const { data, error } = await supabase
+          .from(getDb('USER'))
+          .select('*')
+          .eq('is_display', true)
+          .eq('corporate_id', corporateId)
           .order('updated_at', { ascending: false });
         return data
           ? { data: data as ReturnUser[] }
@@ -151,6 +169,7 @@ export const userApi = createApi({
 
 export const {
   useGetUserListQuery,
+  useGetUserListByCorporateIdQuery,
   useGetUserListByLoginIdQuery,
   useGetUserByIdQuery,
   useCreateUserMutation,

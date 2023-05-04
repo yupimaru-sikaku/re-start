@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
-import { useDispatch } from 'react-redux';
+import { useDispatch as rawUseDispatch } from 'react-redux';
 import {
   useSelector as rawUseSelector,
   TypedUseSelectorHook,
@@ -10,17 +10,34 @@ import { staffApi } from 'src/ducks/staff/query';
 import rootReducer, { RootState } from './root-reducer';
 import { userApi } from './user/query';
 import { homeCareSupportApi } from './home-care-support/query';
+import {
+  persistReducer,
+  persistStore,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
+import storage from 'redux-persist/lib/storage'; // デフォルトのローカルストレージを使用
+
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['provider', 'staff', 'user'],
+};
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: {
-    [providerApi.reducerPath]: providerApi.reducer,
-    [staffApi.reducerPath]: staffApi.reducer,
-    [userApi.reducerPath]: userApi.reducer,
-    [homeCareSupportApi.reducerPath]: homeCareSupportApi.reducer,
-    ...rootReducer,
-  },
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(
+    getDefaultMiddleware({
+      serializableCheck: {
+        // redux-persist の非シリアライズ可能なアクションを無視
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }).concat(
       providerApi.middleware,
       staffApi.middleware,
       userApi.middleware,
@@ -31,5 +48,6 @@ export const store = configureStore({
 setupListeners(store.dispatch);
 
 export type AppDispatch = typeof store.dispatch;
-export const useAppDispatch: () => AppDispatch = useDispatch;
+export const useAppDispatch = () => rawUseDispatch<AppDispatch>();
 export const useSelector: TypedUseSelectorHook<RootState> = rawUseSelector;
+export const persistor = persistStore(store);

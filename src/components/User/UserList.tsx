@@ -8,20 +8,23 @@ import {
   useGetUserListByLoginIdQuery,
   useGetUserListQuery,
 } from '@/ducks/user/query';
-import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { useGetTablePage } from '@/hooks/useGetTablePage';
+import { useSelector } from '@/ducks/store';
+import { RootState } from '@/ducks/root-reducer';
 
 export const UserList: NextPage = () => {
   const [page, setPage] = useState(1);
-  const { loginUser, provider } = useLoginUser();
+  const loginProviderInfo = useSelector(
+    (state: RootState) => state.provider.loginProviderInfo
+  );
   const data1 = useGetUserListQuery();
-  const data2 = useGetUserListByLoginIdQuery(loginUser?.id || '');
+  const data2 = useGetUserListByLoginIdQuery(loginProviderInfo.id || '');
   const {
     data: userList,
     isLoading: userListLoading,
     refetch,
   } = useMemo(() => {
-    if (provider?.role === 'super_admin') {
+    if (loginProviderInfo.role === 'admin') {
       return data1;
     } else {
       return data2;

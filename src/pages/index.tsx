@@ -7,6 +7,9 @@ import { PageContainer } from '@/components/PageContainer';
 import { User } from 'tabler-icons-react';
 import { IconFriends, IconToolsKitchen2, IconWalk } from '@tabler/icons';
 import { useGetProviderByIdQuery } from '@/ducks/provider/query';
+import { useSelector } from '@/ducks/store';
+import { useEffect } from 'react';
+import { skipToken } from '@reduxjs/toolkit/dist/query';
 
 const SERVICE_LINK = [
   { url: 'USER', title: '利用者情報', icon: <User /> },
@@ -18,6 +21,12 @@ const SERVICE_LINK = [
 ] as const;
 
 const Index: CustomNextPage = () => {
+  const loginProviderInfo = useSelector(
+    (state) => state.provider.loginProviderInfo
+  );
+  const { data: providerData } = useGetProviderByIdQuery(
+    loginProviderInfo.id || skipToken
+  );
   return (
     <DashboardLayout title="トップページ">
       <PageContainer title="ホーム" fluid>

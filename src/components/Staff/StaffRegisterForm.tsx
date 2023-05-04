@@ -13,7 +13,6 @@ import React, { useState } from 'react';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { useForm } from '@mantine/form';
 import { CustomButton } from '../Common/CustomButton';
-import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
@@ -29,14 +28,18 @@ import {
 } from '@/ducks/staff/query';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { useGetQualificationList } from '@/hooks/staff/useGetQualificationList';
+import { useSelector } from '@/ducks/store';
+import { RootState } from '@/ducks/root-reducer';
 
 export const StaffRegisterForm = () => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
+  const loginProviderInfo = useSelector(
+    (state: RootState) => state.provider.loginProviderInfo
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [createStaff] = useCreateStaffMutation();
   const { refetch } = useGetStaffListQuery();
-  const { loginUser } = useLoginUser();
   const form = useForm({
     initialValues: initialState,
     validate: {
@@ -59,8 +62,8 @@ export const StaffRegisterForm = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      if (!loginUser) return;
-      const params = { ...form.values, user_id: loginUser!.id };
+      if (!loginProviderInfo.id) return;
+      const params = { ...form.values, user_id: loginProviderInfo.id };
       const { error } = (await createStaff(params)) as CreateStaffResult;
 
       if (error) {

@@ -4,12 +4,17 @@ import { Anchor, Paper, Title, Text, Space } from '@mantine/core';
 import { getPath } from '@/utils/const/getPath';
 import { AuthLayout } from 'src/components/Layout/AuthLayout/AuthLayout';
 import { useForm } from '@mantine/form';
-import { initialState, Provider } from 'src/ducks/provider/slice';
+import {
+  CreateProviderWithSignUpParams,
+  CreateProviderWithSignUpResult,
+  UpdateProviderParams,
+  UpdateProviderResult,
+  createInitialState,
+} from 'src/ducks/provider/slice';
 import { useFocusTrap } from '@mantine/hooks';
 import { CustomTextInput } from 'src/components/Common/CustomTextInput';
 import { CustomPasswordInput } from '../Common/CustomPasswordInput';
 import { CustomButton } from 'src/components/Common/CustomButton';
-import { getDb, supabase } from 'src/libs/supabase/supabase';
 import {
   validateCorporateName,
   validateOfficeName,
@@ -20,13 +25,20 @@ import { useRouter } from 'next/router';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
 import { generateRandomAccountId } from '@/utils';
+import {
+  useCreateProviderWithSignUpMutation,
+  useUpdateProviderMutation,
+} from '@/ducks/provider/query';
+import { CustomConfirm } from '../Common/CustomConfirm';
 
 export const SignUp = () => {
   const router = useRouter();
   const focusTrapRef = useFocusTrap();
   const [isLoading, setIsLoading] = useState(false);
+  const [createProviderWithSignUp] = useCreateProviderWithSignUpMutation();
+  const [updatePvider] = useUpdateProviderMutation();
   const form = useForm({
-    initialValues: initialState,
+    initialValues: createInitialState,
     validate: {
       corporate_name: (value) => {
         const { error, text } = validateCorporateName(value);
@@ -44,50 +56,59 @@ export const SignUp = () => {
         const { error, text } = validatePassword(value);
         return error ? text : null;
       },
-      password_confirmation: (value: string, values: Provider) =>
-        value !== values.password && 'パスワードが一致しません',
+      password_confirmation: (
+        value: string,
+        values: CreateProviderWithSignUpParams
+      ) => value !== values.password && 'パスワードが一致しません',
     },
-    // },
   });
 
   const handleSubmit = useCallback(async () => {
     setIsLoading(true);
     try {
       // ユーザー登録
-      const { data: signUpData, error: signUpError } =
-        await supabase.auth.signUp({
-          email: form.values.email,
-          password: form.values.password,
-        });
-      if (!signUpData.user || signUpError) {
-        alert('ユーザ情報の登録に失敗しました。');
-        setIsLoading(false);
-        return;
+      const adminParams = {
+        email: form.values.email,
+        password: form.values.password,
+        password_confirmation: form.values.password_confirmation,
+      };
+      const { data: createAdminData, error: createAdminError } =
+        (await createProviderWithSignUp(
+          adminParams
+        )) as CreateProviderWithSignUpResult;
+      if (createAdminError) {
+        throw new Error(
+          `ユーザ情報の登録に失敗しました。${createAdminError.message}`
+        );
       }
-      // 法人登録
+      // 法人更新
       const corporate_id = generateRandomAccountId();
-      const { error: createProviderError } = await supabase
-        .from(getDb('PROVIDER'))
-        .update({
-          corporate_id,
-          corporate_name: form.values.corporate_name,
-          office_name: form.values.office_name,
-          role: 'user',
-          user_id: signUpData.user.id,
-        })
-        .eq('id', signUpData.user.id);
+      const providerParams: UpdateProviderParams = {
+        id: createAdminData.user!.id,
+        user_id: createAdminData.user!.id,
+        corporate_id: corporate_id,
+        corporate_name: form.values.corporate_name,
+        office_name: form.values.office_name,
+        email: form.values.email,
+        role: form.values.role,
+      };
+      const { error: createProviderError } = (await updatePvider(
+        providerParams
+      )) as UpdateProviderResult;
       if (createProviderError) {
-        alert('法人情報の登録に失敗しました。');
-        setIsLoading(false);
-        return;
+        throw new Error(
+          `法人情報の登録に失敗しました。${createProviderError.message}`
+        );
       }
       showNotification({
         icon: <IconCheckbox />,
         message: '登録に成功しました！',
       });
       router.push(getPath('CONFIRM_EMAIL'));
-    } catch (err) {
-      console.log(err);
+    } catch (error: any) {
+      await CustomConfirm(error.message, 'Caution');
+      setIsLoading(false);
+      return;
     }
     setIsLoading(false);
   }, [form]);

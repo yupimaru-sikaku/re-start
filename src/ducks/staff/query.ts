@@ -33,24 +33,6 @@ export const staffApi = createApi({
       },
     }),
     /**
-     * GET/ログインユーザに属する全スタッフのリストを取得
-     * @param {string} loginUserId
-     * @return {ReturnStaff[]}
-     */
-    getStaffListByLoginId: builder.query<ReturnStaff[], string>({
-      queryFn: async (loginUserId: string) => {
-        if (!loginUserId) return { data: [] };
-        const { data, error } = await supabase
-          .from(getDb('STAFF'))
-          .select('*')
-          .eq('is_display', true)
-          .eq('user_id', loginUserId)
-          .order('updated_at', { ascending: false });
-        return data
-          ? { data: data as ReturnStaff[] }
-          : { error: error as PostgrestError };
-      },
-    }),
     /**
      * GET/スタッフの情報をidから取得
      * @param {string} id
@@ -133,7 +115,6 @@ export const staffApi = createApi({
 
 export const {
   useGetStaffListQuery,
-  useGetStaffListByLoginIdQuery,
   useGetStaffByIdQuery,
   useCreateStaffMutation,
   useUpdateStaffMutation,

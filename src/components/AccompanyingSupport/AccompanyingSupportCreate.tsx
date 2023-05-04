@@ -1,6 +1,5 @@
 import { initialState } from '@/ducks/accompanying-support/slice';
 import { User } from '@/ducks/user/slice';
-import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { calcWorkTime, convertWeekItem } from '@/utils';
 import { getPath } from '@/utils/const/getPath';
@@ -32,6 +31,8 @@ import { CustomButton } from '../Common/CustomButton';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { CustomStepper } from '../Common/CustomStepper';
 import { CustomTextInput } from '../Common/CustomTextInput';
+import { useSelector } from '@/ducks/store';
+import { RootState } from '@/ducks/root-reducer';
 
 type Props = {
   userList: User[];
@@ -41,7 +42,9 @@ export const AccompanyingSupportCreate: NextPage<Props> = ({ userList }) => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { loginUser } = useLoginUser();
+  const loginProviderInfo = useSelector(
+    (state: RootState) => state.provider.loginProviderInfo
+  );
   const userNameList = (userList || []).map((user) => user.name);
   const currentDate = new Date();
   const form = useForm({
@@ -114,7 +117,7 @@ export const AccompanyingSupportCreate: NextPage<Props> = ({ userList }) => {
         amount_value: man.doko_amount,
         content_arr: formatArr,
         status: 0,
-        user_id: loginUser?.id,
+        user_id: loginProviderInfo.id,
       });
       showNotification({
         icon: <IconCheckbox />,

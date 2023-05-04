@@ -18,7 +18,6 @@ import { CustomTextInput } from '../Common/CustomTextInput';
 import { CustomButton } from '../Common/CustomButton';
 import { TimeRangeInput } from '@mantine/dates';
 import { IconCheckbox, IconClock } from '@tabler/icons';
-import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { calcEachWorkTime, calcWorkTime, convertWeekItem } from '@/utils';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { User } from '@/ducks/user/slice';
@@ -32,16 +31,21 @@ import {
 import { CustomStepper } from '../Common/CustomStepper';
 import { showNotification } from '@mantine/notifications';
 import { getPath } from '@/utils/const/getPath';
+import { useSelector } from '@/ducks/store';
+import { RootState } from '@/ducks/root-reducer';
+import { useGetUserListByCorporateIdQuery } from '@/ducks/user/query';
 
-type Props = {
-  userList: User[];
-};
-
-export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
+export const HomeCareSupportCreate: NextPage = () => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
+  const loginProviderInfo = useSelector(
+    (state: RootState) => state.provider.loginProviderInfo
+  );
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { loginUser, provider } = useLoginUser();
+  const { data: userList } = useGetUserListByCorporateIdQuery(
+    loginProviderInfo.corporate_id
+  );
   const userNameList = (userList || []).map((user) => user.name);
   const currentDate = new Date();
   const form = useForm({
@@ -69,11 +73,10 @@ export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
       },
     },
   });
-  console.log(provider);
   const { kaziAmount, shintaiAmount, withTsuinAmount, tsuinAmount } =
     calcEachWorkTime(form.values.content_arr);
-  const man = userList.filter((user) => user.name === form.values.name)[0];
-  const serviceArr = userList
+  const man = (userList || []).filter((user) => user.name === form.values.name)[0];
+  const serviceArr = (userList || [])
     .filter((user) => user.name === form.values.name)
     .map((x) => {
       let arr: string[] = [];
@@ -83,7 +86,7 @@ export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
       x.is_tsuin && arr.unshift('通院等介助（伴わない）');
       return arr;
     })[0];
-  const serviceAmountArr = userList
+  const serviceAmountArr = (userList || [])
     .filter((user) => user.name === form.values.name)
     .map((x) => {
       let arr: number[] = [];
@@ -133,7 +136,7 @@ export const HomeCareSupportCreate: NextPage<Props> = ({ userList }) => {
         amount_value_3: serviceAmountArr[2] ? serviceAmountArr[2] : null,
         content_arr: formatArr,
         status: 0,
-        user_id: loginUser?.id,
+        user_id: loginProviderInfo.id,
       });
       showNotification({
         icon: <IconCheckbox />,

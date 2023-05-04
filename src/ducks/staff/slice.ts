@@ -84,6 +84,6 @@ const staffSlice = createSlice({
   // },
 });
 
-export default staffSlice.reducer;
+export default staffSlice;
 
 export const { setStaffList } = staffSlice.actions;

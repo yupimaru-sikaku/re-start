@@ -4,12 +4,10 @@ import { NextPage } from 'next';
 import { PAGE_SIZE } from '@/utils';
 import {
   useDeleteStaffMutation,
-  useGetStaffListByLoginIdQuery,
   useGetStaffListQuery,
 } from '@/ducks/staff/query';
 import { CustomConfirm } from 'src/components/Common/CustomConfirm';
 import { StaffListRecords } from './StaffListRecords';
-import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { useGetTablePage } from '@/hooks/useGetTablePage';
 
 export const StaffList: NextPage = () => {

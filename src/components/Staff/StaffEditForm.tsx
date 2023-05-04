@@ -13,7 +13,6 @@ import React, { useEffect, useState } from 'react';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { useForm } from '@mantine/form';
 import { CustomButton } from '../Common/CustomButton';
-import { useLoginUser } from '@/libs/mantine/useLoginUser';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
@@ -31,14 +30,18 @@ import {
   validateWorkTimePerWeek,
 } from '@/utils/validate/staff';
 import { useGetQualificationList } from '@/hooks/staff/useGetQualificationList';
+import { useSelector } from '@/ducks/store';
+import { RootState } from '@/ducks/root-reducer';
 
 export const StaffEditForm = () => {
   const [updateStaff] = useUpdateStaffMutation();
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
+  const loginProviderInfo = useSelector(
+    (state: RootState) => state.provider.loginProviderInfo
+  );
   const staffId = router.query.id as string;
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { loginUser } = useLoginUser();
   const { data: staffData, refetch: getStaffByIdRefetch } =
     useGetStaffByIdQuery(staffId || skipToken);
   const { refetch: getStaffListRefetch } = useGetStaffListQuery();
@@ -69,7 +72,7 @@ export const StaffEditForm = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      if (!staffData || !loginUser) return;
+      if (!staffData || !loginProviderInfo.id) return;
       const params = form.values;
       const { error } = (await updateStaff(params)) as UpdateStaffResult;
 
