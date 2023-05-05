@@ -24,7 +24,7 @@ import { validateEmail } from 'src/utils/validate/common';
 import { useRouter } from 'next/router';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
-import { generateRandomAccountId } from '@/utils';
+import { generateRandomCorporateId } from '@/utils';
 import {
   useCreateProviderWithSignUpMutation,
   useUpdateProviderMutation,
@@ -35,7 +35,8 @@ export const SignUp = () => {
   const router = useRouter();
   const focusTrapRef = useFocusTrap();
   const [isLoading, setIsLoading] = useState(false);
-  const [createProviderWithSignUp] = useCreateProviderWithSignUpMutation();
+  const [createProviderWithSignUp] =
+    useCreateProviderWithSignUpMutation();
   const [updatePvider] = useUpdateProviderMutation();
   const form = useForm({
     initialValues: createInitialState,
@@ -82,7 +83,7 @@ export const SignUp = () => {
         );
       }
       // 法人更新
-      const corporate_id = generateRandomAccountId();
+      const corporate_id = generateRandomCorporateId();
       const providerParams: UpdateProviderParams = {
         id: createAdminData.user!.id,
         user_id: createAdminData.user!.id,

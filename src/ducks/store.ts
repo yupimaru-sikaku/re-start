@@ -20,12 +20,19 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // デフォルトのローカルストレージを使用
+import storage from 'redux-persist/lib/storage';
+import { behaviorApi } from './behavior/query';
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['provider', 'staff', 'user'],
+  whitelist: [
+    'provider',
+    'staff',
+    'user',
+    'homeCareSupport',
+    'mobilitySupport',
+  ],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
@@ -35,13 +42,21 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         // redux-persist の非シリアライズ可能なアクションを無視
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoredActions: [
+          FLUSH,
+          REHYDRATE,
+          PAUSE,
+          PERSIST,
+          PURGE,
+          REGISTER,
+        ],
       },
     }).concat(
       providerApi.middleware,
       staffApi.middleware,
       userApi.middleware,
-      homeCareSupportApi.middleware
+      homeCareSupportApi.middleware,
+      behaviorApi.middleware
     ),
 });
 
@@ -49,5 +64,6 @@ setupListeners(store.dispatch);
 
 export type AppDispatch = typeof store.dispatch;
 export const useAppDispatch = () => rawUseDispatch<AppDispatch>();
-export const useSelector: TypedUseSelectorHook<RootState> = rawUseSelector;
+export const useSelector: TypedUseSelectorHook<RootState> =
+  rawUseSelector;
 export const persistor = persistStore(store);

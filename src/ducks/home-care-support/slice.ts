@@ -12,8 +12,8 @@ type HomeCareSupport = {
   id: string;
   year: number; // 作成する西暦
   month: number; // 作成する月
-  name: string; // 利用者名
   identification: string; // 受給者証番号
+  name: string; // 利用者名
   amount_title_1: string; // 契約支給量
   amount_value_1: number; // 契約支給量
   amount_title_2: string; // 契約支給量
@@ -22,7 +22,8 @@ type HomeCareSupport = {
   amount_value_3: number; // 契約支給量
   content_arr: HomeCareSupportContentArr[];
   status: number; // 記録票の進捗状況
-  user_id: string; // 作成した法人のID
+  corporate_id: string; // 作成した法人のID
+  login_id: string; // ログインユーザのID
   created_at: string; // 作成日時
   updated_at: string; // 更新日時
 };
@@ -109,7 +110,7 @@ export type DeleteHomeCareSupportResult = {
   error: PostgrestError | null;
 };
 
-export const initialState: CreateHomeCareSupport = {
+export const initialState = {
   year: 0,
   month: 0,
   name: '',
@@ -130,5 +131,5 @@ export const initialState: CreateHomeCareSupport = {
     },
   ],
   status: 0,
-  user_id: '',
+  corporate_id: '',
 };

@@ -10,15 +10,7 @@ import { useGetProviderByIdQuery } from '@/ducks/provider/query';
 import { useSelector } from '@/ducks/store';
 import { useEffect } from 'react';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
-
-const SERVICE_LINK = [
-  { url: 'USER', title: '利用者情報', icon: <User /> },
-  { url: 'STAFF', title: 'スタッフ情報', icon: <User /> },
-  { url: 'ACCOMPANYING_SUPPPORT', title: '同行援護', icon: <IconFriends /> },
-  { url: 'BEHAVIOR_SUPPPORT', title: '行動援護', icon: <IconWalk /> },
-  { url: 'HOME_CARE_SUPPORT', title: '居宅介護', icon: <IconToolsKitchen2 /> },
-  { url: 'MOBILITY_SUPPORT', title: '移動支援', icon: <IconWalk /> },
-] as const;
+import { ITEMS } from '@/components/Layout/DashboardLayout/SideNav';
 
 const Index: CustomNextPage = () => {
   return (
@@ -31,16 +23,16 @@ const Index: CustomNextPage = () => {
             { minWidth: 'xl', cols: 4 },
           ]}
         >
-          {SERVICE_LINK.map((service) => (
-            <Link href={getPath(service.url)} passHref key={service.url}>
+          {ITEMS.map((service) => (
+            <Link href={service.href} passHref key={service.label}>
               <a>
                 <Paper
                   p="xl"
                   shadow="xs"
                   sx={{ display: 'flex', alignItems: 'center', gap: 10 }}
                 >
-                  {service.icon}
-                  {service.title}
+                  <service.Icon />
+                  {service.label}
                 </Paper>
               </a>
             </Link>

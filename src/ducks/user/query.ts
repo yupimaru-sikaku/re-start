@@ -52,6 +52,23 @@ export const userApi = createApi({
       },
     }),
     /**
+     * GET/サービスに属する利用者のリストを取得
+     * @param {string} serviceName
+     * @return {ReturnUser[]}
+     */
+    getUserListByService: builder.query<ReturnUser[], string>({
+      queryFn: async (serviceName: string) => {
+        const { data, error } = await supabase
+          .from(getDb('USER'))
+          .select('*')
+          .eq(serviceName, true)
+          .order('updated_at', { ascending: false });
+        return data
+          ? { data: data as ReturnUser[] }
+          : { error: error as PostgrestError };
+      },
+    }),
+    /**
      * GET/ログインユーザに属する全利用者のリストを取得
      * @param {string} loginUserId
      * @return {ReturnUser[]}
@@ -170,6 +187,7 @@ export const userApi = createApi({
 export const {
   useGetUserListQuery,
   useGetUserListByCorporateIdQuery,
+  useGetUserListByServiceQuery,
   useGetUserListByLoginIdQuery,
   useGetUserByIdQuery,
   useCreateUserMutation,

@@ -381,11 +381,11 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
       (content, contentIndex) => {
         return contentIndex === index
           ? {
-              work_date: null,
+              work_date: 0,
               service_content: '',
-              start_time: null,
-              end_time: null,
-              staff_name: null,
+              start_time: '',
+              end_time: '',
+              staff_name: '',
             }
           : content;
       }

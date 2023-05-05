@@ -20,6 +20,7 @@ const PATH = {
   // 行動援護
   BEHAVIOR_SUPPPORT: '/behavioral-support',
   BEHAVIOR_SUPPPORT_CREATE: '/behavioral-support/create',
+  BEHAVIOR_SUPPPORT_EDIT: '/behavioral-support/[id]/edit',
   // 居宅介護
   HOME_CARE_SUPPORT: '/home-care-support',
   HOME_CARE_SUPPORT_CREATE: '/home-care-support/create',
@@ -27,6 +28,7 @@ const PATH = {
   // 移動支援
   MOBILITY_SUPPORT: '/mobility-support',
   MOBILITY_SUPPORT_CREATE: '/mobility-support/create',
+  MOBILITY_SUPPORT_EDIT: '/mobility-support/[id]/edit',
 } as const;
 
 export const getPath = (pathKey: keyof typeof PATH, ...args: string[]) => {

@@ -16,7 +16,11 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
   return [
     { accessor: 'name', title: '名前', width: 110 },
     { accessor: 'gender', title: '性別', width: 50 },
-    { accessor: 'work_time_per_week', title: '勤務時間/週', width: 70 },
+    {
+      accessor: 'work_time_per_week',
+      title: '勤務時間/週',
+      width: 70,
+    },
     {
       accessor: 'syoninsya',
       width: 50,
@@ -106,7 +110,7 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
     {
       accessor: 'actions',
       title: 'アクション',
-      width: 50,
+      width: 90,
       render: (staff: ReturnStaff) => (
         <Group spacing={4} noWrap>
           <Link href={getPath('STAFF_EDIT', staff.id)}>
@@ -116,7 +120,10 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
               </ActionIcon>
             </a>
           </Link>
-          <ActionIcon color="red" onClick={() => handleDelete(staff.id)}>
+          <ActionIcon
+            color="red"
+            onClick={() => handleDelete(staff.id)}
+          >
             <IconTrash size={20} />
           </ActionIcon>
         </Group>
@@ -125,8 +132,9 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
     {
       accessor: 'updatedAt',
       title: '更新日時',
-      width: 80,
-      render: (staff: ReturnStaff) => convertSupabaseTime(staff.updated_at),
+      width: 150,
+      render: (staff: ReturnStaff) =>
+        convertSupabaseTime(staff.updated_at),
     },
   ];
 };

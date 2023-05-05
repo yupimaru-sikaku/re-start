@@ -20,6 +20,11 @@ import {
   User,
   Login,
   Router,
+  Car,
+  Friends,
+  Walk,
+  HomeHeart,
+  Disabled2,
 } from 'tabler-icons-react';
 import { getPath } from '@/utils/const/getPath';
 import { ActiveLink } from '@/utils/next/active-link';
@@ -113,17 +118,36 @@ const useStyles = createStyles<string, { collapsed?: boolean }>(
   }
 );
 
-const ITEMS = [
+export const ITEMS = [
   { href: getPath('INDEX'), label: 'ホーム', Icon: Home },
-  { href: getPath('USER'), label: '利用者情報', Icon: User },
+  { href: getPath('USER'), label: '利用者情報', Icon: Friends },
   { href: getPath('STAFF'), label: 'スタッフ情報', Icon: User },
-  { href: getPath('ACCOMPANYING_SUPPPORT'), label: '同行援護', Icon: User },
-  { href: getPath('HOME_CARE_SUPPORT'), label: '居宅介護', Icon: User },
-  { href: getPath('MOBILITY_SUPPORT'), label: '移動支援', Icon: User },
+  {
+    href: getPath('ACCOMPANYING_SUPPPORT'),
+    label: '同行援護',
+    Icon: Disabled2,
+  },
+  {
+    href: getPath('BEHAVIOR_SUPPPORT'),
+    label: '行動援護',
+    Icon: Car,
+  },
+  {
+    href: getPath('HOME_CARE_SUPPORT'),
+    label: '居宅介護',
+    Icon: HomeHeart,
+  },
+  {
+    href: getPath('MOBILITY_SUPPORT'),
+    label: '移動支援',
+    Icon: Walk,
+  },
   { href: getPath('SIGN_UP'), label: '設定', Icon: Settings },
 ];
 
-export const SideNav: FC<{ className?: string }> = ({ className }) => {
+export const SideNav: FC<{ className?: string }> = ({
+  className,
+}) => {
   const dispatch = useAppDispatch();
   const [collapsed, handlers] = useDisclosure(false);
   const { classes, cx } = useStyles({ collapsed });
@@ -173,7 +197,10 @@ export const SideNav: FC<{ className?: string }> = ({ className }) => {
 
       <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
         <Navbar.Section className={classes.footer}>
-          <UnstyledButton className={classes.link} onClick={handlers.toggle}>
+          <UnstyledButton
+            className={classes.link}
+            onClick={handlers.toggle}
+          >
             {collapsed ? (
               <ArrowRight className={classes.linkIcon} />
             ) : (

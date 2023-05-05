@@ -5,19 +5,18 @@ import {
 
 export const PAGE_SIZE = 5;
 
-// アカウントIDを自動生成
-export const generateRandomAccountId = () => {
+// 法人IDを自動生成
+export const generateRandomCorporateId = (): string => {
   const characters =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const accountIdLength = 7;
-  let accountId = '';
+  const corporateIdLength = 7;
 
-  for (let i = 0; i < accountIdLength; i++) {
+  let corporateId = '';
+  for (let i = 0; i < corporateIdLength; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
-    accountId += characters.charAt(randomIndex);
+    corporateId += characters.charAt(randomIndex);
   }
-
-  return accountId;
+  return corporateId;
 };
 
 // Supabaseから取得した日付（String）をフォーマット（String）
@@ -40,19 +39,18 @@ export const convertSupabaseTime = (supabaseTime: string): string => {
 };
 
 // date.getDay()で取得した数字を曜日に変換
-export const weekItems = ['日', '月', '火', '水', '木', '金', '土'];
 // Date型の日付をString型の曜日に変換
+const weekItems = ['日', '月', '火', '水', '木', '金', '土'];
 export const convertWeekItem = (date: Date): string => {
   return weekItems[date.getDay()];
 };
 
-// Date型の開始時間と終了時間からString型で働いた時間を算出
+// Date型の開始時間と終了時間から働いた時間をString型で返す
 export const calcWorkTime = (
   start_time: Date | null,
   end_time: Date | null
 ): string => {
   if (!start_time || !end_time) return '0';
-
   const time = end_time.getTime() - start_time.getTime();
   return (time / 3600000).toFixed(1);
 };
@@ -68,8 +66,21 @@ export const convertTime = (date: string): string => {
   return timeString;
 };
 
+// String型の開始時間と終了時間をそれぞれDate型で返す
+export const convertStartEndTimeFromString2Date = (
+  startTime: string,
+  endTime: string
+): [Date | null, Date | null] => {
+  if (!startTime || !endTime) return [null, null];
+  const startDate = new Date(startTime);
+  const endDate = new Date(endTime);
+  return [startDate, endDate];
+};
+
 // サービスの種類を改行して表示
-export const formatServiceContent = (serviceContent: string): string => {
+export const formatServiceContent = (
+  serviceContent: string
+): string => {
   if (serviceContent === '通院等介助（伴う）') {
     return '通院等介助\n    (伴う)';
   } else if (serviceContent === '通院等介助（伴わない）') {
@@ -91,7 +102,10 @@ export const calcEachWorkTime = (
 
   (contentArr || []).map((content) => {
     const workTime = Number(
-      calcWorkTime(new Date(content.start_time!), new Date(content.end_time!))
+      calcWorkTime(
+        new Date(content.start_time!),
+        new Date(content.end_time!)
+      )
     );
 
     switch (content.service_content) {

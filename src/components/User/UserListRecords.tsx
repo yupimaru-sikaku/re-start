@@ -38,7 +38,9 @@ export const UserListRecords = ({ handleDelete }: Props) => {
           支援
         </>
       ),
-      render: (user: ReturnUser) => <Checkbox readOnly checked={user.is_ido} />,
+      render: (user: ReturnUser) => (
+        <Checkbox readOnly checked={user.is_ido} />
+      ),
     },
     {
       accessor: 'kodo',
@@ -125,20 +127,6 @@ export const UserListRecords = ({ handleDelete }: Props) => {
       ),
     },
     {
-      accessor: 'created_at',
-      title: '作成日時',
-      width: 70,
-      render: (user: ReturnUser) =>
-        user.created_at ? convertSupabaseTime(user.created_at) : '',
-    },
-    {
-      accessor: 'updatedAt',
-      title: '更新日時',
-      width: 70,
-      render: (user: ReturnUser) =>
-        user.updated_at ? convertSupabaseTime(user.updated_at) : '',
-    },
-    {
       accessor: 'actions',
       title: 'アクション',
       width: 90,
@@ -151,11 +139,21 @@ export const UserListRecords = ({ handleDelete }: Props) => {
               </ActionIcon>
             </a>
           </Link>
-          <ActionIcon color="red" onClick={() => handleDelete(user.id)}>
+          <ActionIcon
+            color="red"
+            onClick={() => handleDelete(user.id)}
+          >
             <IconTrash size={20} />
           </ActionIcon>
         </Group>
       ),
+    },
+    {
+      accessor: 'updatedAt',
+      title: '更新日時',
+      width: 150,
+      render: (user: ReturnUser) =>
+        user.updated_at ? convertSupabaseTime(user.updated_at) : '',
     },
   ];
 };

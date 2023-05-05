@@ -3,17 +3,7 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { useForm } from '@mantine/form';
 import { initialState } from '@/ducks/home-care-support/slice';
-import {
-  Divider,
-  Grid,
-  Paper,
-  Select,
-  SimpleGrid,
-  Space,
-  Stack,
-  Text,
-  TextInput,
-} from '@mantine/core';
+import { Divider, Grid, Paper, Select, SimpleGrid, Space, Stack, Text, TextInput } from '@mantine/core';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { CustomButton } from '../Common/CustomButton';
 import { TimeRangeInput } from '@mantine/dates';
@@ -23,11 +13,7 @@ import { getDb, supabase } from '@/libs/supabase/supabase';
 import { User } from '@/ducks/user/slice';
 import { NextPage } from 'next';
 import { CustomConfirm } from '../Common/CustomConfirm';
-import {
-  validateMonth,
-  validateName,
-  validateYear,
-} from '@/utils/validate/home-care-support';
+import { validateMonth, validateName, validateYear } from '@/utils/validate/home-care-support';
 import { CustomStepper } from '../Common/CustomStepper';
 import { showNotification } from '@mantine/notifications';
 import { getPath } from '@/utils/const/getPath';
@@ -38,14 +24,10 @@ import { useGetUserListByCorporateIdQuery } from '@/ducks/user/query';
 export const HomeCareSupportCreate: NextPage = () => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
-  const loginProviderInfo = useSelector(
-    (state: RootState) => state.provider.loginProviderInfo
-  );
+  const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { data: userList } = useGetUserListByCorporateIdQuery(
-    loginProviderInfo.corporate_id
-  );
+  const { data: userList } = useGetUserListByCorporateIdQuery(loginProviderInfo.corporate_id);
   const userNameList = (userList || []).map((user) => user.name);
   const currentDate = new Date();
   const form = useForm({
@@ -53,10 +35,7 @@ export const HomeCareSupportCreate: NextPage = () => {
       ...initialState,
       year: currentDate.getFullYear(),
       month: currentDate.getMonth(),
-      content_arr: Array.from(
-        { length: 40 },
-        () => initialState.content_arr[0]
-      ),
+      content_arr: Array.from({ length: 40 }, () => initialState.content_arr[0]),
     },
     validate: {
       year: (value) => {
@@ -73,8 +52,7 @@ export const HomeCareSupportCreate: NextPage = () => {
       },
     },
   });
-  const { kaziAmount, shintaiAmount, withTsuinAmount, tsuinAmount } =
-    calcEachWorkTime(form.values.content_arr);
+  const { kaziAmount, shintaiAmount, withTsuinAmount, tsuinAmount } = calcEachWorkTime(form.values.content_arr);
   const man = (userList || []).filter((user) => user.name === form.values.name)[0];
   const serviceArr = (userList || [])
     .filter((user) => user.name === form.values.name)
@@ -98,10 +76,7 @@ export const HomeCareSupportCreate: NextPage = () => {
     })[0];
   const handleSubmit = async () => {
     setIsLoading(true);
-    const isOK = await CustomConfirm(
-      '実績記録票を作成しますか？後から修正は可能です。',
-      '確認画面'
-    );
+    const isOK = await CustomConfirm('実績記録票を作成しますか？後から修正は可能です。', '確認画面');
     if (!isOK) {
       setIsLoading(false);
       return;
@@ -109,17 +84,13 @@ export const HomeCareSupportCreate: NextPage = () => {
     // データ整形（空欄がある場合に無視、日付順にソート）
     const formatArr = form.values.content_arr
       .filter((content) => {
-        return (
-          content.work_date &&
-          content.service_content !== '' &&
-          content.start_time &&
-          content.end_time
-        );
+        return content.work_date && content.service_content !== '' && content.start_time && content.end_time;
       })
       .sort((a, b) => a.work_date! - b.work_date!);
 
     if (formatArr.length === 0) {
       await CustomConfirm('記録は、少なくとも一行は作成ください。', 'Caution');
+      setIsLoading(false);
       return;
     }
     try {
@@ -154,47 +125,27 @@ export const HomeCareSupportCreate: NextPage = () => {
     setIsLoading(false);
   };
 
-  const handleChangeDate = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    const newContentArr = form.values.content_arr.map(
-      (content, contentIndex) => {
-        return contentIndex === index
-          ? { ...content, work_date: Number(e.target.value) }
-          : content;
-      }
-    );
+  const handleChangeDate = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const newContentArr = form.values.content_arr.map((content, contentIndex) => {
+      return contentIndex === index ? { ...content, work_date: Number(e.target.value) } : content;
+    });
     form.setFieldValue('content_arr', newContentArr);
   };
 
   const handleChangeService = (service: string | null, index: number) => {
     if (!service) return;
-    const newContentArr = form.values.content_arr.map(
-      (content, contentIndex) => {
-        return contentIndex === index
-          ? { ...content, service_content: service }
-          : content;
-      }
-    );
+    const newContentArr = form.values.content_arr.map((content, contentIndex) => {
+      return contentIndex === index ? { ...content, service_content: service } : content;
+    });
     form.setFieldValue('content_arr', newContentArr);
   };
-
-  const handleChangeTime = (
-    start_time: Date,
-    end_time: Date,
-    index: number
-  ) => {
+  const handleChangeTime = (start_time: Date, end_time: Date, index: number) => {
     if (!start_time || !end_time) return;
-    const newContentArr = (form.values.content_arr || []).map(
-      (content, contentIndex) => {
-        const formatStartTime = start_time.toString();
-        const formatEndTime = end_time.toString();
-        return contentIndex === index
-          ? { ...content, start_time: formatStartTime, end_time: formatEndTime }
-          : content;
-      }
-    );
+    const newContentArr = (form.values.content_arr || []).map((content, contentIndex) => {
+      const formatStartTime = start_time.toString();
+      const formatEndTime = end_time.toString();
+      return contentIndex === index ? { ...content, start_time: formatStartTime, end_time: formatEndTime } : content;
+    });
     form.setFieldValue('content_arr', newContentArr);
   };
 
@@ -206,41 +157,10 @@ export const HomeCareSupportCreate: NextPage = () => {
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
           <SimpleGrid cols={4}>
-            <CustomTextInput
-              idText="year"
-              label="西暦"
-              description=""
-              required={true}
-              form={form}
-              formValue="year"
-              minLength={4}
-              maxLength={4}
-            />
-            <CustomTextInput
-              idText="month"
-              label="月"
-              description=""
-              required={true}
-              form={form}
-              formValue="month"
-              minLength={1}
-              maxLength={2}
-            />
-            <Select
-              label="利用者名"
-              searchable
-              nothingFound="No Data"
-              data={userNameList}
-              variant="filled"
-              {...form.getInputProps('name')}
-            />
-            <TextInput
-              label="受給者証番号"
-              value={man?.identification}
-              variant="filled"
-              disabled
-              sx={{ '& input:disabled': { color: 'black' } }}
-            />
+            <CustomTextInput idText="year" label="西暦" description="" required={true} form={form} formValue="year" minLength={4} maxLength={4} />
+            <CustomTextInput idText="month" label="月" description="" required={true} form={form} formValue="month" minLength={1} maxLength={2} />
+            <Select label="利用者名" searchable nothingFound="No Data" data={userNameList} variant="filled" {...form.getInputProps('name')} />
+            <TextInput label="受給者証番号" value={man?.identification} variant="filled" disabled sx={{ '& input:disabled': { color: 'black' } }} />
           </SimpleGrid>
           <Space h="lg" />
           <SimpleGrid cols={4}>
@@ -266,12 +186,7 @@ export const HomeCareSupportCreate: NextPage = () => {
                       },
                     }}
                   />
-                  <TextInput
-                    value={man?.kazi_amount}
-                    variant="filled"
-                    disabled
-                    sx={{ '& input:disabled': { color: 'black' } }}
-                  />
+                  <TextInput value={man?.kazi_amount} variant="filled" disabled sx={{ '& input:disabled': { color: 'black' } }} />
                   <Text size="sm">時間/月</Text>
                 </SimpleGrid>
               </Paper>
@@ -298,12 +213,7 @@ export const HomeCareSupportCreate: NextPage = () => {
                       },
                     }}
                   />
-                  <TextInput
-                    value={man?.shintai_amount}
-                    variant="filled"
-                    disabled
-                    sx={{ '& input:disabled': { color: 'black' } }}
-                  />
+                  <TextInput value={man?.shintai_amount} variant="filled" disabled sx={{ '& input:disabled': { color: 'black' } }} />
                   <Text size="sm">時間/月</Text>
                 </SimpleGrid>
               </Paper>
@@ -330,12 +240,7 @@ export const HomeCareSupportCreate: NextPage = () => {
                       },
                     }}
                   />
-                  <TextInput
-                    value={man?.with_tsuin_amount}
-                    variant="filled"
-                    disabled
-                    sx={{ '& input:disabled': { color: 'black' } }}
-                  />
+                  <TextInput value={man?.with_tsuin_amount} variant="filled" disabled sx={{ '& input:disabled': { color: 'black' } }} />
                   <Text size="sm">時間/月</Text>
                 </SimpleGrid>
               </Paper>
@@ -362,12 +267,7 @@ export const HomeCareSupportCreate: NextPage = () => {
                       },
                     }}
                   />
-                  <TextInput
-                    value={man?.tsuin_amount}
-                    variant="filled"
-                    disabled
-                    sx={{ '& input:disabled': { color: 'black' } }}
-                  />
+                  <TextInput value={man?.tsuin_amount} variant="filled" disabled sx={{ '& input:disabled': { color: 'black' } }} />
                   <Text size="sm">時間/月</Text>
                 </SimpleGrid>
               </Paper>
@@ -401,22 +301,12 @@ export const HomeCareSupportCreate: NextPage = () => {
             {form.values.content_arr.map((_, index) => (
               <Grid key={index}>
                 <Grid.Col span={1}>
-                  <TextInput
-                    variant="filled"
-                    maxLength={2}
-                    onChange={(e) => handleChangeDate(e, index)}
-                  />
+                  <TextInput variant="filled" maxLength={2} onChange={(e) => handleChangeDate(e, index)} />
                 </Grid.Col>
                 <Grid.Col span={1}>
                   <TextInput
                     sx={{ '& input:disabled': { color: 'black' } }}
-                    value={convertWeekItem(
-                      new Date(
-                        form.values.year,
-                        form.values.month,
-                        form.values.content_arr[index].work_date || 1
-                      )
-                    )}
+                    value={convertWeekItem(new Date(form.values.year, form.values.month, form.values.content_arr[index].work_date || 1))}
                     variant="filled"
                     disabled
                   />
@@ -432,24 +322,14 @@ export const HomeCareSupportCreate: NextPage = () => {
                   />
                 </Grid.Col>
                 <Grid.Col span={3}>
-                  <TimeRangeInput
-                    icon={<IconClock size={16} />}
-                    variant="filled"
-                    onChange={(e) => handleChangeTime(e[0], e[1], index)}
-                  />
+                  <TimeRangeInput icon={<IconClock size={16} />} variant="filled" onChange={(e) => handleChangeTime(e[0], e[1], index)} />
                 </Grid.Col>
                 <Grid.Col span={1}>
                   <TextInput
                     sx={{ '& input:disabled': { color: 'black' } }}
                     value={
-                      form.values.content_arr[index].start_time ||
-                      form.values.content_arr[index].end_time
-                        ? calcWorkTime(
-                            new Date(
-                              form.values.content_arr[index].start_time!
-                            ),
-                            new Date(form.values.content_arr[index].end_time!)
-                          )
+                      form.values.content_arr[index].start_time || form.values.content_arr[index].end_time
+                        ? calcWorkTime(new Date(form.values.content_arr[index].start_time!), new Date(form.values.content_arr[index].end_time!))
                         : undefined
                     }
                     variant="filled"
