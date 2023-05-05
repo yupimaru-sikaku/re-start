@@ -15,7 +15,6 @@ import { useForm } from '@mantine/form';
 import {
   LoginResult,
   loginInitialState,
-  setLoginProviderInfo,
 } from 'src/ducks/provider/slice';
 import { useFocusTrap } from '@mantine/hooks';
 import { CustomTextInput } from 'src/components/Common/CustomTextInput';
@@ -67,11 +66,11 @@ export const SignIn = () => {
       if (error) {
         throw new Error('Eメールアドレスかパスワードが間違っています');
       }
-      const loginProviderParams = {
-        id: data.user.id,
-        email: data.user.email,
-      };
-      dispatch(setLoginProviderInfo(loginProviderParams));
+      // const loginProviderParams = {
+      //   id: data.user.id,
+      //   email: data.user.email,
+      // };
+      // dispatch(setLoginProviderInfo(loginProviderParams));
       showNotification({
         icon: <IconCheck />,
         message: 'ログインに成功しました！',

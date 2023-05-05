@@ -40,11 +40,28 @@ export const providerApi = createApi({
     login: builder.mutation<LoginResult, LoginParams>({
       // TODO 型付け
       queryFn: async (params: LoginParams): Promise<any> => {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: params.email,
-          password: params.password,
-        });
-        return { data, error };
+        const { data: signInData, error: signInError } =
+          await supabase.auth.signInWithPassword({
+            email: params.email,
+            password: params.password,
+          });
+        if (signInData.user) {
+          const { data: providerData, error: providerError } = await supabase
+            .from(getDb('PROVIDER'))
+            .select('*')
+            .eq('id', signInData.user.id);
+          if (providerError) return { error: providerError };
+          const returnData = {
+            id: signInData.user.id,
+            email: signInData.user.email,
+            corporate_id: providerData[0].corporate_id,
+            corporate_name: providerData[0].corporate_name,
+            office_name: providerData[0].office_name,
+            role: providerData[0].role,
+          };
+          return { data: returnData };
+        }
+        return { error: signInError };
       },
     }),
     /**

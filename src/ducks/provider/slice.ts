@@ -74,14 +74,16 @@ const providerSlice = createSlice({
   name: 'provider',
   initialState,
   reducers: {
-    setLoginProviderInfo: (state, action) => {
-      state.loginProviderInfo = action.payload;
+    clearLoginProviderInfo: (state) => {
+      state.loginProviderInfo = initialState.loginProviderInfo;
     },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
-      providerApi.endpoints.getProviderById.matchFulfilled,
+      providerApi.endpoints.login.matchFulfilled,
       (state, action: any) => {
+        state.loginProviderInfo.id = action.payload.id;
+        state.loginProviderInfo.email = action.payload.email;
         state.loginProviderInfo.corporate_id = action.payload.corporate_id;
         state.loginProviderInfo.corporate_name = action.payload.corporate_name;
         state.loginProviderInfo.office_name = action.payload.office_name;
@@ -93,4 +95,4 @@ const providerSlice = createSlice({
 
 export default providerSlice;
 
-export const { setLoginProviderInfo } = providerSlice.actions;
+export const { clearLoginProviderInfo } = providerSlice.actions;

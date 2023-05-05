@@ -21,12 +21,6 @@ const SERVICE_LINK = [
 ] as const;
 
 const Index: CustomNextPage = () => {
-  const loginProviderInfo = useSelector(
-    (state) => state.provider.loginProviderInfo
-  );
-  const { data: providerData } = useGetProviderByIdQuery(
-    loginProviderInfo.id || skipToken
-  );
   return (
     <DashboardLayout title="トップページ">
       <PageContainer title="ホーム" fluid>

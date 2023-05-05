@@ -19,11 +19,17 @@ import {
   Logout,
   User,
   Login,
+  Router,
 } from 'tabler-icons-react';
 import { getPath } from '@/utils/const/getPath';
 import { ActiveLink } from '@/utils/next/active-link';
 import { supabase } from '@/libs/supabase/supabase';
 import Image from 'next/image';
+import { RootState } from '@/ducks/root-reducer';
+import { useAppDispatch, useSelector } from '@/ducks/store';
+import { IconLogout } from '@tabler/icons';
+import { clearLoginProviderInfo } from '@/ducks/provider/slice';
+import { useRouter } from 'next/router';
 
 const useStyles = createStyles<string, { collapsed?: boolean }>(
   (theme, params, getRef) => {
@@ -75,6 +81,7 @@ const useStyles = createStyles<string, { collapsed?: boolean }>(
         padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
         borderRadius: theme.radius.sm,
         fontWeight: 500,
+        cursor: 'pointer',
 
         '&:hover': {
           backgroundColor: theme.colors.gray[0],
@@ -114,14 +121,14 @@ const ITEMS = [
   { href: getPath('HOME_CARE_SUPPORT'), label: '居宅介護', Icon: User },
   { href: getPath('MOBILITY_SUPPORT'), label: '移動支援', Icon: User },
   { href: getPath('SIGN_UP'), label: '設定', Icon: Settings },
-  { href: getPath('SIGN_IN'), label: 'ログイン', Icon: Login },
 ];
 
 export const SideNav: FC<{ className?: string }> = ({ className }) => {
+  const dispatch = useAppDispatch();
   const [collapsed, handlers] = useDisclosure(false);
   const { classes, cx } = useStyles({ collapsed });
-
   const handleLogout = async () => {
+    dispatch(clearLoginProviderInfo());
     await supabase.auth.signOut();
   };
 
@@ -158,6 +165,10 @@ export const SideNav: FC<{ className?: string }> = ({ className }) => {
             }}
           </ActiveLink>
         ))}
+        <a className={cx(classes.link)} onClick={handleLogout}>
+          <IconLogout className={classes.linkIcon} />
+          <span className={classes.linkLabel}>ログアウト</span>
+        </a>
       </Navbar.Section>
 
       <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
