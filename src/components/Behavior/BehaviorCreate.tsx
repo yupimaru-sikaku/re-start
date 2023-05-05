@@ -2,6 +2,7 @@ import {
   ActionIcon,
   Divider,
   Grid,
+  LoadingOverlay,
   Paper,
   Select,
   SimpleGrid,
@@ -62,9 +63,11 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
   );
   const TITLE = type === 'create' ? '登録' : '更新';
   const BehaviorId = router.query.id as string;
-  const { data: getBehaviorData, refetch } = useGetBehaviorDataQuery(
-    BehaviorId || skipToken
-  );
+  const {
+    data: getBehaviorData,
+    isLoading: getBehaviorDataLoding,
+    refetch,
+  } = useGetBehaviorDataQuery(BehaviorId || skipToken);
   const [isLoading, setIsLoading] = useState(false);
   const currentDate = new Date();
   const { data: userList = [] } =
@@ -118,14 +121,20 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
     (user) => user.name === form.values.name
   );
   const kodoAmount = form.values.content_arr.reduce(
-    (sum, content) =>
-      sum +
-      Number(
-        calcWorkTime(
-          new Date(content.start_time!),
-          new Date(content.end_time!)
+    (sum, content) => {
+      if (content.start_time === '' || content.end_time === '') {
+        return sum;
+      }
+      return (
+        sum +
+        Number(
+          calcWorkTime(
+            new Date(content.start_time!),
+            new Date(content.end_time!)
+          )
         )
-      ),
+      );
+    },
     0
   );
   const handleChangeDate = (
@@ -232,7 +241,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
           icon: <IconCheckbox />,
           message: `${TITLE}に成功しました！`,
         });
-        router.push(getPath('MOBILITY_SUPPORT'));
+        router.push(getPath('MOBILITY'));
       } else {
         const params: UpdateBehaviorParams = {
           ...form.values,
@@ -252,7 +261,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
           icon: <IconCheckbox />,
           message: `${TITLE}に成功しました！`,
         });
-        router.push(getPath('MOBILITY_SUPPORT'));
+        router.push(getPath('MOBILITY'));
       }
     } catch (error: any) {
       await CustomConfirm(error.message, 'Caution');
@@ -266,7 +275,12 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
         <CustomStepper />
       </Paper>
-      <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
+      <LoadingOverlay visible={getBehaviorDataLoding} />
+      <form
+        onSubmit={form.onSubmit(handleSubmit)}
+        ref={focusTrapRef}
+        className="relative"
+      >
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
           <SimpleGrid cols={6}>
             <CustomTextInput

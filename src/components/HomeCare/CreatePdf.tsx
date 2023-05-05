@@ -1,16 +1,22 @@
 // createPdf.js
 import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
-import { ReturnHomeCareSupport } from '@/ducks/home-care-support/slice';
-import { calcEachWorkTime, convertTime, formatServiceContent } from '@/utils';
+import { ReturnHomeCare } from '@/ducks/home-care/slice';
+import {
+  calcEachWorkTime,
+  convertTime,
+  formatServiceContent,
+} from '@/utils';
 
 export const CreatePdf = async (
   pdfUrl: string,
-  homeCare: ReturnHomeCareSupport
+  homeCare: ReturnHomeCare
 ) => {
-  const existingPdfBytes = await fetch(pdfUrl).then((res) => res.arrayBuffer());
-  const notoSansBytes = await fetch('/NotoSansJP-Regular.otf').then((res) =>
+  const existingPdfBytes = await fetch(pdfUrl).then((res) =>
     res.arrayBuffer()
+  );
+  const notoSansBytes = await fetch('/NotoSansJP-Regular.otf').then(
+    (res) => res.arrayBuffer()
   );
 
   const pdfDoc = await PDFDocument.load(existingPdfBytes);
@@ -44,19 +50,25 @@ export const CreatePdf = async (
   const serviceArr = [
     { value: homeCare.amount_title_1 || '', x: 82, y: 783 },
     {
-      value: homeCare.amount_value_1 ? homeCare.amount_value_1.toString() : '',
+      value: homeCare.amount_value_1
+        ? homeCare.amount_value_1.toString()
+        : '',
       x: 268,
       y: 783,
     },
     { value: homeCare.amount_title_2 || '', x: 82, y: 771 },
     {
-      value: homeCare.amount_value_2 ? homeCare.amount_value_2.toString() : '',
+      value: homeCare.amount_value_2
+        ? homeCare.amount_value_2.toString()
+        : '',
       x: 268,
       y: 771,
     },
     { value: homeCare.amount_title_3 || '', x: 82, y: 759 },
     {
-      value: homeCare.amount_value_3 ? homeCare.amount_value_3.toString() : '',
+      value: homeCare.amount_value_3
+        ? homeCare.amount_value_3.toString()
+        : '',
       x: 268,
       y: 759,
     },
@@ -86,7 +98,9 @@ export const CreatePdf = async (
   // 日付毎の記録
   const contentArr = homeCare.content_arr.map((content) => {
     return {
-      work_date: `${content.work_date! < 10 ? ' ' : ''}${content.work_date!}`,
+      work_date: `${
+        content.work_date! < 10 ? ' ' : ''
+      }${content.work_date!}`,
       service_content: formatServiceContent(content.service_content),
       start_time: convertTime(content.start_time!),
       end_time: convertTime(content.end_time!),

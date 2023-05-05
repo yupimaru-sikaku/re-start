@@ -13,7 +13,7 @@ const DB = {
   HOME_CARE: 'home_care_records',
   ACCOMPANYING: 'accompanying_records',
   BEHAVIOR: 'behavior_records',
-  MOBILITY: 'mobility_support_records',
+  MOBILITY: 'MOBILITY_records',
 } as const;
 
 export const getDb = (db: keyof typeof DB) => {

@@ -1,6 +1,6 @@
 import { PostgrestError } from '@supabase/supabase-js';
 
-export type HomeCareSupportContentArr = {
+export type HomeCareContentArr = {
   work_date: number; // サービス提供日
   service_content: string; // サービス内容
   start_time: string; // 開始時間
@@ -8,7 +8,7 @@ export type HomeCareSupportContentArr = {
   staff_name: string; // スタッフ名
 };
 
-type HomeCareSupport = {
+type HomeCare = {
   id: string;
   year: number; // 作成する西暦
   month: number; // 作成する月
@@ -20,7 +20,7 @@ type HomeCareSupport = {
   amount_value_2: number; // 契約支給量
   amount_title_3: string; // 契約支給量
   amount_value_3: number; // 契約支給量
-  content_arr: HomeCareSupportContentArr[];
+  content_arr: HomeCareContentArr[];
   status: number; // 記録票の進捗状況
   corporate_id: string; // 作成した法人のID
   login_id: string; // ログインユーザのID
@@ -28,8 +28,8 @@ type HomeCareSupport = {
   updated_at: string; // 更新日時
 };
 
-export type CreateHomeCareSupport = Omit<
-  HomeCareSupport,
+export type CreateHomeCare = Omit<
+  HomeCare,
   | 'id'
   | 'year'
   | 'month'
@@ -58,8 +58,8 @@ export type CreateHomeCareSupport = Omit<
   }[];
 };
 
-export type ReturnHomeCareSupport = Omit<
-  HomeCareSupport,
+export type ReturnHomeCare = Omit<
+  HomeCare,
   | 'amount_title_2'
   | 'amount_value_2'
   | 'amount_title_3'
@@ -79,8 +79,8 @@ export type ReturnHomeCareSupport = Omit<
   }[];
 };
 
-export type UpdateHomeCareSupportParams = Omit<
-  HomeCareSupport,
+export type UpdateHomeCareParams = Omit<
+  HomeCare,
   | 'amount_title_2'
   | 'amount_value_2'
   | 'amount_title_3'
@@ -102,11 +102,11 @@ export type UpdateHomeCareSupportParams = Omit<
   }[];
 };
 
-export type UpdateHomeCareSupportResult = {
+export type UpdateHomeCareResult = {
   error: PostgrestError | null;
 };
 
-export type DeleteHomeCareSupportResult = {
+export type DeleteHomeCareResult = {
   error: PostgrestError | null;
 };
 

@@ -18,20 +18,23 @@ const PATH = {
   ACCOMPANYING_SUPPPORT_CREATE: '/accompanying-support/create',
   ACCOMPANYING_SUPPPORT_EDIT: '/accompanying-support/[id]/edit',
   // 行動援護
-  BEHAVIOR_SUPPPORT: '/behavioral-support',
-  BEHAVIOR_SUPPPORT_CREATE: '/behavioral-support/create',
-  BEHAVIOR_SUPPPORT_EDIT: '/behavioral-support/[id]/edit',
+  BEHAVIOR: '/behavior',
+  BEHAVIOR_CREATE: '/behavior/create',
+  BEHAVIOR_EDIT: '/behavior/[id]/edit',
   // 居宅介護
-  HOME_CARE_SUPPORT: '/home-care-support',
-  HOME_CARE_SUPPORT_CREATE: '/home-care-support/create',
-  HOME_CARE_SUPPORT_EDIT: '/home-care-support/[id]/edit',
+  HOME_CARE: '/home-care',
+  HOME_CARE_CREATE: '/home-care/create',
+  HOME_CARE_EDIT: '/home-care/[id]/edit',
   // 移動支援
-  MOBILITY_SUPPORT: '/mobility-support',
-  MOBILITY_SUPPORT_CREATE: '/mobility-support/create',
-  MOBILITY_SUPPORT_EDIT: '/mobility-support/[id]/edit',
+  MOBILITY: '/mobility',
+  MOBILITY_CREATE: '/mobility/create',
+  MOBILITY_EDIT: '/mobility/[id]/edit',
 } as const;
 
-export const getPath = (pathKey: keyof typeof PATH, ...args: string[]) => {
+export const getPath = (
+  pathKey: keyof typeof PATH,
+  ...args: string[]
+) => {
   const val = PATH[pathKey];
 
   if (!args) {

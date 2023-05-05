@@ -9,7 +9,7 @@ import { providerApi } from 'src/ducks/provider/query';
 import { staffApi } from 'src/ducks/staff/query';
 import rootReducer, { RootState } from './root-reducer';
 import { userApi } from './user/query';
-import { homeCareSupportApi } from './home-care-support/query';
+import { HomeCareApi } from './home-care/query';
 import {
   persistReducer,
   persistStore,
@@ -30,7 +30,7 @@ const persistConfig = {
     'provider',
     'staff',
     'user',
-    'homeCareSupport',
+    'HomeCare',
     'mobilitySupport',
   ],
 };
@@ -55,7 +55,7 @@ export const store = configureStore({
       providerApi.middleware,
       staffApi.middleware,
       userApi.middleware,
-      homeCareSupportApi.middleware,
+      HomeCareApi.middleware,
       behaviorApi.middleware
     ),
 });

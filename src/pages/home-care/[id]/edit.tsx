@@ -1,21 +1,25 @@
-import { HomeCareSupportEdit } from '@/components/HomeCareSupport/HomeCareSupportEdit';
+import { HomeCareEdit } from '@/components/HomeCare/HomeCareEdit';
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
-import { ReturnHomeCareSupport } from '@/ducks/home-care-support/slice';
+import { ReturnHomeCare } from '@/ducks/home-care/slice';
 import { ReturnStaff } from '@/ducks/staff/slice';
 import { User } from '@/ducks/user/slice';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { Space } from '@mantine/core';
-import { GetStaticPaths, GetStaticPropsContext, NextPage } from 'next';
+import {
+  GetStaticPaths,
+  GetStaticPropsContext,
+  NextPage,
+} from 'next';
 import React from 'react';
 
 type Props = {
-  userData: ReturnHomeCareSupport;
+  userData: ReturnHomeCare;
   userList: User[];
   staffList: ReturnStaff[];
 };
 
-const HomeCareSupportEditPage: NextPage<Props> = ({
+const HomeCareEditPage: NextPage<Props> = ({
   userData,
   userList,
   staffList,
@@ -23,7 +27,7 @@ const HomeCareSupportEditPage: NextPage<Props> = ({
   return (
     <DashboardLayout title="記録票編集">
       <PageContainer title="実績記録票編集" fluid>
-        <HomeCareSupportEdit
+        <HomeCareEdit
           userData={userData}
           userList={userList}
           staffList={staffList}
@@ -33,8 +37,12 @@ const HomeCareSupportEditPage: NextPage<Props> = ({
   );
 };
 
-export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-  const { data, error } = await supabase.from(getDb('HOME_CARE')).select('id');
+export const getStaticPaths: GetStaticPaths<{
+  id: string;
+}> = async () => {
+  const { data, error } = await supabase
+    .from(getDb('HOME_CARE'))
+    .select('id');
 
   if (error || !data) {
     return {
@@ -75,11 +83,13 @@ export const getStaticProps = async (
   const { data: staffList } = await supabase
     .from(getDb('STAFF'))
     .select('*')
-    .or('is_kaigo.eq.true,is_syoninsya.eq.true,is_zitsumusya.eq.true');
+    .or(
+      'is_kaigo.eq.true,is_syoninsya.eq.true,is_zitsumusya.eq.true'
+    );
 
   return {
     props: { userData, userList, staffList },
   };
 };
 
-export default HomeCareSupportEditPage;
+export default HomeCareEditPage;

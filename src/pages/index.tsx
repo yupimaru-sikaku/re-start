@@ -5,7 +5,11 @@ import Link from 'next/link';
 import { getPath } from '@/utils/const/getPath';
 import { PageContainer } from '@/components/PageContainer';
 import { User } from 'tabler-icons-react';
-import { IconFriends, IconToolsKitchen2, IconWalk } from '@tabler/icons';
+import {
+  IconFriends,
+  IconToolsKitchen2,
+  IconWalk,
+} from '@tabler/icons';
 import { useGetProviderByIdQuery } from '@/ducks/provider/query';
 import { useSelector } from '@/ducks/store';
 import { useEffect } from 'react';
@@ -29,7 +33,11 @@ const Index: CustomNextPage = () => {
                 <Paper
                   p="xl"
                   shadow="xs"
-                  sx={{ display: 'flex', alignItems: 'center', gap: 10 }}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                  }}
                 >
                   <service.Icon />
                   {service.label}

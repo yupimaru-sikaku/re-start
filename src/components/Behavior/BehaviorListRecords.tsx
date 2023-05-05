@@ -41,7 +41,7 @@ export const BehaviorListRecords = ({
       width: 90,
       render: (Behavior: ReturnBehavior) => (
         <Group spacing={4} position="right" noWrap>
-          <Link href={getPath('MOBILITY_SUPPORT_EDIT', Behavior.id)}>
+          <Link href={getPath('MOBILITY_EDIT', Behavior.id)}>
             <a>
               <ActionIcon color="blue">
                 <IconEdit size={20} />

@@ -11,7 +11,7 @@ const BehaviorPage = () => {
   return (
     <DashboardLayout title="行動援護">
       <PageContainer title="行動援護" fluid>
-        <Link href={getPath('BEHAVIOR_SUPPPORT_CREATE')}>
+        <Link href={getPath('BEHAVIOR_CREATE')}>
           <a>
             <CustomButton>実績記録票を作成する</CustomButton>
           </a>

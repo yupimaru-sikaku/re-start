@@ -15,7 +15,7 @@ export function getBreadcrumbs(path: string): BreadcrumbItem[] {
       items.push({ label: '利用者一覧', href: newPath });
     } else if (part === 'register') {
       items.push({ label: '利用者登録', href: newPath });
-    } else if (part === 'home-care-support') {
+    } else if (part === 'home-care') {
       items.push({ label: '居宅介護一覧', href: newPath });
     } else if (part === 'accompanying-support') {
       items.push({ label: '同行援護一覧', href: newPath });

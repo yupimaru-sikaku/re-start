@@ -3,11 +3,11 @@ import { useRouter } from 'next/router';
 import React, { useMemo, useRef, useState } from 'react';
 import { useForm } from '@mantine/form';
 import {
-  CreateHomeCareSupport,
-  HomeCareSupportContentArr,
+  CreateHomeCare,
+  HomeCareContentArr,
   initialState,
-  ReturnHomeCareSupport,
-} from '@/ducks/home-care-support/slice';
+  ReturnHomeCare,
+} from '@/ducks/home-care/slice';
 import {
   ActionIcon,
   Divider,
@@ -24,7 +24,11 @@ import { CustomTextInput } from '../Common/CustomTextInput';
 import { CustomButton } from '../Common/CustomButton';
 import { TimeRangeInput } from '@mantine/dates';
 import { IconCheckbox, IconClock, IconRefresh } from '@tabler/icons';
-import { calcEachWorkTime, calcWorkTime, convertWeekItem } from '@/utils';
+import {
+  calcEachWorkTime,
+  calcWorkTime,
+  convertWeekItem,
+} from '@/utils';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { User } from '@/ducks/user/slice';
 import { NextPage } from 'next';
@@ -33,7 +37,7 @@ import {
   validateMonth,
   validateName,
   validateYear,
-} from '@/utils/validate/home-care-support';
+} from '@/utils/validate/home-care';
 import { CustomStepper } from '../Common/CustomStepper';
 import { showNotification } from '@mantine/notifications';
 import { getPath } from '@/utils/const/getPath';
@@ -47,12 +51,12 @@ import { useSelector } from '@/ducks/store';
 import { RootState } from '@/ducks/root-reducer';
 
 type Props = {
-  userData: ReturnHomeCareSupport;
+  userData: ReturnHomeCare;
   userList: User[];
   staffList: ReturnStaff[];
 };
 
-export const HomeCareSupportEdit: NextPage<Props> = ({
+export const HomeCareEdit: NextPage<Props> = ({
   userData,
   userList,
   staffList,
@@ -104,7 +108,9 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
   });
   const { kaziAmount, shintaiAmount, withTsuinAmount, tsuinAmount } =
     calcEachWorkTime(form.values.content_arr);
-  const man = userList.filter((user) => user.name === form.values.name)[0];
+  const man = userList.filter(
+    (user) => user.name === form.values.name
+  )[0];
 
   // 編集時の初期値をmemo化（不要かも）
   // const oldArr = useMemo(() => {
@@ -135,7 +141,10 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
   const handleSubmit = async () => {
     setIsLoading(true);
 
-    const isOK = await CustomConfirm('編集を完了しますか？', '確認画面');
+    const isOK = await CustomConfirm(
+      '編集を完了しますか？',
+      '確認画面'
+    );
     if (!isOK) {
       setIsLoading(false);
       return;
@@ -173,7 +182,7 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
         // 最初に入力していたデータは一旦削除（不要かも）
         // const oldFormatArr = Object.values(
         //   oldArr.reduce<{
-        //     [key: string]: CreateHomeCareSupport['content_arr'];
+        //     [key: string]: CreateHomeCare['content_arr'];
         //   }>((result, currentValue) => {
         //     if (
         //       currentValue['staff_name'] !== null &&
@@ -219,14 +228,16 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
         // 名前毎に配列を作成した新しいcontent_arr配列を作成[][]
         const formatArr = Object.values(
           nonNullableAndSortArr.reduce<{
-            [key: string]: CreateHomeCareSupport['content_arr'];
+            [key: string]: CreateHomeCare['content_arr'];
           }>((result, currentValue) => {
             if (
               currentValue['staff_name'] !== null &&
               currentValue['staff_name'] !== undefined
             ) {
               (result[currentValue['staff_name']] =
-                result[currentValue['staff_name']] || []).push(currentValue);
+                result[currentValue['staff_name']] || []).push(
+                currentValue
+              );
             }
             return result;
           }, {})
@@ -257,8 +268,11 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
                   content.service_content === '家事援助' ||
                   content.service_content === '身体介護' ||
                   content.service_content === '通院等介助（伴う）' ||
-                  content.service_content === '通院等介助（伴わない）';
-                return !(isDuplicateUserName && isDuplicateServiceContent);
+                  content.service_content ===
+                    '通院等介助（伴わない）';
+                return !(
+                  isDuplicateUserName && isDuplicateServiceContent
+                );
               }
             );
             console.log(removeArr, contentList);
@@ -319,7 +333,7 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
         icon: <IconCheckbox />,
         message: '更新に成功しました！',
       });
-      router.push(getPath('HOME_CARE_SUPPORT'));
+      router.push(getPath('HOME_CARE'));
 
       if (updateError) {
         console.log(updateError);
@@ -346,7 +360,10 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
     form.setFieldValue('content_arr', newContentArr);
   };
 
-  const handleChangeService = (service: string | null, index: number) => {
+  const handleChangeService = (
+    service: string | null,
+    index: number
+  ) => {
     if (!service) return;
     const newContentArr = (form.values.content_arr || []).map(
       (content, contentIndex) => {
@@ -369,7 +386,11 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
         const formatStartTime = start_time.toString();
         const formatEndTime = end_time.toString();
         return contentIndex === index
-          ? { ...content, start_time: formatStartTime, end_time: formatEndTime }
+          ? {
+              ...content,
+              start_time: formatStartTime,
+              end_time: formatEndTime,
+            }
           : content;
       }
     );
@@ -392,11 +413,16 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
     );
     form.setFieldValue('content_arr', newContentArr);
   };
-  const handleChangeStaff = (staff_name: string | null, index: number) => {
+  const handleChangeStaff = (
+    staff_name: string | null,
+    index: number
+  ) => {
     if (!staff_name) return;
     const newContentArr = (form.values.content_arr || []).map(
       (content, contentIndex) => {
-        return contentIndex === index ? { ...content, staff_name } : content;
+        return contentIndex === index
+          ? { ...content, staff_name }
+          : content;
       }
     );
     form.setFieldValue('content_arr', newContentArr);
@@ -489,7 +515,8 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
                     disabled
                     sx={{
                       '& input:disabled': {
-                        ...(Number(shintaiAmount) > man?.shintai_amount
+                        ...(Number(shintaiAmount) >
+                        man?.shintai_amount
                           ? {
                               color: 'red',
                               fontWeight: 'bold',
@@ -521,7 +548,8 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
                     disabled
                     sx={{
                       '& input:disabled': {
-                        ...(Number(withTsuinAmount) > man?.with_tsuin_amount
+                        ...(Number(withTsuinAmount) >
+                        man?.with_tsuin_amount
                           ? {
                               color: 'red',
                               fontWeight: 'bold',
@@ -602,7 +630,9 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
               <Grid key={index}>
                 <Grid.Col span={1}>
                   <TextInput
-                    value={form.values.content_arr[index].work_date || ''}
+                    value={
+                      form.values.content_arr[index].work_date || ''
+                    }
                     variant="filled"
                     maxLength={2}
                     onChange={(e) => handleChangeDate(e, index)}
@@ -629,7 +659,9 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
                     searchable
                     nothingFound="No Data"
                     data={serviceArr || []}
-                    value={form.values.content_arr[index].service_content}
+                    value={
+                      form.values.content_arr[index].service_content
+                    }
                     onChange={(e) => handleChangeService(e, index)}
                   />
                 </Grid.Col>
@@ -642,21 +674,31 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
                       form.values.content_arr[index].end_time
                         ? [
                             new Date(
-                              form.values.content_arr[index].start_time!
+                              form.values.content_arr[
+                                index
+                              ].start_time!
                             ),
-                            new Date(form.values.content_arr[index].end_time!),
+                            new Date(
+                              form.values.content_arr[index].end_time!
+                            ),
                           ]
                         : [null, null]
                     }
-                    onChange={(e) => handleChangeTime(e[0], e[1], index)}
+                    onChange={(e) =>
+                      handleChangeTime(e[0], e[1], index)
+                    }
                   />
                 </Grid.Col>
                 <Grid.Col span={1}>
                   <TextInput
                     sx={{ '& input:disabled': { color: 'black' } }}
                     value={calcWorkTime(
-                      new Date(form.values.content_arr[index].start_time!),
-                      new Date(form.values.content_arr[index].end_time!)
+                      new Date(
+                        form.values.content_arr[index].start_time!
+                      ),
+                      new Date(
+                        form.values.content_arr[index].end_time!
+                      )
                     )}
                     variant="filled"
                     disabled
@@ -670,7 +712,9 @@ export const HomeCareSupportEdit: NextPage<Props> = ({
                       searchable
                       nothingFound="No Data"
                       data={staffArr || []}
-                      value={form.values.content_arr[index].staff_name}
+                      value={
+                        form.values.content_arr[index].staff_name
+                      }
                       onChange={(e) => handleChangeStaff(e, index)}
                     />
                   </Grid.Col>

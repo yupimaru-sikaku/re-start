@@ -1,7 +1,7 @@
 import {
-  CreateHomeCareSupport,
-  ReturnHomeCareSupport,
-} from '@/ducks/home-care-support/slice';
+  CreateHomeCare,
+  ReturnHomeCare,
+} from '@/ducks/home-care/slice';
 
 export const PAGE_SIZE = 5;
 
@@ -92,8 +92,8 @@ export const formatServiceContent = (
 // （居宅介護専用）記録票のオブジェクトから各サービスの合計算定時間を算出
 export const calcEachWorkTime = (
   contentArr:
-    | CreateHomeCareSupport['content_arr']
-    | ReturnHomeCareSupport['content_arr']
+    | CreateHomeCare['content_arr']
+    | ReturnHomeCare['content_arr']
 ) => {
   let kaziAmount = 0;
   let shintaiAmount = 0;

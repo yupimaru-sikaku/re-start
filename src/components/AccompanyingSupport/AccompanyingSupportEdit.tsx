@@ -10,7 +10,7 @@ import {
   validateMonth,
   validateName,
   validateYear,
-} from '@/utils/validate/home-care-support';
+} from '@/utils/validate/home-care';
 import {
   ActionIcon,
   Divider,
@@ -80,19 +80,27 @@ export const AccompanyingSupportEdit: NextPage<Props> = ({
       },
     },
   });
-  const man = userList.filter((user) => user.name === form.values.name)[0];
+  const man = userList.filter(
+    (user) => user.name === form.values.name
+  )[0];
   const dokoAmount = form.values.content_arr.reduce(
     (sum, content) =>
       sum +
       Number(
-        calcWorkTime(new Date(content.start_time!), new Date(content.end_time!))
+        calcWorkTime(
+          new Date(content.start_time!),
+          new Date(content.end_time!)
+        )
       ),
     0
   );
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    const isOK = await CustomConfirm('編集を完了しますか？', '確認画面');
+    const isOK = await CustomConfirm(
+      '編集を完了しますか？',
+      '確認画面'
+    );
     if (!isOK) {
       setIsLoading(false);
       return;
@@ -109,7 +117,10 @@ export const AccompanyingSupportEdit: NextPage<Props> = ({
       })
       .sort((a, b) => a.work_date! - b.work_date!);
     if (formatArr.length === 0) {
-      await CustomConfirm('記録は、少なくとも一行は作成ください。', 'Caution');
+      await CustomConfirm(
+        '記録は、少なくとも一行は作成ください。',
+        'Caution'
+      );
       setIsLoading(false);
       return;
     }
@@ -169,7 +180,11 @@ export const AccompanyingSupportEdit: NextPage<Props> = ({
         const formatStartTime = start_time.toString();
         const formatEndTime = end_time.toString();
         return contentIndex === index
-          ? { ...content, start_time: formatStartTime, end_time: formatEndTime }
+          ? {
+              ...content,
+              start_time: formatStartTime,
+              end_time: formatEndTime,
+            }
           : content;
       }
     );
@@ -295,7 +310,9 @@ export const AccompanyingSupportEdit: NextPage<Props> = ({
               <Grid key={index}>
                 <Grid.Col span={1}>
                   <TextInput
-                    value={form.values.content_arr[index].work_date || ''}
+                    value={
+                      form.values.content_arr[index].work_date || ''
+                    }
                     variant="filled"
                     maxLength={2}
                     onChange={(e) => handleChangeDate(e, index)}
@@ -317,7 +334,9 @@ export const AccompanyingSupportEdit: NextPage<Props> = ({
                 </Grid.Col>
                 <Grid.Col span={3}>
                   <TextInput
-                    value={form.values.content_arr[index].service_content}
+                    value={
+                      form.values.content_arr[index].service_content
+                    }
                     variant="filled"
                     disabled
                     sx={{ '& input:disabled': { color: 'black' } }}
@@ -327,15 +346,21 @@ export const AccompanyingSupportEdit: NextPage<Props> = ({
                   <TimeRangeInput
                     icon={<IconClock size={16} />}
                     variant="filled"
-                    onChange={(e) => handleChangeTime(e[0], e[1], index)}
+                    onChange={(e) =>
+                      handleChangeTime(e[0], e[1], index)
+                    }
                     value={
                       form.values.content_arr[index].start_time &&
                       form.values.content_arr[index].end_time
                         ? [
                             new Date(
-                              form.values.content_arr[index].start_time!
+                              form.values.content_arr[
+                                index
+                              ].start_time!
                             ),
-                            new Date(form.values.content_arr[index].end_time!),
+                            new Date(
+                              form.values.content_arr[index].end_time!
+                            ),
                           ]
                         : [null, null]
                     }
@@ -345,8 +370,12 @@ export const AccompanyingSupportEdit: NextPage<Props> = ({
                   <TextInput
                     sx={{ '& input:disabled': { color: 'black' } }}
                     value={calcWorkTime(
-                      new Date(form.values.content_arr[index].start_time!),
-                      new Date(form.values.content_arr[index].end_time!)
+                      new Date(
+                        form.values.content_arr[index].start_time!
+                      ),
+                      new Date(
+                        form.values.content_arr[index].end_time!
+                      )
                     )}
                     variant="filled"
                     disabled

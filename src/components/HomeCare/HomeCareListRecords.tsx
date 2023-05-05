@@ -5,13 +5,11 @@ import { ActionIcon, Group } from '@mantine/core';
 import Link from 'next/link';
 import { getPath } from '@/utils/const/getPath';
 import { IconEdit, IconTrash } from '@tabler/icons';
-import { ReturnHomeCareSupport } from '@/ducks/home-care-support/slice';
+import { ReturnHomeCare } from '@/ducks/home-care/slice';
 
 type Props = {
   handleDelete: (id: string) => Promise<void>;
-  handlePDFDownload: (
-    homeCare: ReturnHomeCareSupport
-  ) => Promise<void>;
+  handlePDFDownload: (homeCare: ReturnHomeCare) => Promise<void>;
 };
 
 export const HomeCareListRecords = ({
@@ -26,7 +24,7 @@ export const HomeCareListRecords = ({
       accessor: 'created_at',
       title: '作成日時',
       width: 150,
-      render: (homeCare: ReturnHomeCareSupport) =>
+      render: (homeCare: ReturnHomeCare) =>
         homeCare.created_at
           ? convertSupabaseTime(homeCare.created_at)
           : '',
@@ -35,7 +33,7 @@ export const HomeCareListRecords = ({
       accessor: 'download',
       title: 'ダウンロード',
       width: 150,
-      render: (homeCare: ReturnHomeCareSupport) => (
+      render: (homeCare: ReturnHomeCare) => (
         <CustomButton
           color="cyan"
           variant="light"
@@ -49,9 +47,9 @@ export const HomeCareListRecords = ({
       accessor: 'actions',
       title: 'アクション',
       width: 90,
-      render: (homeCare: ReturnHomeCareSupport) => (
+      render: (homeCare: ReturnHomeCare) => (
         <Group spacing={4} position="right" noWrap>
-          <Link href={getPath('HOME_CARE_SUPPORT_EDIT', homeCare.id)}>
+          <Link href={getPath('HOME_CARE_EDIT', homeCare.id)}>
             <a>
               <ActionIcon color="blue">
                 <IconEdit size={20} />
@@ -71,7 +69,7 @@ export const HomeCareListRecords = ({
       accessor: 'updatedAt',
       title: '更新日時',
       width: 150,
-      render: (homeCare: ReturnHomeCareSupport) =>
+      render: (homeCare: ReturnHomeCare) =>
         homeCare.updated_at
           ? convertSupabaseTime(homeCare.updated_at)
           : '',

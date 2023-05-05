@@ -128,17 +128,17 @@ export const ITEMS = [
     Icon: Disabled2,
   },
   {
-    href: getPath('BEHAVIOR_SUPPPORT'),
+    href: getPath('BEHAVIOR'),
     label: '行動援護',
     Icon: Car,
   },
   {
-    href: getPath('HOME_CARE_SUPPORT'),
+    href: getPath('HOME_CARE'),
     label: '居宅介護',
     Icon: HomeHeart,
   },
   {
-    href: getPath('MOBILITY_SUPPORT'),
+    href: getPath('MOBILITY'),
     label: '移動支援',
     Icon: Walk,
   },

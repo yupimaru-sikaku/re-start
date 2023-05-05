@@ -1,24 +1,27 @@
 import { getDb, supabase } from '@/libs/supabase/supabase';
-import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
+import {
+  createApi,
+  fakeBaseQuery,
+} from '@reduxjs/toolkit/query/react';
 import { PostgrestError } from '@supabase/supabase-js';
 import {
-  DeleteHomeCareSupportResult,
-  ReturnHomeCareSupport,
-  UpdateHomeCareSupportParams,
-  UpdateHomeCareSupportResult,
+  DeleteHomeCareResult,
+  ReturnHomeCare,
+  UpdateHomeCareParams,
+  UpdateHomeCareResult,
 } from './slice';
 
-export const homeCareSupportApi = createApi({
-  reducerPath: 'homeCareSupportApi',
+export const HomeCareApi = createApi({
+  reducerPath: 'HomeCareApi',
   baseQuery: fakeBaseQuery(),
-  tagTypes: ['HomeCareSupportApi'],
+  tagTypes: ['HomeCareApi'],
   endpoints: (builder) => ({
     /**
      * GET/全実績記録票のリストを取得
      * @param {}
      * @return {ReturnUser[]}
      */
-    getHomeCareSupportList: builder.query<ReturnHomeCareSupport[], void>({
+    getHomeCareList: builder.query<ReturnHomeCare[], void>({
       queryFn: async () => {
         const { data, error } = await supabase
           .from(getDb('HOME_CARE'))
@@ -26,7 +29,7 @@ export const homeCareSupportApi = createApi({
           .eq('is_display', true)
           .order('updated_at', { ascending: false });
         return data
-          ? { data: data as ReturnHomeCareSupport[] }
+          ? { data: data as ReturnHomeCare[] }
           : { error: error as PostgrestError };
       },
     }),
@@ -35,8 +38,8 @@ export const homeCareSupportApi = createApi({
      * @param {string} corporateId
      * @return {ReturnUser[]}
      */
-    getHomeCareSupportListByCoroprateId: builder.query<
-      ReturnHomeCareSupport[],
+    getHomeCareListByCoroprateId: builder.query<
+      ReturnHomeCare[],
       string
     >({
       queryFn: async (corporateId: string) => {
@@ -47,7 +50,7 @@ export const homeCareSupportApi = createApi({
           .eq('corporate_id', corporateId)
           .order('updated_at', { ascending: false });
         return data
-          ? { data: data as ReturnHomeCareSupport[] }
+          ? { data: data as ReturnHomeCare[] }
           : { error: error as PostgrestError };
       },
     }),
@@ -56,46 +59,45 @@ export const homeCareSupportApi = createApi({
      * @param {string} loginUserId
      * @return {ReturnUser[]}
      */
-    getHomeCareSupportListByLoginId: builder.query<
-      ReturnHomeCareSupport[],
-      string
-    >({
-      queryFn: async (loginUserId: string) => {
-        const { data, error } = await supabase
-          .from(getDb('HOME_CARE'))
-          .select('*')
-          .eq('is_display', true)
-          .eq('user_id', loginUserId)
-          .order('updated_at', { ascending: false });
-        return data
-          ? { data: data as ReturnHomeCareSupport[] }
-          : { error: error as PostgrestError };
-      },
-    }),
+    getHomeCareListByLoginId: builder.query<ReturnHomeCare[], string>(
+      {
+        queryFn: async (loginUserId: string) => {
+          const { data, error } = await supabase
+            .from(getDb('HOME_CARE'))
+            .select('*')
+            .eq('is_display', true)
+            .eq('user_id', loginUserId)
+            .order('updated_at', { ascending: false });
+          return data
+            ? { data: data as ReturnHomeCare[] }
+            : { error: error as PostgrestError };
+        },
+      }
+    ),
     /**
      * GET/実績記録票の情報をidから取得
      * @param {string} id
-     * @return {ReturnHomeCareSupport}
+     * @return {ReturnHomeCare}
      */
-    getHomeCareSupportById: builder.query<ReturnHomeCareSupport, string>({
+    getHomeCareById: builder.query<ReturnHomeCare, string>({
       queryFn: async (id: string) => {
         const { data, error } = await supabase
           .from(getDb('HOME_CARE'))
           .select('*')
           .eq('id', id);
-        return data ? { data: data[0] as ReturnHomeCareSupport } : { error };
+        return data ? { data: data[0] as ReturnHomeCare } : { error };
       },
     }),
     /**
      * PUT/実績記録票の情報を更新
-     * @param {UpdateHomeCareSupportParams[]} params
-     * @return {UpdateHomeCareSupportResult[]}
+     * @param {UpdateHomeCareParams[]} params
+     * @return {UpdateHomeCareResult[]}
      */
-    updateHomeCareSupport: builder.mutation<
-      UpdateHomeCareSupportResult,
-      UpdateHomeCareSupportParams
+    updateHomeCare: builder.mutation<
+      UpdateHomeCareResult,
+      UpdateHomeCareParams
     >({
-      queryFn: async (params: UpdateHomeCareSupportParams) => {
+      queryFn: async (params: UpdateHomeCareParams) => {
         const { error } = await supabase
           .from(getDb('HOME_CARE'))
           .update({})
@@ -106,12 +108,9 @@ export const homeCareSupportApi = createApi({
     /**
      * PUT/ユーザを論理削除
      * @param {string} id
-     * @return {DeleteHomeCareSupportResult}
+     * @return {DeleteHomeCareResult}
      */
-    deleteHomeCareSupport: builder.mutation<
-      DeleteHomeCareSupportResult,
-      string
-    >({
+    deleteHomeCare: builder.mutation<DeleteHomeCareResult, string>({
       queryFn: async (id: string) => {
         const { error } = await supabase
           .from(getDb('HOME_CARE'))
@@ -124,10 +123,10 @@ export const homeCareSupportApi = createApi({
 });
 
 export const {
-  useGetHomeCareSupportListQuery,
-  useGetHomeCareSupportListByCoroprateIdQuery,
-  useGetHomeCareSupportListByLoginIdQuery,
-  useGetHomeCareSupportByIdQuery,
-  useUpdateHomeCareSupportMutation,
-  useDeleteHomeCareSupportMutation,
-} = homeCareSupportApi;
+  useGetHomeCareListQuery,
+  useGetHomeCareListByCoroprateIdQuery,
+  useGetHomeCareListByLoginIdQuery,
+  useGetHomeCareByIdQuery,
+  useUpdateHomeCareMutation,
+  useDeleteHomeCareMutation,
+} = HomeCareApi;

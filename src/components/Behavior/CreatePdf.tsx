@@ -1,7 +1,7 @@
 // createPdf.js
 import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
-import { ReturnHomeCareSupport } from '@/ducks/home-care-support/slice';
+import { ReturnHomeCare } from '@/ducks/home-care/slice';
 import {
   calcEachWorkTime,
   convertTime,
@@ -19,17 +19,14 @@ export const CreatePdf = async (
   // const notoSansBytes = await fetch('/NotoSansJP-Regular.otf').then(
   //   (res) => res.arrayBuffer()
   // );
-
   // const pdfDoc = await PDFDocument.load(existingPdfBytes);
   // pdfDoc.registerFontkit(fontkit); // Register fontkit instance
   // const pages = pdfDoc.getPages();
   // const firstPage = pages[0];
-
   // const notoSansFont = await pdfDoc.embedFont(notoSansBytes);
   // const textSize = 24;
   // const text = `名前: ${name}`;
   // const textWidth = notoSansFont.widthOfTextAtSize(text, textSize);
-
   // const fontSize = 10;
   // // 年、月、名前
   // const convertYear = behavior.year! - 2018;
@@ -83,7 +80,6 @@ export const CreatePdf = async (
   //     color: rgb(0, 0, 0),
   //   });
   // });
-
   // // 受給者証番号
   // const numberArr = behavior.identification.split('');
   // numberArr.map((value, index) => {
@@ -95,7 +91,6 @@ export const CreatePdf = async (
   //     color: rgb(0, 0, 0),
   //   });
   // });
-
   // // 日付毎の記録
   // const contentArr = behavior.content_arr.map((content) => {
   //   return {
@@ -281,7 +276,6 @@ export const CreatePdf = async (
   //   font: notoSansFont,
   //   color: rgb(0, 0, 0),
   // });
-
   // 位置計算用
   // const arr = Array.from({ length: 1000 }, (_, i) => ({
   //   value: (i + 1) * 10,
@@ -306,7 +300,6 @@ export const CreatePdf = async (
   //     color: rgb(0, 0, 0),
   //   });
   // });
-
   // const pdfBytes = await pdfDoc.save();
   // return pdfBytes;
 };

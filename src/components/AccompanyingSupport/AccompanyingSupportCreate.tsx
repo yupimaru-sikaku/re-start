@@ -7,7 +7,7 @@ import {
   validateMonth,
   validateName,
   validateYear,
-} from '@/utils/validate/home-care-support';
+} from '@/utils/validate/home-care';
 import {
   Divider,
   Grid,
@@ -38,7 +38,9 @@ type Props = {
   userList: User[];
 };
 
-export const AccompanyingSupportCreate: NextPage<Props> = ({ userList }) => {
+export const AccompanyingSupportCreate: NextPage<Props> = ({
+  userList,
+}) => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -72,12 +74,17 @@ export const AccompanyingSupportCreate: NextPage<Props> = ({ userList }) => {
       },
     },
   });
-  const man = userList.filter((user) => user.name === form.values.name)[0];
+  const man = userList.filter(
+    (user) => user.name === form.values.name
+  )[0];
   const dokoAmount = form.values.content_arr.reduce(
     (sum, content) =>
       sum +
       Number(
-        calcWorkTime(new Date(content.start_time!), new Date(content.end_time!))
+        calcWorkTime(
+          new Date(content.start_time!),
+          new Date(content.end_time!)
+        )
       ),
     0
   );
@@ -104,21 +111,26 @@ export const AccompanyingSupportCreate: NextPage<Props> = ({ userList }) => {
       })
       .sort((a, b) => a.work_date! - b.work_date!);
     if (formatArr.length === 0) {
-      await CustomConfirm('記録は、少なくとも一行は作成ください。', 'Caution');
+      await CustomConfirm(
+        '記録は、少なくとも一行は作成ください。',
+        'Caution'
+      );
       return;
     }
     try {
-      const { error } = await supabase.from(getDb('ACCOMPANYING')).insert({
-        year: form.values.year,
-        month: form.values.month,
-        name: form.values.name,
-        identification: man.identification,
-        amount_title: '同行（初任者等）',
-        amount_value: man.doko_amount,
-        content_arr: formatArr,
-        status: 0,
-        user_id: loginProviderInfo.id,
-      });
+      const { error } = await supabase
+        .from(getDb('ACCOMPANYING'))
+        .insert({
+          year: form.values.year,
+          month: form.values.month,
+          name: form.values.name,
+          identification: man.identification,
+          amount_title: '同行（初任者等）',
+          amount_value: man.doko_amount,
+          content_arr: formatArr,
+          status: 0,
+          user_id: loginProviderInfo.id,
+        });
       showNotification({
         icon: <IconCheckbox />,
         message: '登録に成功しました！',
@@ -166,7 +178,11 @@ export const AccompanyingSupportCreate: NextPage<Props> = ({ userList }) => {
         const formatStartTime = start_time.toString();
         const formatEndTime = end_time.toString();
         return contentIndex === index
-          ? { ...content, start_time: formatStartTime, end_time: formatEndTime }
+          ? {
+              ...content,
+              start_time: formatStartTime,
+              end_time: formatEndTime,
+            }
           : content;
       }
     );
@@ -297,7 +313,9 @@ export const AccompanyingSupportCreate: NextPage<Props> = ({ userList }) => {
                 </Grid.Col>
                 <Grid.Col span={3}>
                   <TextInput
-                    value={form.values.content_arr[index].service_content}
+                    value={
+                      form.values.content_arr[index].service_content
+                    }
                     variant="filled"
                     disabled
                     sx={{ '& input:disabled': { color: 'black' } }}
@@ -307,7 +325,9 @@ export const AccompanyingSupportCreate: NextPage<Props> = ({ userList }) => {
                   <TimeRangeInput
                     icon={<IconClock size={16} />}
                     variant="filled"
-                    onChange={(e) => handleChangeTime(e[0], e[1], index)}
+                    onChange={(e) =>
+                      handleChangeTime(e[0], e[1], index)
+                    }
                   />
                 </Grid.Col>
                 <Grid.Col span={1}>
@@ -318,9 +338,13 @@ export const AccompanyingSupportCreate: NextPage<Props> = ({ userList }) => {
                       form.values.content_arr[index].end_time
                         ? calcWorkTime(
                             new Date(
-                              form.values.content_arr[index].start_time!
+                              form.values.content_arr[
+                                index
+                              ].start_time!
                             ),
-                            new Date(form.values.content_arr[index].end_time!)
+                            new Date(
+                              form.values.content_arr[index].end_time!
+                            )
                           )
                         : undefined
                     }
