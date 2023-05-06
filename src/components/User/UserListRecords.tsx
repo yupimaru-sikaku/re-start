@@ -127,6 +127,28 @@ export const UserListRecords = ({ handleDelete }: Props) => {
       ),
     },
     {
+      accessor: 'city',
+      title: (
+        <>
+          市区
+          <br />
+          町村
+        </>
+      ),
+      width: 50,
+    },
+    {
+      accessor: 'disability_type',
+      title: (
+        <>
+          障害
+          <br />
+          種別
+        </>
+      ),
+      width: 50,
+    },
+    {
       accessor: 'actions',
       title: 'アクション',
       width: 90,

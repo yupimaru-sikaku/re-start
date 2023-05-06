@@ -1,7 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DataTable } from 'mantine-datatable';
 import { NextPage } from 'next';
-import { PAGE_SIZE } from '@/utils';
 import {
   useDeleteStaffMutation,
   useGetStaffListQuery,
@@ -14,7 +13,7 @@ export const StaffList: NextPage = () => {
   const [page, setPage] = useState(1);
   const {
     data: staffList,
-    isLoading: getStaffListLoading,
+    isLoading: staffListLoading,
     refetch,
   } = useGetStaffListQuery();
   const [deleteStaff] = useDeleteStaffMutation();
@@ -31,7 +30,7 @@ export const StaffList: NextPage = () => {
 
   return (
     <DataTable
-      fetching={getStaffListLoading}
+      fetching={staffListLoading}
       striped
       highlightOnHover
       withBorder

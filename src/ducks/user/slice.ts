@@ -2,7 +2,8 @@ import { PostgrestError } from '@supabase/supabase-js';
 
 export type User = {
   id: string;
-  user_id: string; // 登録したログインユーザID
+  login_id: string; // 登録したログインユーザID
+  corporate_id: string; // 登録した法人ID
   name: string; // 利用者の名前
   identification: string; // 受給者証番号
   gender: '男性' | '女性';
@@ -22,6 +23,8 @@ export type User = {
   with_tsuin_amount: number; // 通院等介助（伴う）の契約支給量
   is_tsuin: boolean; // 通院等介助（伴わない）を受けているか
   tsuin_amount: number; // 通院等介助（伴わない）の契約支給量
+  city: string; // サービスを受けている市区町村
+  disability_type: string; // 障害種別
   is_display: boolean; // 表示するか
   created_at: string; // 作成日時
   updated_at: string; // 更新日時
@@ -29,7 +32,7 @@ export type User = {
 
 export type CreateUserParams = Omit<
   User,
-  'id' | 'is_display' | 'created_at' | 'updated_at'
+  'id' | 'created_at' | 'updated_at'
 >;
 export type CreateUserResult = {
   error: PostgrestError | null;
@@ -37,7 +40,7 @@ export type CreateUserResult = {
 
 export type UpdateUserParams = Omit<
   User,
-  'is_display' | 'created_at' | 'updated_at'
+  'created_at' | 'updated_at'
 >;
 export type UpdateUserResult = {
   error: PostgrestError | null;
@@ -47,6 +50,33 @@ export type ReturnUser = User;
 
 export type DeleteUserResult = {
   error: PostgrestError | null;
+};
+
+export const createInitialState: CreateUserParams = {
+  login_id: '',
+  corporate_id: '',
+  name: '',
+  identification: '',
+  gender: '男性' as '男性' | '女性',
+  is_gender_specification: false,
+  gender_specification: '' as '' | '男性' | '女性' | '無し',
+  is_ido: false,
+  ido_amount: 0,
+  is_kodo: false,
+  kodo_amount: 0,
+  is_doko: false,
+  doko_amount: 0,
+  is_kazi: false,
+  kazi_amount: 0,
+  is_shintai: false,
+  shintai_amount: 0,
+  is_with_tsuin: false,
+  with_tsuin_amount: 0,
+  is_tsuin: false,
+  tsuin_amount: 0,
+  city: '',
+  disability_type: '',
+  is_display: true,
 };
 
 export const initialState = {

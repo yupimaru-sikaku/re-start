@@ -2,6 +2,7 @@ import { CustomButton } from '@/components/Common/CustomButton';
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
 import { StaffList } from '@/components/Staff/StaffList';
+import { useAuth } from '@/hooks/auth/useAuth';
 import { getPath } from '@/utils/const/getPath';
 import { Group, Space } from '@mantine/core';
 import { NextPage } from 'next';
@@ -9,6 +10,7 @@ import Link from 'next/link';
 import React from 'react';
 
 const StaffPage: NextPage = () => {
+  useAuth();
   return (
     <DashboardLayout title="スタッフ情報">
       <PageContainer title="スタッフ情報" fluid>

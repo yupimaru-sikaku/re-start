@@ -1,14 +1,13 @@
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
-import { StaffEditForm } from '@/components/Staff/StaffEditForm';
-import { Space } from '@mantine/core';
+import { StaffRegisterForm } from '@/components/Staff/StaffRegisterForm';
 import React from 'react';
 
 const StaffEditPage = () => {
   return (
     <DashboardLayout title="スタッフ情報編集">
       <PageContainer title="情報編集" fluid>
-        <StaffEditForm />
+        <StaffRegisterForm type="edit" />
       </PageContainer>
     </DashboardLayout>
   );

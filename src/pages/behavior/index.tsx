@@ -6,8 +6,10 @@ import { getPath } from '@/utils/const/getPath';
 import { Space } from '@mantine/core';
 import Link from 'next/link';
 import React from 'react';
+import { useAuth } from '@/hooks/auth/useAuth';
 
 const BehaviorPage = () => {
+  useAuth();
   return (
     <DashboardLayout title="行動援護">
       <PageContainer title="行動援護" fluid>

@@ -3,6 +3,7 @@ import { CustomButton } from '@/components/Common/CustomButton';
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
 import { ReturnAccompany } from '@/ducks/accompany/slice';
+import { useAuth } from '@/hooks/auth/useAuth';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { getPath } from '@/utils/const/getPath';
 import { Space } from '@mantine/core';
@@ -15,6 +16,7 @@ type Props = {
 };
 
 const AccompanyPage: NextPage<Props> = ({ accompanyList }) => {
+  useAuth();
   return (
     <DashboardLayout title="同行援護">
       <PageContainer title="同行援護" fluid>

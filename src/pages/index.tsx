@@ -2,21 +2,12 @@ import { Paper, SimpleGrid } from '@mantine/core';
 import type { CustomNextPage } from 'next';
 import { DashboardLayout } from 'src/components/Layout/DashboardLayout/DashboardLayout';
 import Link from 'next/link';
-import { getPath } from '@/utils/const/getPath';
 import { PageContainer } from '@/components/PageContainer';
-import { User } from 'tabler-icons-react';
-import {
-  IconFriends,
-  IconToolsKitchen2,
-  IconWalk,
-} from '@tabler/icons';
-import { useGetProviderByIdQuery } from '@/ducks/provider/query';
-import { useSelector } from '@/ducks/store';
-import { useEffect } from 'react';
-import { skipToken } from '@reduxjs/toolkit/dist/query';
 import { ITEMS } from '@/components/Layout/DashboardLayout/SideNav';
+import { useAuth } from '@/hooks/auth/useAuth';
 
 const Index: CustomNextPage = () => {
+  useAuth();
   return (
     <DashboardLayout title="トップページ">
       <PageContainer title="ホーム" fluid>

@@ -7,7 +7,7 @@ const StaffRegisterPage = () => {
   return (
     <DashboardLayout title="スタッフ情報登録">
       <PageContainer title="スタッフ情報登録" fluid>
-        <StaffRegisterForm />
+        <StaffRegisterForm type="create" />
       </PageContainer>
     </DashboardLayout>
   );

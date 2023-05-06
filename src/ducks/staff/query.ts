@@ -55,7 +55,7 @@ export const staffApi = createApi({
     createStaff: builder.mutation<CreateStaffResult, CreateStaffParams>({
       queryFn: async (params: CreateStaffParams) => {
         const { error } = await supabase.from(getDb('STAFF')).insert({
-          user_id: params.user_id,
+          login_id: params.login_id,
           name: params.name,
           furigana: params.furigana,
           gender: params.gender,
@@ -90,7 +90,7 @@ export const staffApi = createApi({
             is_doko_apply: params.is_doko_apply,
             is_zitsumusya: params.is_zitsumusya,
             is_kaigo: params.is_kaigo,
-            user_id: params.user_id,
+            login_id: params.login_id,
           })
           .eq('id', params.id);
         return { error };

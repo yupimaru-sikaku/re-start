@@ -1,5 +1,6 @@
 import {
   Box,
+  LoadingOverlay,
   Paper,
   SegmentedControl,
   SimpleGrid,
@@ -9,14 +10,19 @@ import {
 } from '@mantine/core';
 import { useFocusTrap } from '@mantine/hooks';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { useForm } from '@mantine/form';
 import { CustomButton } from '../Common/CustomButton';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
-import { CreateStaffResult, initialState } from '@/ducks/staff/slice';
+import {
+  CreateStaffParams,
+  CreateStaffResult,
+  UpdateStaffParams,
+  createInitialState,
+} from '@/ducks/staff/slice';
 import {
   validateFurigana,
   validateName,
@@ -24,24 +30,39 @@ import {
 } from '@/utils/validate/staff';
 import {
   useCreateStaffMutation,
-  useGetStaffListQuery,
+  useGetStaffByIdQuery,
+  useUpdateStaffMutation,
 } from '@/ducks/staff/query';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { useGetQualificationList } from '@/hooks/staff/useGetQualificationList';
 import { useSelector } from '@/ducks/store';
 import { RootState } from '@/ducks/root-reducer';
+import { NextPage } from 'next';
+import { skipToken } from '@reduxjs/toolkit/dist/query';
+import { UpdateStaffResult } from '@/ducks/staff/slice';
 
-export const StaffRegisterForm = () => {
+type Props = {
+  type: 'create' | 'edit';
+};
+
+export const StaffRegisterForm: NextPage<Props> = ({ type }) => {
+  const TITLE = type === 'create' ? '登録' : '更新';
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
+  const staffId = router.query.id as string;
   const loginProviderInfo = useSelector(
     (state: RootState) => state.provider.loginProviderInfo
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const {
+    data: staffData,
+    isLoading: staffDataLoading,
+    refetch: staffDataRefetch,
+  } = useGetStaffByIdQuery(staffId || skipToken);
   const [createStaff] = useCreateStaffMutation();
-  const { refetch } = useGetStaffListQuery();
+  const [updateStaff] = useUpdateStaffMutation();
   const form = useForm({
-    initialValues: initialState,
+    initialValues: createInitialState,
     validate: {
       name: (value) => {
         const { error, text } = validateName(value);
@@ -57,26 +78,43 @@ export const StaffRegisterForm = () => {
       },
     },
   });
+  useEffect(() => {
+    if (!staffData) return;
+    staffDataRefetch();
+    form.setValues(staffData);
+  }, [staffData]);
   const qualificationList = useGetQualificationList(form);
 
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      if (!loginProviderInfo.id) return;
-      const params = {
-        ...form.values,
-        user_id: loginProviderInfo.id,
-      };
-      const { error } = (await createStaff(
-        params
-      )) as CreateStaffResult;
-
-      if (error) {
-        throw new Error(error.message);
+      if (type === 'create') {
+        const params: CreateStaffParams = {
+          ...form.values,
+          login_id: loginProviderInfo.id,
+        };
+        const { error } = (await createStaff(
+          params
+        )) as CreateStaffResult;
+        if (error) {
+          throw new Error(error.message);
+        }
+      } else {
+        const params: UpdateStaffParams = {
+          ...form.values,
+          id: staffId,
+          login_id: loginProviderInfo.id,
+        };
+        const { error } = (await updateStaff(
+          params
+        )) as UpdateStaffResult;
+        if (error) {
+          throw new Error(error.message);
+        }
       }
     } catch (error) {
       await CustomConfirm(
-        `スタッフの情報登録に失敗しました。${error}`,
+        `スタッフの${TITLE}に失敗しました。${error}`,
         'Caution'
       );
       setIsLoading(false);
@@ -84,15 +122,19 @@ export const StaffRegisterForm = () => {
     }
     showNotification({
       icon: <IconCheckbox />,
-      message: '登録に成功しました！',
+      message: `${TITLE}に成功しました！`,
     });
-    refetch();
     router.push(getPath('STAFF'));
     setIsLoading(false);
   };
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
+    <form
+      onSubmit={form.onSubmit(handleSubmit)}
+      ref={focusTrapRef}
+      className="relative"
+    >
+      <LoadingOverlay visible={staffDataLoading} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomTextInput
           idText="name"
@@ -161,6 +203,7 @@ export const StaffRegisterForm = () => {
                 size="md"
                 onLabel="ON"
                 offLabel="OFF"
+                checked={qualification.formValue}
                 {...form.getInputProps(qualification.formTitle)}
               />
             </Box>

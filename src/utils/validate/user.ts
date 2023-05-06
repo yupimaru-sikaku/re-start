@@ -39,11 +39,39 @@ export const validateIdentification = (value: string): ReturnType => {
   };
 };
 
-export const validateGenderSpecification = (value: string): ReturnType => {
+export const validateGenderSpecification = (
+  value: string
+): ReturnType => {
   if (value === '') {
     return {
       error: true,
       text: '性別を指定してください',
+    };
+  }
+  return {
+    error: false,
+    text: '',
+  };
+};
+
+export const validateCity = (value: string): ReturnType => {
+  if (value === '') {
+    return {
+      error: true,
+      text: '市区町村を指定してください',
+    };
+  }
+  return {
+    error: false,
+    text: '',
+  };
+};
+
+export const validateDisabilityType = (value: string): ReturnType => {
+  if (value === '') {
+    return {
+      error: true,
+      text: 'サービス種別を指定してください',
     };
   }
   return {

@@ -22,11 +22,12 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { behaviorApi } from './behavior/query';
+import { mobilityApi } from './mobility/query';
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['provider', 'staff', 'user', 'HomeCare', 'mobility'],
+  whitelist: ['provider', 'staff', 'user', 'homeCare', 'mobility'],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
@@ -50,7 +51,8 @@ export const store = configureStore({
       staffApi.middleware,
       userApi.middleware,
       HomeCareApi.middleware,
-      behaviorApi.middleware
+      behaviorApi.middleware,
+      mobilityApi.middleware
     ),
 });
 

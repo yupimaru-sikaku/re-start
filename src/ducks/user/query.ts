@@ -1,5 +1,8 @@
 import { getDb, supabase } from '@/libs/supabase/supabase';
-import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
+import {
+  createApi,
+  fakeBaseQuery,
+} from '@reduxjs/toolkit/query/react';
 import { PostgrestError } from '@supabase/supabase-js';
 import {
   CreateUserParams,
@@ -70,17 +73,17 @@ export const userApi = createApi({
     }),
     /**
      * GET/ログインユーザに属する全利用者のリストを取得
-     * @param {string} loginUserId
+     * @param {string} loginId
      * @return {ReturnUser[]}
      */
     getUserListByLoginId: builder.query<ReturnUser[], string>({
-      queryFn: async (loginUserId: string) => {
-        if (!loginUserId) return { data: [] };
+      queryFn: async (loginId: string) => {
+        if (!loginId) return { data: [] };
         const { data, error } = await supabase
           .from(getDb('USER'))
           .select('*')
           .eq('is_display', true)
-          .eq('user_id', loginUserId)
+          .eq('login_id', loginId)
           .order('updated_at', { ascending: false });
         return data
           ? { data: data as ReturnUser[] }
@@ -109,7 +112,8 @@ export const userApi = createApi({
     createUser: builder.mutation<CreateUserResult, CreateUserParams>({
       queryFn: async (params: CreateUserParams) => {
         const { error } = await supabase.from(getDb('USER')).insert({
-          user_id: params.user_id,
+          login_id: params.login_id,
+          corporate_id: params.corporate_id,
           name: params.name,
           identification: params.identification,
           gender: params.gender,
@@ -129,6 +133,8 @@ export const userApi = createApi({
           with_tsuin_amount: params.with_tsuin_amount,
           is_tsuin: params.is_tsuin,
           tsuin_amount: params.tsuin_amount,
+          city: params.city,
+          disability_type: params.disability_type,
         });
         return { error };
       },
@@ -143,6 +149,8 @@ export const userApi = createApi({
         const { error } = await supabase
           .from(getDb('USER'))
           .update({
+            login_id: params.login_id,
+            corporate_id: params.corporate_id,
             name: params.name,
             identification: params.identification,
             gender: params.gender,
@@ -162,6 +170,8 @@ export const userApi = createApi({
             with_tsuin_amount: params.with_tsuin_amount,
             is_tsuin: params.is_tsuin,
             tsuin_amount: params.tsuin_amount,
+            city: params.city,
+            disability_type: params.disability_type,
           })
           .eq('id', params.id);
         return { error };

@@ -7,7 +7,7 @@ const UserRegisterPage = () => {
   return (
     <DashboardLayout title="利用者情報登録">
       <PageContainer title="利用者情報登録" fluid>
-        <UserRegisterForm />
+        <UserRegisterForm type="create" />
       </PageContainer>
     </DashboardLayout>
   );
