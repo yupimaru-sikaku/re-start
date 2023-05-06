@@ -64,7 +64,9 @@ export const SignIn = () => {
       //{session: {...}, user: {...}}
       // user: {id}
       if (error) {
-        throw new Error('Eメールアドレスかパスワードが間違っています');
+        throw new Error(
+          'Eメールアドレスかパスワードが間違っています'
+        );
       }
       // const loginProviderParams = {
       //   id: data.user.id,
@@ -102,7 +104,7 @@ export const SignIn = () => {
         </Link>
       </Text>
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
-        <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+        <Paper withBorder shadow="md" p={30} radius="md">
           <CustomTextInput
             idText="email"
             label="メールアドレス"
@@ -122,7 +124,9 @@ export const SignIn = () => {
           <Group position="apart" mt="md">
             <Checkbox label="ログイン状態を保持" />
             <Link href={getPath('FORGOT_PASSWORD')} passHref>
-              <Anchor<'a'> size="sm">パスワードをお忘れですか？</Anchor>
+              <Anchor<'a'> size="sm">
+                パスワードをお忘れですか？
+              </Anchor>
             </Link>
           </Group>
           <Space h="xs" />

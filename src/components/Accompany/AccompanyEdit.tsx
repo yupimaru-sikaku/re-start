@@ -31,7 +31,10 @@ import { CustomButton } from '../Common/CustomButton';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { CustomStepper } from '../Common/CustomStepper';
 import { CustomTextInput } from '../Common/CustomTextInput';
-import { ReturnAccompany, initialState } from '@/ducks/accompany/slice';
+import {
+  ReturnAccompany,
+  initialState,
+} from '@/ducks/accompany/slice';
 
 type Props = {
   userData: ReturnAccompany;
@@ -207,11 +210,11 @@ export const AccompanyEdit: NextPage<Props> = ({
 
   return (
     <Stack>
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+      <Paper withBorder shadow="md" p={30} radius="md">
         <CustomStepper />
       </Paper>
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
-        <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+        <Paper withBorder shadow="md" p={30} radius="md">
           <SimpleGrid cols={4}>
             <CustomTextInput
               idText="year"

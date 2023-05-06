@@ -25,7 +25,7 @@ export const behaviorApi = createApi({
     getBehaviorList: builder.query<ReturnBehavior[], void>({
       queryFn: async (): Promise<any> => {
         const { data, error } = await supabase
-          .from(getDb('MOBILITY'))
+          .from(getDb('BEHAVIOR'))
           .select('*')
           .order('updated_at', { ascending: false });
         return { data, error };
@@ -42,7 +42,7 @@ export const behaviorApi = createApi({
     >({
       queryFn: async (corporateId: string): Promise<any> => {
         const { data, error } = await supabase
-          .from(getDb('MOBILITY'))
+          .from(getDb('BEHAVIOR'))
           .select('*')
           .eq('corporate_id', corporateId)
           .order('updated_at', { ascending: false });
@@ -58,7 +58,7 @@ export const behaviorApi = createApi({
       {
         queryFn: async (loginId: string): Promise<any> => {
           const { data, error } = await supabase
-            .from(getDb('MOBILITY'))
+            .from(getDb('BEHAVIOR'))
             .select('*')
             .eq('login_id', loginId)
             .order('updated_at', { ascending: false });
@@ -74,7 +74,7 @@ export const behaviorApi = createApi({
     getBehaviorData: builder.query<ReturnBehavior, string>({
       queryFn: async (id: string): Promise<any> => {
         const { data, error } = await supabase
-          .from(getDb('MOBILITY'))
+          .from(getDb('BEHAVIOR'))
           .select('*')
           .eq('id', id)
           .order('updated_at', { ascending: false });
@@ -92,7 +92,7 @@ export const behaviorApi = createApi({
         params: CreateBehaviorParams
       ): Promise<CreateBehaviorResult> => {
         const { error } = await supabase
-          .from(getDb('MOBILITY'))
+          .from(getDb('BEHAVIOR'))
           .insert({
             corporate_id: params.corporate_id,
             login_id: params.login_id,
@@ -116,7 +116,7 @@ export const behaviorApi = createApi({
         params: UpdateBehaviorParams
       ): Promise<UpdateBehaviorResult> => {
         const { error } = await supabase
-          .from(getDb('MOBILITY'))
+          .from(getDb('BEHAVIOR'))
           .update({
             corporate_id: params.corporate_id,
             login_id: params.login_id,
@@ -139,7 +139,7 @@ export const behaviorApi = createApi({
     deleteBehavior: builder.mutation<DeleteBehaviorResult, string>({
       queryFn: async (id: string): Promise<DeleteBehaviorResult> => {
         const { error } = await supabase
-          .from(getDb('MOBILITY'))
+          .from(getDb('BEHAVIOR'))
           .update({ is_display: false })
           .eq('id', id);
         return { error };

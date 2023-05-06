@@ -8,7 +8,6 @@ const BehaviorCreatePage = () => {
   return (
     <DashboardLayout title="記録票作成">
       <PageContainer title="実績記録票作成" fluid>
-        <Space h="md" />
         <BehaviorCreate type="create" />
       </PageContainer>
     </DashboardLayout>

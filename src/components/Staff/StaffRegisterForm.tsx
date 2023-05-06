@@ -63,8 +63,13 @@ export const StaffRegisterForm = () => {
     setIsLoading(true);
     try {
       if (!loginProviderInfo.id) return;
-      const params = { ...form.values, user_id: loginProviderInfo.id };
-      const { error } = (await createStaff(params)) as CreateStaffResult;
+      const params = {
+        ...form.values,
+        user_id: loginProviderInfo.id,
+      };
+      const { error } = (await createStaff(
+        params
+      )) as CreateStaffResult;
 
       if (error) {
         throw new Error(error.message);
@@ -88,7 +93,7 @@ export const StaffRegisterForm = () => {
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+      <Paper withBorder shadow="md" p={30} radius="md">
         <CustomTextInput
           idText="name"
           label="スタッフ名"

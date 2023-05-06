@@ -11,9 +11,9 @@ const DB = {
   STAFF_SCHEDULE: 'staff_schedules',
   PROVIDER: 'providers',
   HOME_CARE: 'home_care_records',
-  Accompany: 'Accompany_records',
+  Accompany: 'accompany_records',
   BEHAVIOR: 'behavior_records',
-  MOBILITY: 'MOBILITY_records',
+  MOBILITY: 'mobility_records',
 } as const;
 
 export const getDb = (db: keyof typeof DB) => {

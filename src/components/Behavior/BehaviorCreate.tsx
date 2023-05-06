@@ -241,7 +241,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
           icon: <IconCheckbox />,
           message: `${TITLE}に成功しました！`,
         });
-        router.push(getPath('MOBILITY'));
+        router.push(getPath('BEHAVIOR'));
       } else {
         const params: UpdateBehaviorParams = {
           ...form.values,
@@ -261,7 +261,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
           icon: <IconCheckbox />,
           message: `${TITLE}に成功しました！`,
         });
-        router.push(getPath('MOBILITY'));
+        router.push(getPath('BEHAVIOR'));
       }
     } catch (error: any) {
       await CustomConfirm(error.message, 'Caution');
@@ -272,7 +272,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
   };
   return (
     <Stack>
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+      <Paper withBorder shadow="md" p={30} radius="md">
         <CustomStepper />
       </Paper>
       <LoadingOverlay visible={getBehaviorDataLoding} />
@@ -281,7 +281,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
         ref={focusTrapRef}
         className="relative"
       >
-        <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+        <Paper withBorder shadow="md" p={30} radius="md">
           <SimpleGrid cols={6}>
             <CustomTextInput
               idText="year"

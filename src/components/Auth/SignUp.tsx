@@ -133,7 +133,7 @@ export const SignUp = () => {
       </Text>
 
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
-        <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+        <Paper withBorder shadow="md" p={30} radius="md">
           <CustomTextInput
             idText="corporate_name"
             label="法人名"
