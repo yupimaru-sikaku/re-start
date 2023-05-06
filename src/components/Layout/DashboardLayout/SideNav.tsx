@@ -123,7 +123,7 @@ export const ITEMS = [
   { href: getPath('USER'), label: '利用者情報', Icon: Friends },
   { href: getPath('STAFF'), label: 'スタッフ情報', Icon: User },
   {
-    href: getPath('ACCOMPANYING_SUPPPORT'),
+    href: getPath('Accompany'),
     label: '同行援護',
     Icon: Disabled2,
   },

@@ -14,9 +14,9 @@ const PATH = {
   STAFF_EDIT: '/staff/[id]/edit',
   STAFF_SCHEDULE: '/staff/schedule/[id]',
   // 同行援護
-  ACCOMPANYING_SUPPPORT: '/accompanying-support',
-  ACCOMPANYING_SUPPPORT_CREATE: '/accompanying-support/create',
-  ACCOMPANYING_SUPPPORT_EDIT: '/accompanying-support/[id]/edit',
+  Accompany: '/accompany',
+  Accompany_CREATE: '/accompany/create',
+  Accompany_EDIT: '/accompany/[id]/edit',
   // 行動援護
   BEHAVIOR: '/behavior',
   BEHAVIOR_CREATE: '/behavior/create',

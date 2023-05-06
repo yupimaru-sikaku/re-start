@@ -1,4 +1,3 @@
-import { initialState } from '@/ducks/accompanying-support/slice';
 import { User } from '@/ducks/user/slice';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { calcWorkTime, convertWeekItem } from '@/utils';
@@ -33,14 +32,13 @@ import { CustomStepper } from '../Common/CustomStepper';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { useSelector } from '@/ducks/store';
 import { RootState } from '@/ducks/root-reducer';
+import { initialState } from '@/ducks/accompany/slice';
 
 type Props = {
   userList: User[];
 };
 
-export const AccompanyingSupportCreate: NextPage<Props> = ({
-  userList,
-}) => {
+export const AccompanyCreate: NextPage<Props> = ({ userList }) => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -119,7 +117,7 @@ export const AccompanyingSupportCreate: NextPage<Props> = ({
     }
     try {
       const { error } = await supabase
-        .from(getDb('ACCOMPANYING'))
+        .from(getDb('Accompany'))
         .insert({
           year: form.values.year,
           month: form.values.month,
@@ -135,7 +133,7 @@ export const AccompanyingSupportCreate: NextPage<Props> = ({
         icon: <IconCheckbox />,
         message: '登録に成功しました！',
       });
-      router.push(getPath('ACCOMPANYING_SUPPPORT'));
+      router.push(getPath('Accompany'));
 
       console.log(error);
       if (error) {

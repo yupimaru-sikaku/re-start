@@ -1,7 +1,3 @@
-import {
-  initialState,
-  ReturnAccompanyingSupport,
-} from '@/ducks/accompanying-support/slice';
 import { User } from '@/ducks/user/slice';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { calcWorkTime, convertWeekItem } from '@/utils';
@@ -35,13 +31,14 @@ import { CustomButton } from '../Common/CustomButton';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { CustomStepper } from '../Common/CustomStepper';
 import { CustomTextInput } from '../Common/CustomTextInput';
+import { ReturnAccompany, initialState } from '@/ducks/accompany/slice';
 
 type Props = {
-  userData: ReturnAccompanyingSupport;
+  userData: ReturnAccompany;
   userList: User[];
 };
 
-export const AccompanyingSupportEdit: NextPage<Props> = ({
+export const AccompanyEdit: NextPage<Props> = ({
   userData,
   userList,
 }) => {
@@ -126,7 +123,7 @@ export const AccompanyingSupportEdit: NextPage<Props> = ({
     }
     try {
       const { error } = await supabase
-        .from(getDb('ACCOMPANYING'))
+        .from(getDb('Accompany'))
         .update({
           year: form.values.year,
           month: form.values.month,
@@ -137,7 +134,7 @@ export const AccompanyingSupportEdit: NextPage<Props> = ({
         icon: <IconCheckbox />,
         message: '編集に成功しました！',
       });
-      router.push(getPath('ACCOMPANYING_SUPPPORT'));
+      router.push(getPath('Accompany'));
 
       if (error) {
         console.log(error);

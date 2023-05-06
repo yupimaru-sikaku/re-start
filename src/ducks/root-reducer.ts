@@ -6,12 +6,12 @@ import { staffApi } from './staff/query';
 import { userApi } from './user/query';
 import { HomeCareApi } from './home-care/query';
 import { behaviorApi } from './behavior/query';
-import behaviorSupportSlice from './behavior/slice';
+import behaviorSlice from './behavior/slice';
 
 const rootReducer = combineReducers({
   provider: providerSlice.reducer,
   staff: staffSlice.reducer,
-  behaviorSupport: behaviorSupportSlice.reducer,
+  behavior: behaviorSlice.reducer,
   [providerApi.reducerPath]: providerApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [staffApi.reducerPath]: staffApi.reducer,

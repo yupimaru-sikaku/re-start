@@ -26,13 +26,7 @@ import { behaviorApi } from './behavior/query';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: [
-    'provider',
-    'staff',
-    'user',
-    'HomeCare',
-    'mobilitySupport',
-  ],
+  whitelist: ['provider', 'staff', 'user', 'HomeCare', 'mobility'],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

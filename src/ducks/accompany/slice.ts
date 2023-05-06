@@ -1,4 +1,4 @@
-type AccompanyingSupport = {
+type Accompany = {
   id: string;
   year: number; // 作成する西暦
   month: number; // 作成する月
@@ -19,8 +19,8 @@ type AccompanyingSupport = {
   updated_at: string; // 更新日時
 };
 
-export type CreateAccompanyingSupport = Omit<
-  AccompanyingSupport,
+export type CreateAccompany = Omit<
+  Accompany,
   | 'id'
   | 'year'
   | 'month'
@@ -41,10 +41,7 @@ export type CreateAccompanyingSupport = Omit<
   }[];
 };
 
-export type ReturnAccompanyingSupport = Omit<
-  AccompanyingSupport,
-  'content_arr'
-> & {
+export type ReturnAccompany = Omit<Accompany, 'content_arr'> & {
   content_arr: {
     work_date: number;
     service_content: string;
@@ -54,8 +51,8 @@ export type ReturnAccompanyingSupport = Omit<
   }[];
 };
 
-export type UpdateAccompanyingSupport = Omit<
-  AccompanyingSupport,
+export type UpdateAccompany = Omit<
+  Accompany,
   'content_arr' | 'created_at' | 'updated_at'
 > & {
   content_arr: {
@@ -67,7 +64,7 @@ export type UpdateAccompanyingSupport = Omit<
   }[];
 };
 
-export const initialState: CreateAccompanyingSupport = {
+export const initialState: CreateAccompany = {
   year: null,
   month: null,
   name: '',

@@ -1,8 +1,8 @@
-import { AccompanyingSupportList } from '@/components/AccompanyingSupport/AccompanyingSupportList';
+import { AccompanyList } from '@/components/Accompany/AccompanyList';
 import { CustomButton } from '@/components/Common/CustomButton';
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
-import { ReturnAccompanyingSupport } from '@/ducks/accompanying-support/slice';
+import { ReturnAccompany } from '@/ducks/accompany/slice';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { getPath } from '@/utils/const/getPath';
 import { Space } from '@mantine/core';
@@ -11,39 +11,35 @@ import Link from 'next/link';
 import React from 'react';
 
 type Props = {
-  accompanyingSupportList: ReturnAccompanyingSupport[];
+  accompanyList: ReturnAccompany[];
 };
 
-const AccompanyingSupportPage: NextPage<Props> = ({
-  accompanyingSupportList,
-}) => {
+const AccompanyPage: NextPage<Props> = ({ accompanyList }) => {
   return (
     <DashboardLayout title="同行援護">
       <PageContainer title="同行援護" fluid>
-        <Link href={getPath('ACCOMPANYING_SUPPPORT_CREATE')}>
+        <Link href={getPath('Accompany_CREATE')}>
           <a>
             <CustomButton>実績記録票を作成する</CustomButton>
           </a>
         </Link>
         <Space h="md" />
-        <AccompanyingSupportList
-          accompanyingSupportList={accompanyingSupportList}
-        />
+        <AccompanyList accompanyList={accompanyList} />
       </PageContainer>
     </DashboardLayout>
   );
 };
 
-export default AccompanyingSupportPage;
+export default AccompanyPage;
 
 export const getStaticProps = async () => {
-  const { data: accompanyingSupportList } = await supabase
-    .from(getDb('ACCOMPANYING'))
+  const { data: accompanyList } = await supabase
+    .from(getDb('Accompany'))
     .select('*')
     .order('updated_at', { ascending: false });
   return {
     props: {
-      accompanyingSupportList,
+      accompanyList,
     },
   };
 };

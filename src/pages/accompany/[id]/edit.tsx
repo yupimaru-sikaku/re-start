@@ -1,19 +1,23 @@
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
-import { ReturnAccompanyingSupport } from '@/ducks/accompanying-support/slice';
+import { ReturnAccompany } from '@/ducks/accompany/slice';
 import { User } from '@/ducks/user/slice';
 import { Space } from '@mantine/core';
 import React from 'react';
-import { GetStaticPaths, GetStaticPropsContext, NextPage } from 'next';
+import {
+  GetStaticPaths,
+  GetStaticPropsContext,
+  NextPage,
+} from 'next';
 import { getDb, supabase } from '@/libs/supabase/supabase';
-import { AccompanyingSupportEdit } from '@/components/AccompanyingSupport/AccompanyingSupportEdit';
+import { AccompanyEdit } from '@/components/Accompany/AccompanyEdit';
 
 type Props = {
-  userData: ReturnAccompanyingSupport;
+  userData: ReturnAccompany;
   userList: User[];
 };
 
-const AccompanyingSupportEditPage: NextPage<Props> = ({
+const AccompanyEditPage: NextPage<Props> = ({
   userData,
   userList,
 }) => {
@@ -21,15 +25,17 @@ const AccompanyingSupportEditPage: NextPage<Props> = ({
     <DashboardLayout title="記録票編集">
       <PageContainer title="実績記録票編集" fluid>
         <Space h="md" />
-        <AccompanyingSupportEdit userData={userData} userList={userList} />
+        <AccompanyEdit userData={userData} userList={userList} />
       </PageContainer>
     </DashboardLayout>
   );
 };
 
-export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
+export const getStaticPaths: GetStaticPaths<{
+  id: string;
+}> = async () => {
   const { data, error } = await supabase
-    .from(getDb('ACCOMPANYING'))
+    .from(getDb('Accompany'))
     .select('id');
 
   if (error || !data) {
@@ -55,7 +61,7 @@ export const getStaticProps = async (
     return { notFound: true };
   }
   const { data: userData, error } = await supabase
-    .from(getDb('ACCOMPANYING'))
+    .from(getDb('Accompany'))
     .select('*')
     .eq('id', ctx.params.id)
     .single();
@@ -73,4 +79,4 @@ export const getStaticProps = async (
   };
 };
 
-export default AccompanyingSupportEditPage;
+export default AccompanyEditPage;

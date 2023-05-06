@@ -1,4 +1,3 @@
-import { ReturnAccompanyingSupport } from '@/ducks/accompanying-support/slice';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { convertSupabaseTime, PAGE_SIZE } from '@/utils';
 import { getPath } from '@/utils/const/getPath';
@@ -14,38 +13,40 @@ import { IconCheckbox, IconEye, IconTrash } from '@tabler/icons';
 import { IconEdit } from '@tabler/icons';
 import Link from 'next/link';
 import { useGetTablePage } from '@/hooks/useGetTablePage';
+import { ReturnAccompany } from '@/ducks/accompany/slice';
 
 type Props = {
-  accompanyingSupportList: ReturnAccompanyingSupport[];
+  accompanyList: ReturnAccompany[];
 };
 
-export const AccompanyingSupportList: NextPage<Props> = ({
-  accompanyingSupportList,
-}) => {
+export const AccompanyList: NextPage<Props> = ({ accompanyList }) => {
   const router = useRouter();
   const [page, setPage] = useState(1);
-  const { records, PAGE_SIZE } = useGetTablePage(page, accompanyingSupportList);
+  const { records, PAGE_SIZE } = useGetTablePage(page, accompanyList);
 
   const handleShow = () => {};
-  const handleDelete = async (accompanying: ReturnAccompanyingSupport) => {
-    const isOK = await CustomConfirm('本当に削除しますか？', '確認画面');
+  const handleDelete = async (accompany: ReturnAccompany) => {
+    const isOK = await CustomConfirm(
+      '本当に削除しますか？',
+      '確認画面'
+    );
     if (!isOK) return;
     const { error } = await supabase
-      .from(getDb('ACCOMPANYING'))
+      .from(getDb('Accompany'))
       .delete()
-      .eq('id', accompanying.id);
+      .eq('id', accompany.id);
     showNotification({
       icon: <IconCheckbox />,
       message: '削除しました。',
     });
     router.reload();
   };
-  const handlePDFDownload = async (accompanying: ReturnAccompanyingSupport) => {
-    // const pdfBytes = await CreatePdf('/home_care_records.pdf', accompanying);
+  const handlePDFDownload = async (accompany: ReturnAccompany) => {
+    // const pdfBytes = await CreatePdf('/home_care_records.pdf', accompany);
     // const blob = new Blob([pdfBytes], { type: 'application/pdf' });
     // const link = document.createElement('a');
     // link.href = URL.createObjectURL(blob);
-    // link.download = `${accompanying.name}.pdf`;
+    // link.download = `${accompany.name}.pdf`;
     // link.click();
   };
   return (
@@ -56,7 +57,7 @@ export const AccompanyingSupportList: NextPage<Props> = ({
       withBorder
       records={records}
       recordsPerPage={PAGE_SIZE}
-      totalRecords={accompanyingSupportList.length}
+      totalRecords={AccompanyList.length}
       page={page}
       loaderVariant="oval"
       loaderSize="lg"
@@ -71,9 +72,9 @@ export const AccompanyingSupportList: NextPage<Props> = ({
           textAlignment: 'center',
           title: '作成日時',
           width: 150,
-          render: (accompanying) =>
-            accompanying.created_at
-              ? convertSupabaseTime(accompanying.created_at)
+          render: (accompany) =>
+            accompany.created_at
+              ? convertSupabaseTime(accompany.created_at)
               : '',
         },
         {
@@ -81,20 +82,20 @@ export const AccompanyingSupportList: NextPage<Props> = ({
           textAlignment: 'center',
           title: '更新日時',
           width: 150,
-          render: (accompanying) =>
-            accompanying.updated_at
-              ? convertSupabaseTime(accompanying.updated_at)
+          render: (accompany) =>
+            accompany.updated_at
+              ? convertSupabaseTime(accompany.updated_at)
               : '',
         },
         {
           accessor: 'download',
           title: 'ダウンロード',
           width: 150,
-          render: (accompanying) => (
+          render: (accompany) => (
             <CustomButton
               color="cyan"
               variant="light"
-              onClick={() => handlePDFDownload(accompanying)}
+              onClick={() => handlePDFDownload(accompany)}
             >
               ダウンロード
             </CustomButton>
@@ -104,14 +105,12 @@ export const AccompanyingSupportList: NextPage<Props> = ({
           accessor: 'actions',
           title: 'アクション',
           width: 110,
-          render: (accompanying) => (
+          render: (accompany) => (
             <Group spacing={4} position="right" noWrap>
               <ActionIcon color="green" onClick={() => handleShow()}>
                 <IconEye size={20} />
               </ActionIcon>
-              <Link
-                href={getPath('ACCOMPANYING_SUPPPORT_EDIT', accompanying.id)}
-              >
+              <Link href={getPath('Accompany_EDIT', accompany.id)}>
                 <a>
                   <ActionIcon color="blue">
                     <IconEdit size={20} />
@@ -120,7 +119,7 @@ export const AccompanyingSupportList: NextPage<Props> = ({
               </Link>
               <ActionIcon
                 color="red"
-                onClick={() => handleDelete(accompanying)}
+                onClick={() => handleDelete(accompany)}
               >
                 <IconTrash size={20} />
               </ActionIcon>

@@ -1,4 +1,4 @@
-import { AccompanyingSupportCreate } from '@/components/AccompanyingSupport/AccompanyingSupportCreate';
+import { AccompanyCreate } from '@/components/Accompany/AccompanyCreate';
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
 import { User } from '@/ducks/user/slice';
@@ -11,18 +11,18 @@ type Props = {
   userList: User[];
 };
 
-const AccompanyingSupportPage: NextPage<Props> = ({ userList }) => {
+const AccompanyPage: NextPage<Props> = ({ userList }) => {
   return (
     <DashboardLayout title="記録票作成">
       <PageContainer title="実績記録票作成" fluid>
         <Space h="md" />
-        <AccompanyingSupportCreate userList={userList} />
+        <AccompanyCreate userList={userList} />
       </PageContainer>
     </DashboardLayout>
   );
 };
 
-export default AccompanyingSupportPage;
+export default AccompanyPage;
 
 export const getStaticProps = async () => {
   const { data: userList } = await supabase
