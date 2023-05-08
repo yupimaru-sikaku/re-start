@@ -16,6 +16,7 @@ type Mobility = {
   year: number; // 作成する西暦
   month: number; // 作成する月
   identification: string; // 受給者証番号
+  city: string; // 市区町村
   name: string; // 利用者名
   content_arr: MobilityContentArr[];
   status: number; // 記録票の進捗状況
@@ -46,9 +47,12 @@ export type DeleteMobilityResult = {
 export type ReturnMobility = Mobility;
 
 export const createInitialState: CreateMobilityParams = {
+  corporate_id: '',
+  login_id: '',
   year: 0,
   month: 0,
   identification: '',
+  city: '',
   name: '',
   content_arr: [
     {
@@ -60,14 +64,12 @@ export const createInitialState: CreateMobilityParams = {
     },
   ],
   status: 0,
-  corporate_id: '',
-  login_id: '',
 };
 
 const initialState = {};
 
 export const MobilitySlice = createSlice({
-  name: 'Mobility',
+  name: 'mobility',
   initialState,
   reducers: {},
 });

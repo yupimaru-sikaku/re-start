@@ -11,7 +11,7 @@ const DB = {
   STAFF_SCHEDULE: 'staff_schedules',
   PROVIDER: 'providers',
   HOME_CARE: 'home_care_records',
-  Accompany: 'accompany_records',
+  ACCOMPANY: 'accompany_records',
   BEHAVIOR: 'behavior_records',
   MOBILITY: 'mobility_records',
 } as const;

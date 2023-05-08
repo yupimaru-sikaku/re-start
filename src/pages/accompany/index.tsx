@@ -20,7 +20,7 @@ const AccompanyPage: NextPage<Props> = ({ accompanyList }) => {
   return (
     <DashboardLayout title="同行援護">
       <PageContainer title="同行援護" fluid>
-        <Link href={getPath('Accompany_CREATE')}>
+        <Link href={getPath('ACCOMPANY_CREATE')}>
           <a>
             <CustomButton>実績記録票を作成する</CustomButton>
           </a>
@@ -36,7 +36,7 @@ export default AccompanyPage;
 
 export const getStaticProps = async () => {
   const { data: accompanyList } = await supabase
-    .from(getDb('Accompany'))
+    .from(getDb('ACCOMPANY'))
     .select('*')
     .order('updated_at', { ascending: false });
   return {

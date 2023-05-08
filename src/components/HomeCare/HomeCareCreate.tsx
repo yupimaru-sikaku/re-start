@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useForm } from '@mantine/form';
 import { initialState } from '@/ducks/home-care/slice';
 import {
+  ActionIcon,
   Divider,
   Grid,
   Paper,
@@ -11,13 +12,14 @@ import {
   SimpleGrid,
   Space,
   Stack,
+  Table,
   Text,
   TextInput,
 } from '@mantine/core';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { CustomButton } from '../Common/CustomButton';
 import { TimeRangeInput } from '@mantine/dates';
-import { IconCheckbox, IconClock } from '@tabler/icons';
+import { IconCheckbox, IconClock, IconRefresh } from '@tabler/icons';
 import {
   calcEachWorkTime,
   calcWorkTime,
@@ -402,94 +404,103 @@ export const HomeCareCreate: NextPage = () => {
           <Space h="lg" />
           <Divider variant="dotted" />
           <Space h="lg" />
-          <Paper>
-            <Grid>
-              <Grid.Col span={1}>
-                <Text size="sm">日付</Text>
-              </Grid.Col>
-              <Grid.Col span={1}>
-                <Text size="sm">曜日</Text>
-              </Grid.Col>
-              <Grid.Col span={3}>
-                <Text size="sm">サービスの種類</Text>
-              </Grid.Col>
-              <Grid.Col span={3}>
-                <Text size="sm">開始-終了時間</Text>
-              </Grid.Col>
-              <Grid.Col span={2}>
-                <Text size="sm">算定時間数</Text>
-              </Grid.Col>
-              <Grid.Col span={2}>
-                <Text size="sm">算定時間数</Text>
-              </Grid.Col>
-            </Grid>
-            <Space h="sm" />
-            {form.values.content_arr.map((_, index) => (
-              <Grid key={index}>
-                <Grid.Col span={1}>
-                  <TextInput
-                    variant="filled"
-                    maxLength={2}
-                    onChange={(e) => handleChangeDate(e, index)}
-                  />
-                </Grid.Col>
-                <Grid.Col span={1}>
-                  <TextInput
-                    sx={{ '& input:disabled': { color: 'black' } }}
-                    value={convertWeekItem(
-                      new Date(
-                        form.values.year,
-                        form.values.month,
-                        form.values.content_arr[index].work_date || 1
-                      )
-                    )}
-                    variant="filled"
-                    disabled
-                  />
-                </Grid.Col>
-                <Grid.Col span={3}>
-                  <Select
-                    variant="filled"
-                    label=""
-                    searchable
-                    nothingFound="No Data"
-                    data={serviceArr || []}
-                    onChange={(e) => handleChangeService(e, index)}
-                  />
-                </Grid.Col>
-                <Grid.Col span={3}>
-                  <TimeRangeInput
-                    icon={<IconClock size={16} />}
-                    variant="filled"
-                    onChange={(e) =>
-                      handleChangeTime(e[0], e[1], index)
-                    }
-                  />
-                </Grid.Col>
-                <Grid.Col span={1}>
-                  <TextInput
-                    sx={{ '& input:disabled': { color: 'black' } }}
-                    value={
-                      form.values.content_arr[index].start_time ||
-                      form.values.content_arr[index].end_time
-                        ? calcWorkTime(
-                            new Date(
-                              form.values.content_arr[
-                                index
-                              ].start_time!
-                            ),
-                            new Date(
-                              form.values.content_arr[index].end_time!
-                            )
+          <Paper sx={{ overflowX: 'auto' }}>
+            <Table sx={{ width: '750px' }}>
+              <thead>
+                <tr>
+                  <th style={{ width: '100px' }}>日付</th>
+                  <th style={{ width: '100px' }}>曜日</th>
+                  <th style={{ width: '150px' }}>サービスの種類</th>
+                  <th style={{ width: '200px' }}>開始-終了時間</th>
+                  <th style={{ width: '100px' }}>算定時間数</th>
+                  <th style={{ width: '100px' }}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {form.values.content_arr.map((_, index) => (
+                  <tr key={index}>
+                    <td>
+                      <TextInput
+                        variant="filled"
+                        maxLength={2}
+                        onChange={(e) => handleChangeDate(e, index)}
+                      />
+                    </td>
+                    <td>
+                      <TextInput
+                        sx={{
+                          '& input:disabled': { color: 'black' },
+                        }}
+                        value={convertWeekItem(
+                          new Date(
+                            form.values.year,
+                            form.values.month,
+                            form.values.content_arr[index]
+                              .work_date || 1
                           )
-                        : undefined
-                    }
-                    variant="filled"
-                    disabled
-                  />
-                </Grid.Col>
-              </Grid>
-            ))}
+                        )}
+                        variant="filled"
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <Select
+                        variant="filled"
+                        label=""
+                        searchable
+                        nothingFound="No Data"
+                        data={serviceArr || []}
+                        onChange={(e) =>
+                          handleChangeService(e, index)
+                        }
+                      />
+                    </td>
+                    <td>
+                      <TimeRangeInput
+                        icon={<IconClock size={16} />}
+                        variant="filled"
+                        onChange={(e) =>
+                          handleChangeTime(e[0], e[1], index)
+                        }
+                      />
+                    </td>
+                    <td>
+                      <TextInput
+                        sx={{
+                          '& input:disabled': { color: 'black' },
+                        }}
+                        value={
+                          form.values.content_arr[index].start_time ||
+                          form.values.content_arr[index].end_time
+                            ? calcWorkTime(
+                                new Date(
+                                  form.values.content_arr[
+                                    index
+                                  ].start_time!
+                                ),
+                                new Date(
+                                  form.values.content_arr[
+                                    index
+                                  ].end_time!
+                                )
+                              )
+                            : undefined
+                        }
+                        variant="filled"
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <ActionIcon
+                      // onClick={() => handleRefresh(index)}
+                      >
+                        <IconRefresh />
+                      </ActionIcon>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
           </Paper>
           <Space h="xl" />
           <CustomButton type="submit" fullWidth loading={isLoading}>

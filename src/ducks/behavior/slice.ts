@@ -15,8 +15,8 @@ type Behavior = {
   login_id: string; // ログインユーザのID
   year: number; // 作成する西暦
   month: number; // 作成する月
-  identification: string; // 受給者証番号
   name: string; // 利用者名
+  identification: string; // 受給者証番号
   content_arr: BehaviorContentArr[];
   status: number; // 記録票の進捗状況
   is_display: boolean; // 表示するか

@@ -8,6 +8,7 @@ import {
   SimpleGrid,
   Space,
   Stack,
+  Table,
   Text,
   TextInput,
 } from '@mantine/core';
@@ -117,7 +118,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
     });
   }, [getBehaviorData]);
 
-  const user = userList.find(
+  const selectedUser = userList.find(
     (user) => user.name === form.values.name
   );
   const kodoAmount = form.values.content_arr.reduce(
@@ -227,7 +228,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
         const params: CreateBehaviorParams = {
           ...form.values,
           content_arr: formatArr,
-          identification: user!.identification,
+          identification: selectedUser!.identification,
           corporate_id: loginProviderInfo.corporate_id,
           login_id: loginProviderInfo.id,
         };
@@ -247,7 +248,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
           ...form.values,
           id: getBehaviorData!.id,
           content_arr: formatArr,
-          identification: user!.identification,
+          identification: selectedUser!.identification,
           corporate_id: loginProviderInfo.corporate_id,
           login_id: loginProviderInfo.id,
         };
@@ -313,7 +314,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
             />
             <TextInput
               label="受給者証番号"
-              value={user?.identification || ''}
+              value={selectedUser?.identification || ''}
               variant="filled"
               disabled
               sx={{
@@ -324,7 +325,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
             />
             <TextInput
               label="契約支給量"
-              value={`${user?.kodo_amount || 0} 時間/月`}
+              value={`${selectedUser?.kodo_amount || 0} 時間/月`}
               variant="filled"
               disabled
               sx={{
@@ -347,96 +348,94 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
           </SimpleGrid>
           <Space h="lg" /> <Divider variant="dotted" />
           <Space h="lg" />
-          <Paper>
-            <Grid>
-              <Grid.Col span={1}>
-                <Text size="sm"> 日付 </Text>
-              </Grid.Col>
-              <Grid.Col span={1}>
-                <Text size="sm"> 曜日 </Text>
-              </Grid.Col>
-              <Grid.Col span={3}>
-                <Text size="sm"> 開始-終了時間 </Text>
-              </Grid.Col>
-              <Grid.Col span={2}>
-                <Text size="sm"> 算定時間数 </Text>
-              </Grid.Col>
-            </Grid>
-            <Space h="sm" />
-            {form.values.content_arr.map((content, index) => (
-              <Grid key={index}>
-                <Grid.Col span={1}>
-                  <TextInput
-                    variant="filled"
-                    maxLength={2}
-                    onChange={(e) => handleChangeDate(e, index)}
-                    value={content.work_date || ''}
-                  />
-                </Grid.Col>
-                <Grid.Col span={1}>
-                  <TextInput
-                    sx={{
-                      '& input:disabled': {
-                        color: 'black',
-                      },
-                    }}
-                    value={convertWeekItem(
-                      new Date(
-                        form.values.year,
-                        form.values.month,
-                        form.values.content_arr[index].work_date
-                      )
-                    )}
-                    variant="filled"
-                    disabled
-                  />
-                </Grid.Col>
-                <Grid.Col span={3}>
-                  <TimeRangeInput
-                    icon={<IconClock size={16} />}
-                    variant="filled"
-                    value={convertStartEndTimeFromString2Date(
-                      content.start_time,
-                      content.end_time
-                    )}
-                    onChange={(e) =>
-                      handleChangeTime(e[0], e[1], index)
-                    }
-                  />
-                </Grid.Col>
-                <Grid.Col span={1}>
-                  <TextInput
-                    sx={{
-                      '& input:disabled': {
-                        color: 'black',
-                      },
-                    }}
-                    value={
-                      form.values.content_arr[index].start_time ||
-                      form.values.content_arr[index].end_time
-                        ? calcWorkTime(
-                            new Date(
-                              form.values.content_arr[
-                                index
-                              ].start_time!
-                            ),
-                            new Date(
-                              form.values.content_arr[index].end_time!
-                            )
+          <Paper sx={{ overflowX: 'auto' }}>
+            <Table sx={{ width: '550px' }}>
+              <thead>
+                <tr>
+                  <th style={{ width: '100px' }}>日付</th>
+                  <th style={{ width: '100px' }}>曜日</th>
+                  <th style={{ width: '200px' }}>開始-終了時間</th>
+                  <th style={{ width: '150px' }}>算定時間数</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {form.values.content_arr.map((content, index) => (
+                  <tr key={index}>
+                    <td>
+                      <TextInput
+                        variant="filled"
+                        maxLength={2}
+                        onChange={(e) => handleChangeDate(e, index)}
+                        value={content.work_date || ''}
+                      />
+                    </td>
+                    <td>
+                      <TextInput
+                        sx={{
+                          '& input:disabled': { color: 'black' },
+                        }}
+                        value={convertWeekItem(
+                          new Date(
+                            form.values.year,
+                            form.values.month,
+                            form.values.content_arr[index].work_date
                           )
-                        : ''
-                    }
-                    variant="filled"
-                    disabled
-                  />
-                </Grid.Col>
-                <Grid.Col span={1}>
-                  <ActionIcon onClick={() => handleRefresh(index)}>
-                    <IconRefresh />
-                  </ActionIcon>
-                </Grid.Col>
-              </Grid>
-            ))}
+                        )}
+                        variant="filled"
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <TimeRangeInput
+                        icon={<IconClock size={16} />}
+                        variant="filled"
+                        value={convertStartEndTimeFromString2Date(
+                          content.start_time,
+                          content.end_time
+                        )}
+                        onChange={(e) =>
+                          handleChangeTime(e[0], e[1], index)
+                        }
+                      />
+                    </td>
+                    <td>
+                      <TextInput
+                        sx={{
+                          '& input:disabled': { color: 'black' },
+                        }}
+                        value={
+                          form.values.content_arr[index].start_time ||
+                          form.values.content_arr[index].end_time
+                            ? calcWorkTime(
+                                new Date(
+                                  form.values.content_arr[
+                                    index
+                                  ].start_time!
+                                ),
+                                new Date(
+                                  form.values.content_arr[
+                                    index
+                                  ].end_time!
+                                )
+                              )
+                            : ''
+                        }
+                        variant="filled"
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <ActionIcon
+                        onClick={() => handleRefresh(index)}
+                      >
+                        <IconRefresh />
+                      </ActionIcon>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
           </Paper>
           <Space h="xl" />
           <CustomButton type="submit" fullWidth loading={isLoading}>

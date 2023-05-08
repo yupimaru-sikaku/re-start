@@ -7,31 +7,15 @@ import { Space } from '@mantine/core';
 import { NextPage } from 'next';
 import React from 'react';
 
-type Props = {
-  userList: User[];
-};
-
-const AccompanyPage: NextPage<Props> = ({ userList }) => {
+const AccompanyPage: NextPage = () => {
   return (
     <DashboardLayout title="記録票作成">
       <PageContainer title="実績記録票作成" fluid>
         <Space h="md" />
-        <AccompanyCreate userList={userList} />
+        <AccompanyCreate type="create" />
       </PageContainer>
     </DashboardLayout>
   );
 };
 
 export default AccompanyPage;
-
-export const getStaticProps = async () => {
-  const { data: userList } = await supabase
-    .from('users')
-    .select('*')
-    .order('updated_at', { ascending: false });
-  return {
-    props: {
-      userList,
-    },
-  };
-};

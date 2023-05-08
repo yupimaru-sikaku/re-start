@@ -32,7 +32,7 @@ export const AccompanyList: NextPage<Props> = ({ accompanyList }) => {
     );
     if (!isOK) return;
     const { error } = await supabase
-      .from(getDb('Accompany'))
+      .from(getDb('ACCOMPANY'))
       .delete()
       .eq('id', accompany.id);
     showNotification({
@@ -110,7 +110,7 @@ export const AccompanyList: NextPage<Props> = ({ accompanyList }) => {
               <ActionIcon color="green" onClick={() => handleShow()}>
                 <IconEye size={20} />
               </ActionIcon>
-              <Link href={getPath('Accompany_EDIT', accompany.id)}>
+              <Link href={getPath('ACCOMPANY_EDIT', accompany.id)}>
                 <a>
                   <ActionIcon color="blue">
                     <IconEdit size={20} />

@@ -8,6 +8,7 @@ import {
   validateYear,
 } from '@/utils/validate/home-care';
 import {
+  ActionIcon,
   Divider,
   Grid,
   Paper,
@@ -15,6 +16,7 @@ import {
   SimpleGrid,
   Space,
   Stack,
+  Table,
   Text,
   TextInput,
 } from '@mantine/core';
@@ -22,39 +24,65 @@ import { TimeRangeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { useFocusTrap } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
-import { IconCheckbox, IconClock } from '@tabler/icons';
+import { IconCheckbox, IconClock, IconRefresh } from '@tabler/icons';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CustomButton } from '../Common/CustomButton';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { CustomStepper } from '../Common/CustomStepper';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { useSelector } from '@/ducks/store';
 import { RootState } from '@/ducks/root-reducer';
-import { initialState } from '@/ducks/accompany/slice';
+import {
+  CreateAccompanyParams,
+  CreateAccompanyResult,
+  UpdateAccompanyParams,
+  UpdateAccompanyResult,
+  createInitialState,
+  initialState,
+} from '@/ducks/accompany/slice';
+import { skipToken } from '@reduxjs/toolkit/dist/query';
+import { useGetUserListByServiceQuery } from '@/ducks/user/query';
+import {
+  useCreateAccompanyMutation,
+  useGetAccompanyDataQuery,
+  useUpdateAccompanyMutation,
+} from '@/ducks/accompany/query';
 
 type Props = {
-  userList: User[];
+  type: 'create' | 'edit';
 };
 
-export const AccompanyCreate: NextPage<Props> = ({ userList }) => {
+export const AccompanyCreate: NextPage<Props> = ({ type }) => {
+  const TITLE = type === 'create' ? '登録' : '更新';
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const loginProviderInfo = useSelector(
     (state: RootState) => state.provider.loginProviderInfo
   );
+  const AccompanyId = router.query.id as string;
+  const {
+    data: accompanyData,
+    isLoading: accompanyDataLoding,
+    refetch,
+  } = useGetAccompanyDataQuery(AccompanyId || skipToken);
+  const { data: userList = [] } =
+    useGetUserListByServiceQuery('is_doko');
+  const [createAccompany] = useCreateAccompanyMutation();
+  const [updateAccompany] = useUpdateAccompanyMutation();
+
   const userNameList = (userList || []).map((user) => user.name);
   const currentDate = new Date();
   const form = useForm({
     initialValues: {
-      ...initialState,
+      ...createInitialState,
       year: currentDate.getFullYear(),
       month: currentDate.getMonth(),
       content_arr: Array.from(
         { length: 40 },
-        () => initialState.content_arr[0]
+        () => createInitialState.content_arr[0]
       ),
     },
     validate: {
@@ -72,25 +100,47 @@ export const AccompanyCreate: NextPage<Props> = ({ userList }) => {
       },
     },
   });
-  const man = userList.filter(
-    (user) => user.name === form.values.name
-  )[0];
-  const dokoAmount = form.values.content_arr.reduce(
-    (sum, content) =>
-      sum +
-      Number(
-        calcWorkTime(
-          new Date(content.start_time!),
-          new Date(content.end_time!)
-        )
+  // useFormは再レンダリングされないので
+  useEffect(() => {
+    if (!accompanyData) return;
+    refetch();
+    const newContentArr = [
+      ...accompanyData.content_arr,
+      ...Array.from(
+        { length: 40 - accompanyData.content_arr.length },
+        () => createInitialState.content_arr[0]
       ),
+    ];
+    form.setValues({
+      ...accompanyData,
+      content_arr: newContentArr,
+    });
+  }, [accompanyData]);
+  const selectedUser = userList.find(
+    (user) => user.name === form.values.name
+  );
+  const dokoAmount = form.values.content_arr.reduce(
+    (sum, content) => {
+      if (content.start_time === '' || content.end_time === '') {
+        return sum;
+      }
+      return (
+        sum +
+        Number(
+          calcWorkTime(
+            new Date(content.start_time!),
+            new Date(content.end_time!)
+          )
+        )
+      );
+    },
     0
   );
 
   const handleSubmit = async () => {
     setIsLoading(true);
     const isOK = await CustomConfirm(
-      '実績記録票を作成しますか？後から修正は可能です。',
+      `実績記録票を${TITLE}しますか？後から修正は可能です。`,
       '確認画面'
     );
     if (!isOK) {
@@ -101,11 +151,14 @@ export const AccompanyCreate: NextPage<Props> = ({ userList }) => {
     const formatArr = form.values.content_arr
       .filter((content) => {
         return (
-          content.work_date &&
-          content.service_content !== '' &&
-          content.start_time &&
-          content.end_time
+          content.work_date && content.start_time && content.end_time
         );
+      })
+      .map((content) => {
+        return {
+          ...content,
+          service_content: '同行援護',
+        };
       })
       .sort((a, b) => a.work_date! - b.work_date!);
     if (formatArr.length === 0) {
@@ -113,34 +166,54 @@ export const AccompanyCreate: NextPage<Props> = ({ userList }) => {
         '記録は、少なくとも一行は作成ください。',
         'Caution'
       );
+      setIsLoading(false);
       return;
     }
     try {
-      const { error } = await supabase
-        .from(getDb('Accompany'))
-        .insert({
-          year: form.values.year,
-          month: form.values.month,
-          name: form.values.name,
-          identification: man.identification,
-          amount_title: '同行（初任者等）',
-          amount_value: man.doko_amount,
+      if (type === 'create') {
+        const params: CreateAccompanyParams = {
+          ...form.values,
           content_arr: formatArr,
-          status: 0,
-          user_id: loginProviderInfo.id,
+          identification: selectedUser!.identification,
+          corporate_id: loginProviderInfo.corporate_id,
+          login_id: loginProviderInfo.id,
+        };
+        const { error } = (await createAccompany(
+          params
+        )) as CreateAccompanyResult;
+        if (error) {
+          throw new Error(`記録票の${TITLE}に失敗しました。${error}`);
+        }
+        showNotification({
+          icon: <IconCheckbox />,
+          message: `${TITLE}に成功しました！`,
         });
-      showNotification({
-        icon: <IconCheckbox />,
-        message: '登録に成功しました！',
-      });
-      router.push(getPath('Accompany'));
-
-      console.log(error);
-      if (error) {
-        alert('実績記録表の登録に失敗しました。');
+        router.push(getPath('ACCOMPANY'));
+      } else {
+        const params: UpdateAccompanyParams = {
+          ...form.values,
+          id: accompanyData!.id,
+          content_arr: formatArr,
+          identification: selectedUser!.identification,
+          corporate_id: loginProviderInfo.corporate_id,
+          login_id: loginProviderInfo.id,
+        };
+        const { error } = (await updateAccompany(
+          params
+        )) as UpdateAccompanyResult;
+        if (error) {
+          throw new Error(`記録票の${TITLE}に失敗しました。${error}`);
+        }
+        showNotification({
+          icon: <IconCheckbox />,
+          message: `${TITLE}に成功しました！`,
+        });
+        router.push(getPath('MOBILITY'));
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error: any) {
+      await CustomConfirm(error.message, 'Caution');
+      setIsLoading(false);
+      return;
     }
     setIsLoading(false);
   };
@@ -187,6 +260,23 @@ export const AccompanyCreate: NextPage<Props> = ({ userList }) => {
     form.setFieldValue('content_arr', newContentArr);
   };
 
+  const handleRefresh = (index: number) => {
+    const newContentArr = (form.values.content_arr || []).map(
+      (content, contentIndex) => {
+        return contentIndex === index
+          ? {
+              work_date: 0,
+              service_content: '',
+              start_time: '',
+              end_time: '',
+              staff_name: '',
+            }
+          : content;
+      }
+    );
+    form.setFieldValue('content_arr', newContentArr);
+  };
+
   return (
     <Stack>
       <Paper withBorder shadow="md" p={30} radius="md">
@@ -194,7 +284,7 @@ export const AccompanyCreate: NextPage<Props> = ({ userList }) => {
       </Paper>
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
         <Paper withBorder shadow="md" p={30} radius="md">
-          <SimpleGrid cols={4}>
+          <SimpleGrid cols={6}>
             <CustomTextInput
               idText="year"
               label="西暦"
@@ -225,133 +315,121 @@ export const AccompanyCreate: NextPage<Props> = ({ userList }) => {
             />
             <TextInput
               label="受給者証番号"
-              value={man?.identification}
+              value={selectedUser?.identification || ''}
               variant="filled"
               disabled
               sx={{ '& input:disabled': { color: 'black' } }}
             />
-          </SimpleGrid>
-          <Space h="lg" />
-          <SimpleGrid cols={4}>
-            <Paper>
-              <Text size="sm">同行（初任者等）</Text>
-              <SimpleGrid cols={3}>
-                <TextInput
-                  variant="filled"
-                  disabled
-                  value={dokoAmount}
-                  sx={{
-                    '& input:disabled': {
-                      ...(Number(dokoAmount) > man?.doko_amount
-                        ? {
-                            color: 'red',
-                            fontWeight: 'bold',
-                          }
-                        : {
-                            color: 'black',
-                            fontWeight: 'normal',
-                          }),
-                    },
-                  }}
-                />
-                <TextInput
-                  value={man?.doko_amount}
-                  variant="filled"
-                  disabled
-                  sx={{ '& input:disabled': { color: 'black' } }}
-                />
-                <Text size="sm">時間/月</Text>
-              </SimpleGrid>
-            </Paper>
+            <TextInput
+              label="契約支給量"
+              value={`${selectedUser?.kodo_amount || 0} 時間/月`}
+              variant="filled"
+              disabled
+              sx={{
+                '& input:disabled': {
+                  color: 'black',
+                },
+              }}
+            />
+            <TextInput
+              label="合計算定時間数"
+              value={`${dokoAmount} 時間`}
+              variant="filled"
+              disabled
+              sx={{
+                '& input:disabled': {
+                  color: 'black',
+                },
+              }}
+            />
           </SimpleGrid>
           <Space h="lg" />
           <Divider variant="dotted" />
           <Space h="lg" />
-          <Paper>
-            <Grid>
-              <Grid.Col span={1}>
-                <Text size="sm">日付</Text>
-              </Grid.Col>
-              <Grid.Col span={1}>
-                <Text size="sm">曜日</Text>
-              </Grid.Col>
-              <Grid.Col span={3}>
-                <Text size="sm">サービスの種類</Text>
-              </Grid.Col>
-              <Grid.Col span={3}>
-                <Text size="sm">開始-終了時間</Text>
-              </Grid.Col>
-              <Grid.Col span={2}>
-                <Text size="sm">算定時間数</Text>
-              </Grid.Col>
-            </Grid>
-            <Space h="sm" />
-            {form.values.content_arr.map((_, index) => (
-              <Grid key={index}>
-                <Grid.Col span={1}>
-                  <TextInput
-                    variant="filled"
-                    maxLength={2}
-                    onChange={(e) => handleChangeDate(e, index)}
-                  />
-                </Grid.Col>
-                <Grid.Col span={1}>
-                  <TextInput
-                    sx={{ '& input:disabled': { color: 'black' } }}
-                    value={convertWeekItem(
-                      new Date(
-                        form.values.year,
-                        form.values.month,
-                        form.values.content_arr[index].work_date || 1
-                      )
-                    )}
-                    variant="filled"
-                    disabled
-                  />
-                </Grid.Col>
-                <Grid.Col span={3}>
-                  <TextInput
-                    value={
-                      form.values.content_arr[index].service_content
-                    }
-                    variant="filled"
-                    disabled
-                    sx={{ '& input:disabled': { color: 'black' } }}
-                  />
-                </Grid.Col>
-                <Grid.Col span={3}>
-                  <TimeRangeInput
-                    icon={<IconClock size={16} />}
-                    variant="filled"
-                    onChange={(e) =>
-                      handleChangeTime(e[0], e[1], index)
-                    }
-                  />
-                </Grid.Col>
-                <Grid.Col span={1}>
-                  <TextInput
-                    sx={{ '& input:disabled': { color: 'black' } }}
-                    value={
-                      form.values.content_arr[index].start_time ||
-                      form.values.content_arr[index].end_time
-                        ? calcWorkTime(
-                            new Date(
-                              form.values.content_arr[
-                                index
-                              ].start_time!
-                            ),
-                            new Date(
-                              form.values.content_arr[index].end_time!
-                            )
+          <Paper sx={{ overflowX: 'auto' }}>
+            <Table sx={{ width: '550px' }}>
+              <thead>
+                <tr>
+                  <th style={{ width: '100px' }}>日付</th>
+                  <th style={{ width: '100px' }}>曜日</th>
+                  <th style={{ width: '200px' }}>開始-終了時間</th>
+                  <th style={{ width: '150px' }}>算定時間数</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {form.values.content_arr.map((_, index) => (
+                  <tr key={index}>
+                    <td>
+                      <TextInput
+                        variant="filled"
+                        maxLength={2}
+                        onChange={(e) => handleChangeDate(e, index)}
+                      />
+                    </td>
+                    <td>
+                      <TextInput
+                        sx={{
+                          '& input:disabled': { color: 'black' },
+                        }}
+                        value={convertWeekItem(
+                          new Date(
+                            form.values.year,
+                            form.values.month,
+                            form.values.content_arr[index]
+                              .work_date || 1
                           )
-                        : undefined
-                    }
-                    variant="filled"
-                    disabled
-                  />
-                </Grid.Col>
-              </Grid>
-            ))}
+                        )}
+                        variant="filled"
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <TimeRangeInput
+                        icon={<IconClock size={16} />}
+                        variant="filled"
+                        onChange={(e) =>
+                          handleChangeTime(e[0], e[1], index)
+                        }
+                      />
+                    </td>
+                    <td>
+                      <TextInput
+                        sx={{
+                          '& input:disabled': { color: 'black' },
+                        }}
+                        value={
+                          form.values.content_arr[index].start_time ||
+                          form.values.content_arr[index].end_time
+                            ? calcWorkTime(
+                                new Date(
+                                  form.values.content_arr[
+                                    index
+                                  ].start_time!
+                                ),
+                                new Date(
+                                  form.values.content_arr[
+                                    index
+                                  ].end_time!
+                                )
+                              )
+                            : undefined
+                        }
+                        variant="filled"
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <ActionIcon
+                        onClick={() => handleRefresh(index)}
+                      >
+                        <IconRefresh />
+                      </ActionIcon>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
           </Paper>
           <Space h="xl" />
           <CustomButton type="submit" fullWidth loading={isLoading}>

@@ -27,7 +27,14 @@ import { mobilityApi } from './mobility/query';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['provider', 'staff', 'user', 'homeCare', 'mobility'],
+  whitelist: [
+    'provider',
+    'staff',
+    'user',
+    'homeCare',
+    'behavior',
+    'mobility',
+  ],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
