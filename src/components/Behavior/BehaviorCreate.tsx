@@ -183,6 +183,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
         <Paper withBorder shadow="md" p={30} radius="md">
           <RecordBasicInfo
+            type={type}
             form={form}
             userList={userList}
             selectedUser={selectedUser}

@@ -114,7 +114,9 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
           service_content: '行動援護',
         };
       })
-      .sort((a: ContentArr, b: ContentArr) => a.work_date! - b.work_date!);
+      .sort(
+        (a: ContentArr, b: ContentArr) => a.work_date! - b.work_date!
+      );
     if (formatArr.length === 0) {
       await CustomConfirm(
         '記録は、少なくとも一行は作成ください。',
@@ -186,6 +188,7 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
         <Paper withBorder shadow="md" p={30} radius="md">
           <RecordBasicInfo
+            type={type}
             form={form}
             userList={userList}
             selectedUser={selectedUser}
