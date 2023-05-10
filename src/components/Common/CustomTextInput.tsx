@@ -30,6 +30,7 @@ export const CustomTextInput = ({
 }: Props) => {
   return (
     <TextInput
+      sx={{ '& input:disabled': { color: 'black' } }}
       id={idText}
       label={label}
       description={description}

@@ -12,6 +12,7 @@ import { UseFormReturnType } from '@mantine/form';
 import { NextPage } from 'next';
 
 type Props = {
+  type: 'create' | 'edit';
   form: UseFormReturnType<any>;
   userList: ReturnUser[];
   selectedUser: ReturnUser | undefined;
@@ -19,11 +20,13 @@ type Props = {
 };
 
 export const RecordBasicInfo: NextPage<Props> = ({
+  type,
   form,
   userList,
   selectedUser,
   amountTime,
 }) => {
+  const isEdit = type === 'edit';
   return (
     <SimpleGrid
       breakpoints={[
@@ -33,6 +36,7 @@ export const RecordBasicInfo: NextPage<Props> = ({
       ]}
     >
       <CustomTextInput
+        disabled={isEdit}
         idText="year"
         label="西暦"
         description=""
@@ -43,6 +47,7 @@ export const RecordBasicInfo: NextPage<Props> = ({
         maxLength={4}
       />
       <CustomTextInput
+        disabled={isEdit}
         idText="month"
         label="月"
         description=""
@@ -53,12 +58,14 @@ export const RecordBasicInfo: NextPage<Props> = ({
         maxLength={2}
       />
       <Select
+        disabled={isEdit}
         label="利用者名"
         searchable
         nothingFound="No Data"
         data={userList.map((user) => user.name)}
         variant="filled"
         {...form.getInputProps('name')}
+        sx={{ '& input:disabled': { color: 'black' } }}
       />
       <TextInput
         label="受給者証番号"
@@ -83,22 +90,14 @@ export const RecordBasicInfo: NextPage<Props> = ({
         value={`${selectedUser?.kodo_amount || 0} 時間/月`}
         variant="filled"
         disabled
-        sx={{
-          '& input:disabled': {
-            color: 'black',
-          },
-        }}
+        sx={{ '& input:disabled': { color: 'black' } }}
       />
       <TextInput
         label="合計算定時間数"
         value={`${amountTime} 時間`}
         variant="filled"
         disabled
-        sx={{
-          '& input:disabled': {
-            color: 'black',
-          },
-        }}
+        sx={{ '& input:disabled': { color: 'black' } }}
       />
     </SimpleGrid>
   );
