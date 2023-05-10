@@ -13,7 +13,7 @@ import { CreateAccompanyParams } from './slice';
 import { CreateAccompanyResult } from './slice';
 
 export const accompanyApi = createApi({
-  reducerPath: 'AccompanyApi',
+  reducerPath: 'accompanyApi',
   baseQuery: fakeBaseQuery(),
   tagTypes: ['AccompanyApi'],
   endpoints: (builder) => ({
@@ -54,18 +54,19 @@ export const accompanyApi = createApi({
      * @param {string} loginId
      * @return {ReturnAccompany[]}
      */
-    getAccompanyListByLoginId: builder.query<ReturnAccompany[], string>(
-      {
-        queryFn: async (loginId: string): Promise<any> => {
-          const { data, error } = await supabase
-            .from(getDb('ACCOMPANY'))
-            .select('*')
-            .eq('login_id', loginId)
-            .order('updated_at', { ascending: false });
-          return { data, error };
-        },
-      }
-    ),
+    getAccompanyListByLoginId: builder.query<
+      ReturnAccompany[],
+      string
+    >({
+      queryFn: async (loginId: string): Promise<any> => {
+        const { data, error } = await supabase
+          .from(getDb('ACCOMPANY'))
+          .select('*')
+          .eq('login_id', loginId)
+          .order('updated_at', { ascending: false });
+        return { data, error };
+      },
+    }),
     /**
      * GET/IDに該当する実績記録票を取得
      * @param {string} id

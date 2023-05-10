@@ -1,12 +1,5 @@
 import { PostgrestError } from '@supabase/supabase-js';
-
-export type HomeCareContentArr = {
-  work_date: number; // サービス提供日
-  service_content: string; // サービス内容
-  start_time: string; // 開始時間
-  end_time: string; // 終了時間
-  staff_name: string; // スタッフ名
-};
+import { ContentArr } from '../accompany/slice';
 
 type HomeCare = {
   id: string;
@@ -20,7 +13,7 @@ type HomeCare = {
   amount_value_2: number; // 契約支給量
   amount_title_3: string; // 契約支給量
   amount_value_3: number; // 契約支給量
-  content_arr: HomeCareContentArr[];
+  content_arr: ContentArr[];
   status: number; // 記録票の進捗状況
   corporate_id: string; // 作成した法人のID
   login_id: string; // ログインユーザのID

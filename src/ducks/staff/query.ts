@@ -1,5 +1,8 @@
 import { getDb, supabase } from '@/libs/supabase/supabase';
-import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
+import {
+  createApi,
+  fakeBaseQuery,
+} from '@reduxjs/toolkit/query/react';
 import {
   CreateStaffParams,
   CreateStaffResult,
@@ -33,6 +36,41 @@ export const staffApi = createApi({
       },
     }),
     /**
+     * GET/サービスに属するスタッフのリストを取得
+     * @param {string} serviceName
+     * @return {ReturnStaff[]}
+     */
+    getStaffListByService: builder.query<ReturnStaff[], string>({
+      queryFn: async (serviceName: string) => {
+        let query = supabase.from(getDb('STAFF')).select('*');
+
+        switch (serviceName) {
+          case 'kodo':
+            query = query.eq('is_kodo', true);
+            break;
+          case 'doko':
+            query = query.or(
+              'is_doko_normal.eq.true,is_doko_apply.eq.true'
+            );
+            break;
+          case 'ido':
+          case 'kyotaku':
+            query = query.or(
+              'is_syoninsya.eq.true,is_zitsumusya.eq.true,is_kaigo.eq.true'
+            );
+            break;
+          default:
+            throw new Error('Invalid service name');
+        }
+        const { data, error } = await query.order('updated_at', {
+          ascending: false,
+        });
+        return data
+          ? { data: data as ReturnStaff[] }
+          : { error: error as PostgrestError };
+      },
+    }),
+    /**
     /**
      * GET/スタッフの情報をidから取得
      * @param {string} id
@@ -52,7 +90,10 @@ export const staffApi = createApi({
      * @param {CreateStaffParams} params
      * @return {CreateStaffResult}
      */
-    createStaff: builder.mutation<CreateStaffResult, CreateStaffParams>({
+    createStaff: builder.mutation<
+      CreateStaffResult,
+      CreateStaffParams
+    >({
       queryFn: async (params: CreateStaffParams) => {
         const { error } = await supabase.from(getDb('STAFF')).insert({
           login_id: params.login_id,
@@ -75,7 +116,10 @@ export const staffApi = createApi({
      * @param {ReturnStaff[]} params
      * @return {ReturnStaff[]}
      */
-    updateStaff: builder.mutation<UpdateStaffResult, UpdateStaffParams>({
+    updateStaff: builder.mutation<
+      UpdateStaffResult,
+      UpdateStaffParams
+    >({
       queryFn: async (params: UpdateStaffParams) => {
         const { error } = await supabase
           .from(getDb('STAFF'))
@@ -115,6 +159,7 @@ export const staffApi = createApi({
 
 export const {
   useGetStaffListQuery,
+  useGetStaffListByServiceQuery,
   useGetStaffByIdQuery,
   useCreateStaffMutation,
   useUpdateStaffMutation,

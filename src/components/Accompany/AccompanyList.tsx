@@ -12,7 +12,7 @@ import { CustomConfirm } from '../Common/CustomConfirm';
 import { IconCheckbox, IconEye, IconTrash } from '@tabler/icons';
 import { IconEdit } from '@tabler/icons';
 import Link from 'next/link';
-import { useGetTablePage } from '@/hooks/useGetTablePage';
+import { useGetTablePage } from '@/hooks/table/useGetTablePage';
 import { ReturnAccompany } from '@/ducks/accompany/slice';
 
 type Props = {

@@ -6,7 +6,7 @@ import {
 } from '@/ducks/behavior/query';
 import { RootState } from '@/ducks/root-reducer';
 import { useSelector } from '@/ducks/store';
-import { useGetTablePage } from '@/hooks/useGetTablePage';
+import { useGetTablePage } from '@/hooks/table/useGetTablePage';
 import { DataTable } from 'mantine-datatable';
 import React, { useEffect, useMemo, useState } from 'react';
 import { BehaviorListRecords } from './BehaviorListRecords';

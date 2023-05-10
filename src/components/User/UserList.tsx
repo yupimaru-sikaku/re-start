@@ -8,7 +8,7 @@ import {
   useGetUserListByLoginIdQuery,
   useGetUserListQuery,
 } from '@/ducks/user/query';
-import { useGetTablePage } from '@/hooks/useGetTablePage';
+import { useGetTablePage } from '@/hooks/table/useGetTablePage';
 import { useSelector } from '@/ducks/store';
 import { RootState } from '@/ducks/root-reducer';
 
@@ -18,7 +18,9 @@ export const UserList: NextPage = () => {
     (state: RootState) => state.provider.loginProviderInfo
   );
   const data1 = useGetUserListQuery();
-  const data2 = useGetUserListByLoginIdQuery(loginProviderInfo.id || '');
+  const data2 = useGetUserListByLoginIdQuery(
+    loginProviderInfo.id || ''
+  );
   const {
     data: userList,
     isLoading: userListLoading,

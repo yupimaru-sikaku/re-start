@@ -7,8 +7,12 @@ import { getDb, supabase } from '@/libs/supabase/supabase';
 import { getPath } from '@/utils/const/getPath';
 import { Box, Group, Space } from '@mantine/core';
 import { useRouter } from 'next/router';
-import React, { useCallback } from 'react';
-import { GetStaticPaths, GetStaticPropsContext, NextPage } from 'next';
+import React, { useCallback, useMemo } from 'react';
+import {
+  GetStaticPaths,
+  GetStaticPropsContext,
+  NextPage,
+} from 'next';
 
 import { useEffect, useState } from 'react';
 import moment, { Moment } from 'moment';
@@ -21,8 +25,20 @@ import {
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'moment/locale/ja';
 import { CustomToolbar } from '@/components/StaffSchedule/CustomToolbar';
-import { ReturnStaffSchedule } from '@/ducks/staff-schedule/slice';
+import {
+  GetScheduleParams,
+  ScheduleContentArr,
+} from '@/ducks/schedule/slice';
 import { title } from 'process';
+import { skipToken } from '@reduxjs/toolkit/dist/query';
+import { useGetStaffByIdQuery } from '@/ducks/staff/query';
+import { useGetScheduleQuery } from '@/ducks/schedule/query';
+import {
+  dokoColor,
+  idoColor,
+  kodoColor,
+  kyotakuColor,
+} from '@/utils';
 
 type EventStyleGetter = {
   color: string;
@@ -31,27 +47,31 @@ type EventStyleGetter = {
 moment.locale('ja');
 const localizer = momentLocalizer(moment);
 
-const StaffPersonalSchedulePage: NextPage = () => {
+const SchedulePage: NextPage = () => {
+  const router = useRouter();
+  const staffId = router.query.id as string;
   const currentDate = new Date();
   const [year, setYeart] = useState(currentDate.getFullYear());
   const [month, setMonth] = useState(currentDate.getMonth());
-  const [staffName, setStaffName] = useState('渡辺真由美');
-  const [scheduleList, setScheduleList] = useState<any>();
-  const getScheduleList = async () => {
-    const { data, error } = await supabase
-      .from(getDb('STAFF_SCHEDULE'))
-      .select('*')
-      .eq('year', year)
-      .eq('month', month)
-      .eq('staff_name', staffName);
-    if (data) {
-      setScheduleList(data[0]);
-    }
-  };
+  const { data: staffData } = useGetStaffByIdQuery(
+    staffId || skipToken
+  );
 
-  useEffect(() => {
-    getScheduleList();
-  }, [year, month]);
+  const params = useMemo(() => {
+    if (staffData) {
+      return {
+        staff_id: staffData.id,
+        year: 2023,
+
+        month: 5,
+      };
+    }
+    return null;
+  }, [year, month, staffData]);
+  console.log('staffData', staffData);
+  console.log('params', params);
+  const { data: scheduleList, isLoading: scheduleLoading } =
+    useGetScheduleQuery(params || skipToken);
 
   const eventStyleGetter = (event: EventStyleGetter) => ({
     style: {
@@ -65,7 +85,9 @@ const StaffPersonalSchedulePage: NextPage = () => {
     monthHeaderFormat: 'YYYY年M月',
     dayHeaderFormat: 'M月D日(ddd)',
     dayRangeHeaderFormat: ({ start, end }, culture, local) => {
-      const startDate = moment.isMoment(start) ? start.toDate() : start;
+      const startDate = moment.isMoment(start)
+        ? start.toDate()
+        : start;
       const endDate = moment.isMoment(end) ? end.toDate() : end;
       return `${local!.format(startDate, 'MMMD日')} - ${local!.format(
         endDate,
@@ -74,23 +96,30 @@ const StaffPersonalSchedulePage: NextPage = () => {
     },
   };
 
-  const formatScheduleArr = (
-    content_arr: ReturnStaffSchedule['content_arr']
-  ) => {
-    if (!content_arr) return [];
+  const formatScheduleArr = (content_arr: ScheduleContentArr[]) => {
     return content_arr.map((content) => {
+      let bgColor;
+      if (content.service_content === '同行援護') {
+        bgColor = dokoColor;
+      } else if (content.service_content === '行動援護') {
+        bgColor = kodoColor;
+      } else if (content.service_content === '移動支援') {
+        bgColor = idoColor;
+      } else {
+        bgColor = kyotakuColor;
+      }
       return {
         title: `${content.user_name}[${content.service_content}]`,
         start: new Date(content.start_time),
         end: new Date(content.end_time),
-        color: '#F00',
+        color: bgColor,
       };
     });
   };
+  console.log('scheduleList', scheduleList);
   return (
     <DashboardLayout title="勤怠状況">
       <PageContainer title="勤怠状況" fluid>
-        <Space h="md" />
         {scheduleList && (
           <Calendar
             localizer={localizer}
@@ -110,4 +139,4 @@ const StaffPersonalSchedulePage: NextPage = () => {
   );
 };
 
-export default StaffPersonalSchedulePage;
+export default SchedulePage;

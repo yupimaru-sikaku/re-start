@@ -8,12 +8,12 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const DB = {
   USER: 'users',
   STAFF: 'staffs',
-  STAFF_SCHEDULE: 'staff_schedules',
+  SCHEDULE: 'schedules',
   PROVIDER: 'providers',
-  HOME_CARE: 'home_care_records',
-  ACCOMPANY: 'accompany_records',
-  BEHAVIOR: 'behavior_records',
-  MOBILITY: 'mobility_records',
+  HOME_CARE: 'home_care',
+  ACCOMPANY: 'accompany',
+  BEHAVIOR: 'behavior',
+  MOBILITY: 'mobility',
 } as const;
 
 export const getDb = (db: keyof typeof DB) => {

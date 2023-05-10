@@ -1,20 +1,12 @@
 import {
-  ActionIcon,
   Divider,
-  Grid,
   LoadingOverlay,
   Paper,
-  Select,
-  SimpleGrid,
   Space,
   Stack,
-  Table,
-  Text,
-  TextInput,
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import { CustomStepper } from '../Common/CustomStepper';
-import { useForm } from '@mantine/form';
 import {
   CreateBehaviorParams,
   CreateBehaviorResult,
@@ -22,21 +14,10 @@ import {
   UpdateBehaviorResult,
   createInitialState,
 } from '@/ducks/behavior/slice';
-import {
-  validateMonth,
-  validateName,
-  validateYear,
-} from '@/utils/validate/behavior';
+import { validate } from '@/utils/validate/behavior';
 import { useFocusTrap } from '@mantine/hooks';
-import { CustomTextInput } from '../Common/CustomTextInput';
 import { useGetUserListByServiceQuery } from '@/ducks/user/query';
-import {
-  calcWorkTime,
-  convertStartEndTimeFromString2Date,
-  convertWeekItem,
-} from '@/utils';
-import { TimeRangeInput } from '@mantine/dates';
-import { IconCheckbox, IconClock, IconRefresh } from '@tabler/icons';
+import { IconCheckbox } from '@tabler/icons';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { showNotification } from '@mantine/notifications';
 import { getPath } from '@/utils/const/getPath';
@@ -51,146 +32,65 @@ import { RootState } from '@/ducks/root-reducer';
 import { CustomButton } from '../Common/CustomButton';
 import { NextPage } from 'next';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
+import { useGetForm } from '@/hooks/form/useGetForm';
+import { RecordBasicInfo } from '../Common/RecordBasicInfo';
+import { RecordContentArray } from '../Common/RecordContentArray';
+import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
+import { ContentArr } from '@/ducks/accompany/slice';
 
 type Props = {
   type: 'create' | 'edit';
 };
 
 export const BehaviorCreate: NextPage<Props> = ({ type }) => {
-  const router = useRouter();
+  const TITLE = type === 'create' ? '登録' : '更新';
   const focusTrapRef = useFocusTrap();
+  const router = useRouter();
+  const BehaviorId = router.query.id as string;
+  const [isLoading, setIsLoading] = useState(false);
   const loginProviderInfo = useSelector(
     (state: RootState) => state.provider.loginProviderInfo
   );
-  const TITLE = type === 'create' ? '登録' : '更新';
-  const BehaviorId = router.query.id as string;
   const {
-    data: getBehaviorData,
-    isLoading: getBehaviorDataLoding,
+    data: behaviorData,
+    isLoading: behaviorLoding,
     refetch,
   } = useGetBehaviorDataQuery(BehaviorId || skipToken);
-  const [isLoading, setIsLoading] = useState(false);
-  const currentDate = new Date();
   const { data: userList = [] } =
     useGetUserListByServiceQuery('is_kodo');
+  const { data: staffList = [] } =
+    useGetStaffListByServiceQuery('kodo');
   const [createBehavior] = useCreateBehaviorMutation();
   const [updateBehavior] = useUpdateBehaviorMutation();
-  const form = useForm({
-    initialValues: {
-      ...createInitialState,
-      year: currentDate.getFullYear(),
-      month: currentDate.getMonth(),
-      content_arr: Array.from(
-        { length: 40 },
-        () => createInitialState.content_arr[0]
-      ),
-    },
-    validate: {
-      year: (value) => {
-        const { error, text } = validateYear(value);
-        return error ? text : null;
-      },
-      month: (value) => {
-        const { error, text } = validateMonth(value);
-        return error ? text : null;
-      },
-      name: (value) => {
-        const { error, text } = validateName(value);
-        return error ? text : null;
-      },
-    },
-  });
+  const {
+    form,
+    handleChangeDate,
+    handleChangeStaff,
+    handleChangeTime,
+    handleRefresh,
+    amountTime,
+  } = useGetForm(createInitialState, validate);
+  const selectedUser = userList.find(
+    (user) => user.name === form.values.name
+  );
 
   // useFormは再レンダリングされないので
   useEffect(() => {
-    if (!getBehaviorData) return;
+    if (!behaviorData) return;
     refetch();
     const newContentArr = [
-      ...getBehaviorData.content_arr,
+      ...behaviorData.content_arr,
       ...Array.from(
-        { length: 40 - getBehaviorData.content_arr.length },
+        { length: 40 - behaviorData.content_arr.length },
         () => createInitialState.content_arr[0]
       ),
     ];
     form.setValues({
-      ...getBehaviorData,
+      ...behaviorData,
       content_arr: newContentArr,
     });
-  }, [getBehaviorData]);
+  }, [behaviorData]);
 
-  const selectedUser = userList.find(
-    (user) => user.name === form.values.name
-  );
-  const kodoAmount = form.values.content_arr.reduce(
-    (sum, content) => {
-      if (content.start_time === '' || content.end_time === '') {
-        return sum;
-      }
-      return (
-        sum +
-        Number(
-          calcWorkTime(
-            new Date(content.start_time!),
-            new Date(content.end_time!)
-          )
-        )
-      );
-    },
-    0
-  );
-  const handleChangeDate = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    const newContentArr = form.values.content_arr.map(
-      (content, contentIndex) => {
-        return contentIndex === index
-          ? {
-              ...content,
-              work_date: Number(e.target.value),
-            }
-          : content;
-      }
-    );
-    form.setFieldValue('content_arr', newContentArr);
-  };
-  const handleChangeTime = (
-    start_time: Date,
-    end_time: Date,
-    index: number
-  ) => {
-    if (!start_time || !end_time) return;
-    const newContentArr = form.values.content_arr.map(
-      (content, contentIndex) => {
-        const formatStartTime = start_time.toString();
-        const formatEndTime = end_time.toString();
-        return contentIndex === index
-          ? {
-              ...content,
-              start_time: formatStartTime,
-              end_time: formatEndTime,
-            }
-          : content;
-      }
-    );
-    form.setFieldValue('content_arr', newContentArr);
-  };
-  const handleRefresh = (index: number) => {
-    const newContentArr = (form.values.content_arr || []).map(
-      (content, contentIndex) => {
-        return contentIndex === index
-          ? {
-              work_date: 0,
-              service_content: '',
-              start_time: '',
-              end_time: '',
-              staff_name: '',
-            }
-          : content;
-      }
-    );
-    form.setFieldValue('content_arr', newContentArr);
-  };
   const handleSubmit = async () => {
     setIsLoading(true);
     const isOK = await CustomConfirm(
@@ -202,19 +102,21 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
       return;
     }
     // データ整形（空欄がある場合に無視、日付順にソート）
-    const formatArr = form.values.content_arr
-      .filter((content) => {
+    const formatArr: ContentArr[] = form.values.content_arr
+      .filter((content: ContentArr) => {
         return (
           content.work_date && content.start_time && content.end_time
         );
       })
-      .map((content) => {
+      .map((content: ContentArr) => {
         return {
           ...content,
           service_content: '行動援護',
         };
       })
-      .sort((a, b) => a.work_date! - b.work_date!);
+      .sort(
+        (a: ContentArr, b: ContentArr) => a.work_date! - b.work_date!
+      );
     if (formatArr.length === 0) {
       await CustomConfirm(
         '記録は、少なくとも一行は作成ください。',
@@ -246,7 +148,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
       } else {
         const params: UpdateBehaviorParams = {
           ...form.values,
-          id: getBehaviorData!.id,
+          id: behaviorData!.id,
           content_arr: formatArr,
           identification: selectedUser!.identification,
           corporate_id: loginProviderInfo.corporate_id,
@@ -271,172 +173,32 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
     }
     setIsLoading(false);
   };
+
   return (
     <Stack>
+      <LoadingOverlay className="relative" visible={behaviorLoding} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomStepper />
       </Paper>
-      <LoadingOverlay visible={getBehaviorDataLoding} />
-      <form
-        onSubmit={form.onSubmit(handleSubmit)}
-        ref={focusTrapRef}
-        className="relative"
-      >
+      <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
         <Paper withBorder shadow="md" p={30} radius="md">
-          <SimpleGrid cols={6}>
-            <CustomTextInput
-              idText="year"
-              label="西暦"
-              description=""
-              required={false}
-              form={form}
-              formValue="year"
-              minLength={4}
-              maxLength={4}
-            />
-            <CustomTextInput
-              idText="month"
-              label="月"
-              description=""
-              required={false}
-              form={form}
-              formValue="month"
-              minLength={1}
-              maxLength={2}
-            />
-            <Select
-              label="利用者名"
-              searchable
-              nothingFound="No Data"
-              data={userList.map((user) => user.name)}
-              variant="filled"
-              {...form.getInputProps('name')}
-            />
-            <TextInput
-              label="受給者証番号"
-              value={selectedUser?.identification || ''}
-              variant="filled"
-              disabled
-              sx={{
-                '& input:disabled': {
-                  color: 'black',
-                },
-              }}
-            />
-            <TextInput
-              label="契約支給量"
-              value={`${selectedUser?.kodo_amount || 0} 時間/月`}
-              variant="filled"
-              disabled
-              sx={{
-                '& input:disabled': {
-                  color: 'black',
-                },
-              }}
-            />
-            <TextInput
-              label="合計算定時間数"
-              value={`${kodoAmount} 時間`}
-              variant="filled"
-              disabled
-              sx={{
-                '& input:disabled': {
-                  color: 'black',
-                },
-              }}
-            />
-          </SimpleGrid>
-          <Space h="lg" /> <Divider variant="dotted" />
+          <RecordBasicInfo
+            form={form}
+            userList={userList}
+            selectedUser={selectedUser}
+            amountTime={amountTime}
+          />
           <Space h="lg" />
-          <Paper sx={{ overflowX: 'auto' }}>
-            <Table sx={{ width: '550px' }}>
-              <thead>
-                <tr>
-                  <th style={{ width: '100px' }}>日付</th>
-                  <th style={{ width: '100px' }}>曜日</th>
-                  <th style={{ width: '200px' }}>開始-終了時間</th>
-                  <th style={{ width: '150px' }}>算定時間数</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {form.values.content_arr.map((content, index) => (
-                  <tr key={index}>
-                    <td>
-                      <TextInput
-                        variant="filled"
-                        maxLength={2}
-                        onChange={(e) => handleChangeDate(e, index)}
-                        value={content.work_date || ''}
-                      />
-                    </td>
-                    <td>
-                      <TextInput
-                        sx={{
-                          '& input:disabled': { color: 'black' },
-                        }}
-                        value={convertWeekItem(
-                          new Date(
-                            form.values.year,
-                            form.values.month,
-                            form.values.content_arr[index].work_date
-                          )
-                        )}
-                        variant="filled"
-                        disabled
-                      />
-                    </td>
-                    <td>
-                      <TimeRangeInput
-                        icon={<IconClock size={16} />}
-                        variant="filled"
-                        value={convertStartEndTimeFromString2Date(
-                          content.start_time,
-                          content.end_time
-                        )}
-                        onChange={(e) =>
-                          handleChangeTime(e[0], e[1], index)
-                        }
-                      />
-                    </td>
-                    <td>
-                      <TextInput
-                        sx={{
-                          '& input:disabled': { color: 'black' },
-                        }}
-                        value={
-                          form.values.content_arr[index].start_time ||
-                          form.values.content_arr[index].end_time
-                            ? calcWorkTime(
-                                new Date(
-                                  form.values.content_arr[
-                                    index
-                                  ].start_time!
-                                ),
-                                new Date(
-                                  form.values.content_arr[
-                                    index
-                                  ].end_time!
-                                )
-                              )
-                            : ''
-                        }
-                        variant="filled"
-                        disabled
-                      />
-                    </td>
-                    <td>
-                      <ActionIcon
-                        onClick={() => handleRefresh(index)}
-                      >
-                        <IconRefresh />
-                      </ActionIcon>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </Paper>
+          <Divider variant="dotted" />
+          <Space h="lg" />
+          <RecordContentArray
+            form={form}
+            handleChangeDate={handleChangeDate}
+            handleChangeTime={handleChangeTime}
+            staffList={staffList}
+            handleChangeStaff={handleChangeStaff}
+            handleRefresh={handleRefresh}
+          />
           <Space h="xl" />
           <CustomButton type="submit" fullWidth loading={isLoading}>
             {TITLE}

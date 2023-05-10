@@ -9,7 +9,7 @@ import {
   useGetHomeCareListQuery,
 } from '@/ducks/home-care/query';
 import { HomeCareListRecords } from './HomeCareListRecords';
-import { useGetTablePage } from '@/hooks/useGetTablePage';
+import { useGetTablePage } from '@/hooks/table/useGetTablePage';
 import { ReturnHomeCare } from '@/ducks/home-care/slice';
 import { useSelector } from '@/ducks/store';
 import { RootState } from '@/ducks/root-reducer';

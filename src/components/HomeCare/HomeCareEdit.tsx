@@ -4,7 +4,6 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useForm } from '@mantine/form';
 import {
   CreateHomeCare,
-  HomeCareContentArr,
   initialState,
   ReturnHomeCare,
 } from '@/ducks/home-care/slice';
@@ -42,13 +41,10 @@ import { CustomStepper } from '../Common/CustomStepper';
 import { showNotification } from '@mantine/notifications';
 import { getPath } from '@/utils/const/getPath';
 import { ReturnStaff } from '@/ducks/staff/slice';
-import {
-  ReturnStaffSchedule,
-  StaffScheduleContentArr,
-} from '@/ducks/staff-schedule/slice';
 import { format } from 'path';
 import { useSelector } from '@/ducks/store';
 import { RootState } from '@/ducks/root-reducer';
+import { ContentArr } from '@/ducks/accompany/slice';
 
 type Props = {
   userData: ReturnHomeCare;
@@ -245,7 +241,7 @@ export const HomeCareEdit: NextPage<Props> = ({
         formatArr.map(async (contentList) => {
           const staffName = contentList[0].staff_name;
           const { data: getData, error: getError } = await supabase
-            .from(getDb('STAFF_SCHEDULE'))
+            .from(getDb('SCHEDULE'))
             .select('*')
             .eq('year', form.values.year)
             .eq('month', form.values.month)
@@ -261,9 +257,9 @@ export const HomeCareEdit: NextPage<Props> = ({
           }
           if (getData.length) {
             const removeArr = getData[0].content_arr.filter(
-              (content: StaffScheduleContentArr) => {
+              (content: ContentArr) => {
                 const isDuplicateUserName =
-                  content.user_name === form.values.name;
+                  content.staff_name === form.values.name;
                 const isDuplicateServiceContent =
                   content.service_content === '家事援助' ||
                   content.service_content === '身体介護' ||
@@ -282,7 +278,7 @@ export const HomeCareEdit: NextPage<Props> = ({
                 return { ...content, user_name: form.values.name };
               });
             const { error: updateError } = await supabase
-              .from(getDb('STAFF_SCHEDULE'))
+              .from(getDb('SCHEDULE'))
               .update({
                 content_arr: newArr,
               })
@@ -302,7 +298,7 @@ export const HomeCareEdit: NextPage<Props> = ({
               return { ...content, user_name: form.values.name };
             });
             const { error: createError } = await supabase
-              .from(getDb('STAFF_SCHEDULE'))
+              .from(getDb('SCHEDULE'))
               .insert({
                 year: form.values.year,
                 month: form.values.month,
@@ -641,13 +637,13 @@ export const HomeCareEdit: NextPage<Props> = ({
                 <Grid.Col span={1}>
                   <TextInput
                     sx={{ '& input:disabled': { color: 'black' } }}
-                    value={convertWeekItem(
-                      new Date(
-                        form.values.year,
-                        form.values.month,
-                        form.values.content_arr[index].work_date || 1
-                      )
-                    )}
+                    // value={convertWeekItem(
+                    //   new Date(
+                    //     form.values.year,
+                    //     form.values.month,
+                    //     form.values.content_arr[index].work_date || 1
+                    //   )
+                    // )}
                     variant="filled"
                     disabled
                   />

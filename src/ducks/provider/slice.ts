@@ -17,6 +17,17 @@ export type Provider = {
   updated_at: string;
 };
 
+type initialStateType = {
+  loginProviderInfo: {
+    id: string;
+    corporate_id: string;
+    corporate_name: string;
+    office_name: string;
+    email: string;
+    role: 'office' | 'corporate' | 'admin';
+  };
+};
+
 export type CreateProviderWithSignUpParams = Pick<
   Provider,
   'email' | 'password' | 'password_confirmation'
@@ -59,14 +70,14 @@ export const loginInitialState = {
   password: '',
 };
 
-export const initialState = {
+export const initialState: initialStateType = {
   loginProviderInfo: {
     id: '',
     corporate_id: '',
     corporate_name: '',
     office_name: '',
     email: '',
-    role: '',
+    role: 'corporate',
   },
 };
 
@@ -84,9 +95,12 @@ const providerSlice = createSlice({
       (state, action: any) => {
         state.loginProviderInfo.id = action.payload.id;
         state.loginProviderInfo.email = action.payload.email;
-        state.loginProviderInfo.corporate_id = action.payload.corporate_id;
-        state.loginProviderInfo.corporate_name = action.payload.corporate_name;
-        state.loginProviderInfo.office_name = action.payload.office_name;
+        state.loginProviderInfo.corporate_id =
+          action.payload.corporate_id;
+        state.loginProviderInfo.corporate_name =
+          action.payload.corporate_name;
+        state.loginProviderInfo.office_name =
+          action.payload.office_name;
         state.loginProviderInfo.role = action.payload.role;
       }
     );

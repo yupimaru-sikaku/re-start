@@ -1,13 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { PostgrestError } from '@supabase/supabase-js';
-
-export type BehaviorContentArr = {
-  work_date: number; // サービス提供日
-  service_content: string; // サービス内容
-  start_time: string; // 開始時間
-  end_time: string; // 終了時間
-  staff_name: string; // スタッフ名
-};
+import { ContentArr } from '../accompany/slice';
 
 type Behavior = {
   id: string;
@@ -17,7 +10,7 @@ type Behavior = {
   month: number; // 作成する月
   name: string; // 利用者名
   identification: string; // 受給者証番号
-  content_arr: BehaviorContentArr[];
+  content_arr: ContentArr[];
   status: number; // 記録票の進捗状況
   is_display: boolean; // 表示するか
   created_at: string; // 作成日時
@@ -57,6 +50,7 @@ export const createInitialState: CreateBehaviorParams = {
       start_time: '',
       end_time: '',
       staff_name: '',
+      city: '',
     },
   ],
   status: 0,

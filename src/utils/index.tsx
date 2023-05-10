@@ -5,6 +5,11 @@ import {
 
 export const PAGE_SIZE = 5;
 
+export const dokoColor = '#ccff66';
+export const kodoColor = '#fce2c4';
+export const idoColor = '#ffdc00';
+export const kyotakuColor = '#87cefa';
+
 // 法人IDを自動生成
 export const generateRandomCorporateId = (): string => {
   const characters =
@@ -41,10 +46,18 @@ export const convertSupabaseTime = (supabaseTime: string): string => {
 // date.getDay()で取得した数字を曜日に変換
 // Date型の日付をString型の曜日に変換
 const weekItems = ['日', '月', '火', '水', '木', '金', '土'];
-export const convertWeekItem = (date: Date): string => {
-  return weekItems[date.getDay()];
+export const convertWeekItem = (
+  year: number,
+  month: number,
+  day: number
+): string => {
+  if (day) {
+    const targetDate = new Date(year, month - 1, day);
+    return weekItems[targetDate.getDay()];
+  } else {
+    return '';
+  }
 };
-
 // Date型の開始時間と終了時間から働いた時間をString型で返す
 export const calcWorkTime = (
   start_time: Date | null,

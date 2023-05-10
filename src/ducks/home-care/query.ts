@@ -11,10 +11,10 @@ import {
   UpdateHomeCareResult,
 } from './slice';
 
-export const HomeCareApi = createApi({
-  reducerPath: 'HomeCareApi',
+export const homeCareApi = createApi({
+  reducerPath: 'homeCareApi',
   baseQuery: fakeBaseQuery(),
-  tagTypes: ['HomeCareApi'],
+  tagTypes: ['HomeCare'],
   endpoints: (builder) => ({
     /**
      * GET/全実績記録票のリストを取得
@@ -129,4 +129,4 @@ export const {
   useGetHomeCareByIdQuery,
   useUpdateHomeCareMutation,
   useDeleteHomeCareMutation,
-} = HomeCareApi;
+} = homeCareApi;

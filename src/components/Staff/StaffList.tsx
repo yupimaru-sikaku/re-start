@@ -7,7 +7,7 @@ import {
 } from '@/ducks/staff/query';
 import { CustomConfirm } from 'src/components/Common/CustomConfirm';
 import { StaffListRecords } from './StaffListRecords';
-import { useGetTablePage } from '@/hooks/useGetTablePage';
+import { useGetTablePage } from '@/hooks/table/useGetTablePage';
 
 export const StaffList: NextPage = () => {
   const [page, setPage] = useState(1);

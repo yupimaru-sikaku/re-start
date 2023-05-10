@@ -9,7 +9,6 @@ import { providerApi } from 'src/ducks/provider/query';
 import { staffApi } from 'src/ducks/staff/query';
 import rootReducer, { RootState } from './root-reducer';
 import { userApi } from './user/query';
-import { HomeCareApi } from './home-care/query';
 import {
   persistReducer,
   persistStore,
@@ -23,6 +22,9 @@ import {
 import storage from 'redux-persist/lib/storage';
 import { behaviorApi } from './behavior/query';
 import { mobilityApi } from './mobility/query';
+import { scheduleApi } from './schedule/query';
+import { accompanyApi } from './accompany/query';
+import { homeCareApi } from './home-care/query';
 
 const persistConfig = {
   key: 'root',
@@ -34,6 +36,7 @@ const persistConfig = {
     'homeCare',
     'behavior',
     'mobility',
+    'schedule',
   ],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -57,9 +60,11 @@ export const store = configureStore({
       providerApi.middleware,
       staffApi.middleware,
       userApi.middleware,
-      HomeCareApi.middleware,
+      homeCareApi.middleware,
       behaviorApi.middleware,
-      mobilityApi.middleware
+      mobilityApi.middleware,
+      scheduleApi.middleware,
+      accompanyApi.middleware
     ),
 });
 

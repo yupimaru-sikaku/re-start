@@ -431,14 +431,14 @@ export const HomeCareCreate: NextPage = () => {
                         sx={{
                           '& input:disabled': { color: 'black' },
                         }}
-                        value={convertWeekItem(
-                          new Date(
-                            form.values.year,
-                            form.values.month,
-                            form.values.content_arr[index]
-                              .work_date || 1
-                          )
-                        )}
+                        // value={convertWeekItem(
+                        //   new Date(
+                        //     form.values.year,
+                        //     form.values.month,
+                        //     form.values.content_arr[index]
+                        //       .work_date || 1
+                        //   )
+                        // )}
                         variant="filled"
                         disabled
                       />
