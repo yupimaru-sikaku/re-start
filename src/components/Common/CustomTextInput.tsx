@@ -31,6 +31,7 @@ export const CustomTextInput = ({
   return (
     <TextInput
       sx={{ '& input:disabled': { color: 'black' } }}
+      type="number"
       id={idText}
       label={label}
       description={description}
