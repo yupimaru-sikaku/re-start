@@ -27,6 +27,7 @@ export const mobilityApi = createApi({
         const { data, error } = await supabase
           .from(getDb('MOBILITY'))
           .select('*')
+          .eq('is_display', true)
           .order('updated_at', { ascending: false });
         return { data, error };
       },
@@ -45,6 +46,7 @@ export const mobilityApi = createApi({
           .from(getDb('MOBILITY'))
           .select('*')
           .eq('corporate_id', corporateId)
+          .eq('is_display', true)
           .order('updated_at', { ascending: false });
         return { data, error };
       },
@@ -61,6 +63,7 @@ export const mobilityApi = createApi({
             .from(getDb('MOBILITY'))
             .select('*')
             .eq('login_id', loginId)
+            .eq('is_display', true)
             .order('updated_at', { ascending: false });
           return { data, error };
         },

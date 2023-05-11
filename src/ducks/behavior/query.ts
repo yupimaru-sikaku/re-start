@@ -20,13 +20,14 @@ export const behaviorApi = createApi({
     /**
      * GET/全実績記録票のリストを取得
      * @param {}
-     * @return {ReturnBehavior[][]}
+     * @return {ReturnBehavior[]}
      */
     getBehaviorList: builder.query<ReturnBehavior[], void>({
       queryFn: async (): Promise<any> => {
         const { data, error } = await supabase
           .from(getDb('BEHAVIOR'))
           .select('*')
+          .eq('is_display', true)
           .order('updated_at', { ascending: false });
         return { data, error };
       },
@@ -34,7 +35,7 @@ export const behaviorApi = createApi({
     /**
      * GET/法人IDに属する実績記録票のリストを取得
      * @param {string} corporateId
-     * @return {ReturnBehavior[][]}
+     * @return {ReturnBehavior[]}
      */
     getBehaviorListByCorporateId: builder.query<
       ReturnBehavior[],
@@ -45,6 +46,7 @@ export const behaviorApi = createApi({
           .from(getDb('BEHAVIOR'))
           .select('*')
           .eq('corporate_id', corporateId)
+          .eq('is_display', true)
           .order('updated_at', { ascending: false });
         return { data, error };
       },
@@ -61,6 +63,7 @@ export const behaviorApi = createApi({
             .from(getDb('BEHAVIOR'))
             .select('*')
             .eq('login_id', loginId)
+            .eq('is_display', true)
             .order('updated_at', { ascending: false });
           return { data, error };
         },

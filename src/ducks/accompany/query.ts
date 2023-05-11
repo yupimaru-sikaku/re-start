@@ -1,8 +1,5 @@
 import { getDb, supabase } from '@/libs/supabase/supabase';
-import {
-  createApi,
-  fakeBaseQuery,
-} from '@reduxjs/toolkit/query/react';
+import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   DeleteAccompanyResult,
   ReturnAccompany,
@@ -20,13 +17,14 @@ export const accompanyApi = createApi({
     /**
      * GET/全実績記録票のリストを取得
      * @param {}
-     * @return {ReturnAccompany[][]}
+     * @return {ReturnAccompany[]}
      */
     getAccompanyList: builder.query<ReturnAccompany[], void>({
       queryFn: async (): Promise<any> => {
         const { data, error } = await supabase
           .from(getDb('ACCOMPANY'))
           .select('*')
+          .eq('is_display', true)
           .order('updated_at', { ascending: false });
         return { data, error };
       },
@@ -36,15 +34,13 @@ export const accompanyApi = createApi({
      * @param {string} corporateId
      * @return {ReturnAccompany[][]}
      */
-    getAccompanyListByCorporateId: builder.query<
-      ReturnAccompany[],
-      string
-    >({
+    getAccompanyListByCorporateId: builder.query<ReturnAccompany[], string>({
       queryFn: async (corporateId: string): Promise<any> => {
         const { data, error } = await supabase
           .from(getDb('ACCOMPANY'))
           .select('*')
           .eq('corporate_id', corporateId)
+          .eq('is_display', true)
           .order('updated_at', { ascending: false });
         return { data, error };
       },
@@ -54,15 +50,13 @@ export const accompanyApi = createApi({
      * @param {string} loginId
      * @return {ReturnAccompany[]}
      */
-    getAccompanyListByLoginId: builder.query<
-      ReturnAccompany[],
-      string
-    >({
+    getAccompanyListByLoginId: builder.query<ReturnAccompany[], string>({
       queryFn: async (loginId: string): Promise<any> => {
         const { data, error } = await supabase
           .from(getDb('ACCOMPANY'))
           .select('*')
           .eq('login_id', loginId)
+          .eq('is_display', true)
           .order('updated_at', { ascending: false });
         return { data, error };
       },
@@ -92,18 +86,16 @@ export const accompanyApi = createApi({
       queryFn: async (
         params: CreateAccompanyParams
       ): Promise<CreateAccompanyResult> => {
-        const { error } = await supabase
-          .from(getDb('ACCOMPANY'))
-          .insert({
-            corporate_id: params.corporate_id,
-            login_id: params.login_id,
-            year: params.year,
-            month: params.month,
-            identification: params.identification,
-            name: params.name,
-            content_arr: params.content_arr,
-            status: params.status,
-          });
+        const { error } = await supabase.from(getDb('ACCOMPANY')).insert({
+          corporate_id: params.corporate_id,
+          login_id: params.login_id,
+          year: params.year,
+          month: params.month,
+          identification: params.identification,
+          name: params.name,
+          content_arr: params.content_arr,
+          status: params.status,
+        });
         return { error };
       },
     }),

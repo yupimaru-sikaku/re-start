@@ -1,21 +1,15 @@
-import { AccompanyList } from '@/components/Accompany/AccompanyList';
-import { CustomButton } from '@/components/Common/CustomButton';
+import React from 'react';
+import Link from 'next/link';
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
-import { ReturnAccompany } from '@/ducks/accompany/slice';
-import { useAuth } from '@/hooks/auth/useAuth';
-import { getDb, supabase } from '@/libs/supabase/supabase';
+import { CustomButton } from '@/components/Common/CustomButton';
+import { AccompanyList } from '@/components/Accompany/AccompanyList';
 import { getPath } from '@/utils/const/getPath';
+import { useAuth } from '@/hooks/auth/useAuth';
 import { Space } from '@mantine/core';
 import { NextPage } from 'next';
-import Link from 'next/link';
-import React from 'react';
 
-type Props = {
-  accompanyList: ReturnAccompany[];
-};
-
-const AccompanyPage: NextPage<Props> = ({ accompanyList }) => {
+const AccompanyPage: NextPage = () => {
   useAuth();
   return (
     <DashboardLayout title="同行援護">
@@ -26,22 +20,10 @@ const AccompanyPage: NextPage<Props> = ({ accompanyList }) => {
           </a>
         </Link>
         <Space h="md" />
-        <AccompanyList accompanyList={accompanyList} />
+        <AccompanyList />
       </PageContainer>
     </DashboardLayout>
   );
 };
 
 export default AccompanyPage;
-
-export const getStaticProps = async () => {
-  const { data: accompanyList } = await supabase
-    .from(getDb('ACCOMPANY'))
-    .select('*')
-    .order('updated_at', { ascending: false });
-  return {
-    props: {
-      accompanyList,
-    },
-  };
-};

@@ -1,14 +1,15 @@
-import { CustomButton } from '@/components/Common/CustomButton';
+import React from 'react';
+import Link from 'next/link';
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
-import { BehaviorList } from '@/components/Behavior/BehaviorList';
 import { PageContainer } from '@/components/PageContainer';
+import { CustomButton } from '@/components/Common/CustomButton';
+import { BehaviorList } from '@/components/Behavior/BehaviorList';
 import { getPath } from '@/utils/const/getPath';
 import { Space } from '@mantine/core';
-import Link from 'next/link';
-import React from 'react';
 import { useAuth } from '@/hooks/auth/useAuth';
+import { NextPage } from 'next';
 
-const BehaviorPage = () => {
+const BehaviorPage: NextPage = () => {
   useAuth();
   return (
     <DashboardLayout title="行動援護">

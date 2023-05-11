@@ -142,12 +142,9 @@ export const ITEMS = [
     label: '移動支援',
     Icon: Walk,
   },
-  { href: getPath('SIGN_UP'), label: '設定', Icon: Settings },
 ];
 
-export const SideNav: FC<{ className?: string }> = ({
-  className,
-}) => {
+export const SideNav: FC<{ className?: string }> = ({ className }) => {
   const dispatch = useAppDispatch();
   const [collapsed, handlers] = useDisclosure(false);
   const { classes, cx } = useStyles({ collapsed });
@@ -197,10 +194,7 @@ export const SideNav: FC<{ className?: string }> = ({
 
       <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
         <Navbar.Section className={classes.footer}>
-          <UnstyledButton
-            className={classes.link}
-            onClick={handlers.toggle}
-          >
+          <UnstyledButton className={classes.link} onClick={handlers.toggle}>
             {collapsed ? (
               <ArrowRight className={classes.linkIcon} />
             ) : (

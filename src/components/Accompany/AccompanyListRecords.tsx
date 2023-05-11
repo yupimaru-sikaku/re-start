@@ -2,17 +2,17 @@ import { convertSupabaseTime } from '@/utils';
 import React from 'react';
 import { CustomButton } from '../Common/CustomButton';
 import { ActionIcon, Group } from '@mantine/core';
-import Link from 'next/link';
 import { getPath } from '@/utils/const/getPath';
 import { IconEdit, IconTrash } from '@tabler/icons';
-import { ReturnBehavior } from '@/ducks/behavior/slice';
+import { ReturnAccompany } from '@/ducks/accompany/slice';
+import Link from 'next/link';
 
 type Props = {
   handleDelete: (id: string) => Promise<void>;
-  handlePDFDownload: (behavior: ReturnBehavior) => Promise<void>;
+  handlePDFDownload: (accompany: ReturnAccompany) => Promise<void>;
 };
 
-export const BehaviorListRecords = ({
+export const AccompanyListRecords = ({
   handleDelete,
   handlePDFDownload,
 }: Props) => {
@@ -24,31 +24,30 @@ export const BehaviorListRecords = ({
       accessor: 'download',
       title: 'ダウンロード',
       width: 150,
-      render: (behavior: ReturnBehavior) => (
+      render: (accompany: ReturnAccompany) => (
         <CustomButton
           color="cyan"
           variant="light"
-          onClick={() => handlePDFDownload(behavior)}
+          onClick={() => handlePDFDownload(accompany)}
         >
           ダウンロード
         </CustomButton>
       ),
     },
-
     {
       accessor: 'actions',
       title: 'アクション',
       width: 90,
-      render: (behavior: ReturnBehavior) => (
+      render: (accompany: ReturnAccompany) => (
         <Group spacing={4} position="right" noWrap>
-          <Link href={getPath('MOBILITY_EDIT', behavior.id)}>
+          <Link href={getPath('ACCOMPANY_EDIT', accompany.id)}>
             <a>
               <ActionIcon color="blue">
                 <IconEdit size={20} />
               </ActionIcon>
             </a>
           </Link>
-          <ActionIcon color="red" onClick={() => handleDelete(behavior.id)}>
+          <ActionIcon color="red" onClick={() => handleDelete(accompany.id)}>
             <IconTrash size={20} />
           </ActionIcon>
         </Group>
@@ -58,8 +57,8 @@ export const BehaviorListRecords = ({
       accessor: 'updatedAt',
       title: '更新日時',
       width: 150,
-      render: (behavior: ReturnBehavior) =>
-        behavior.updated_at ? convertSupabaseTime(behavior.updated_at) : '',
+      render: (accompany: ReturnAccompany) =>
+        accompany.updated_at ? convertSupabaseTime(accompany.updated_at) : '',
     },
   ];
 };
