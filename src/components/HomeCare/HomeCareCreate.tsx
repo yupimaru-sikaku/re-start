@@ -60,7 +60,7 @@ export const HomeCareCreate: NextPage = () => {
       year: currentDate.getFullYear(),
       month: currentDate.getMonth(),
       content_arr: Array.from(
-        { length: 40 },
+        { length: 31 },
         () => initialState.content_arr[0]
       ),
     },
@@ -469,23 +469,23 @@ export const HomeCareCreate: NextPage = () => {
                         sx={{
                           '& input:disabled': { color: 'black' },
                         }}
-                        value={
-                          form.values.content_arr[index].start_time ||
-                          form.values.content_arr[index].end_time
-                            ? calcWorkTime(
-                                new Date(
-                                  form.values.content_arr[
-                                    index
-                                  ].start_time!
-                                ),
-                                new Date(
-                                  form.values.content_arr[
-                                    index
-                                  ].end_time!
-                                )
-                              )
-                            : undefined
-                        }
+                        // value={
+                        //   form.values.content_arr[index].start_time ||
+                        //   form.values.content_arr[index].end_time
+                        //     ? calcWorkTime(
+                        //         new Date(
+                        //           form.values.content_arr[
+                        //             index
+                        //           ].start_time!
+                        //         ),
+                        //         new Date(
+                        //           form.values.content_arr[
+                        //             index
+                        //           ].end_time!
+                        //         )
+                        //       )
+                        //     : undefined
+                        // }
                         variant="filled"
                         disabled
                       />

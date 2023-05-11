@@ -81,7 +81,7 @@ export const HomeCareEdit: NextPage<Props> = ({
       content_arr: [
         ...userData.content_arr,
         ...Array.from(
-          { length: 40 - userData.content_arr.length },
+          { length: 31 - userData.content_arr.length },
           () => initialState.content_arr[0]
         ),
       ],
@@ -689,12 +689,8 @@ export const HomeCareEdit: NextPage<Props> = ({
                   <TextInput
                     sx={{ '& input:disabled': { color: 'black' } }}
                     value={calcWorkTime(
-                      new Date(
-                        form.values.content_arr[index].start_time!
-                      ),
-                      new Date(
-                        form.values.content_arr[index].end_time!
-                      )
+                      content.start_time,
+                      content.end_time
                     )}
                     variant="filled"
                     disabled

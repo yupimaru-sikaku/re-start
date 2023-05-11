@@ -5,7 +5,7 @@ import {
 
 export const PAGE_SIZE = 5;
 
-export const dokoColor = '#ccff66';
+export const dokoColor = '#008000';
 export const kodoColor = '#fce2c4';
 export const idoColor = '#ffdc00';
 export const kyotakuColor = '#87cefa';
@@ -60,11 +60,13 @@ export const convertWeekItem = (
 };
 // Date型の開始時間と終了時間から働いた時間をString型で返す
 export const calcWorkTime = (
-  start_time: Date | null,
-  end_time: Date | null
+  start_time: string,
+  end_time: string
 ): string => {
   if (!start_time || !end_time) return '0';
-  const time = end_time.getTime() - start_time.getTime();
+  const startTime = new Date(start_time);
+  const endTime = new Date(end_time);
+  const time = endTime.getTime() - startTime.getTime();
   return (time / 3600000).toFixed(1);
 };
 
@@ -115,10 +117,7 @@ export const calcEachWorkTime = (
 
   (contentArr || []).map((content) => {
     const workTime = Number(
-      calcWorkTime(
-        new Date(content.start_time!),
-        new Date(content.end_time!)
-      )
+      calcWorkTime(content.start_time!, content.end_time!)
     );
 
     switch (content.service_content) {

@@ -1,10 +1,4 @@
-import {
-  Divider,
-  LoadingOverlay,
-  Paper,
-  Space,
-  Stack,
-} from '@mantine/core';
+import { Divider, LoadingOverlay, Paper, Space, Stack } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import { CustomStepper } from '../Common/CustomStepper';
 import {
@@ -32,7 +26,7 @@ import { RootState } from '@/ducks/root-reducer';
 import { CustomButton } from '../Common/CustomButton';
 import { NextPage } from 'next';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
-import { useGetForm } from '@/hooks/form/useGetForm';
+import { UseGetFormType, useGetForm } from '@/hooks/form/useGetForm';
 import { RecordBasicInfo } from '../Common/RecordBasicInfo';
 import { RecordContentArray } from '../Common/RecordContentArray';
 import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
@@ -56,10 +50,8 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
     isLoading: behaviorLoding,
     refetch,
   } = useGetBehaviorDataQuery(BehaviorId || skipToken);
-  const { data: userList = [] } =
-    useGetUserListByServiceQuery('is_kodo');
-  const { data: staffList = [] } =
-    useGetStaffListByServiceQuery('kodo');
+  const { data: userList = [] } = useGetUserListByServiceQuery('is_kodo');
+  const { data: staffList = [] } = useGetStaffListByServiceQuery('kodo');
   const [createBehavior] = useCreateBehaviorMutation();
   const [updateBehavior] = useUpdateBehaviorMutation();
   const {
@@ -69,10 +61,13 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
     handleChangeTime,
     handleRefresh,
     amountTime,
-  } = useGetForm(createInitialState, validate);
-  const selectedUser = userList.find(
-    (user) => user.name === form.values.name
+  }: UseGetFormType<CreateBehaviorParams> = useGetForm(
+    createInitialState,
+    behaviorData,
+    refetch,
+    validate
   );
+  const selectedUser = userList.find((user) => user.name === form.values.name);
 
   // useFormは再レンダリングされないので
   useEffect(() => {
@@ -81,7 +76,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
     const newContentArr = [
       ...behaviorData.content_arr,
       ...Array.from(
-        { length: 40 - behaviorData.content_arr.length },
+        { length: 31 - behaviorData.content_arr.length },
         () => createInitialState.content_arr[0]
       ),
     ];
@@ -104,9 +99,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
     // データ整形（空欄がある場合に無視、日付順にソート）
     const formatArr: ContentArr[] = form.values.content_arr
       .filter((content: ContentArr) => {
-        return (
-          content.work_date && content.start_time && content.end_time
-        );
+        return content.work_date && content.start_time && content.end_time;
       })
       .map((content: ContentArr) => {
         return {
@@ -114,14 +107,9 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
           service_content: '行動援護',
         };
       })
-      .sort(
-        (a: ContentArr, b: ContentArr) => a.work_date! - b.work_date!
-      );
+      .sort((a: ContentArr, b: ContentArr) => a.work_date! - b.work_date!);
     if (formatArr.length === 0) {
-      await CustomConfirm(
-        '記録は、少なくとも一行は作成ください。',
-        'Caution'
-      );
+      await CustomConfirm('記録は、少なくとも一行は作成ください。', 'Caution');
       setIsLoading(false);
       return;
     }

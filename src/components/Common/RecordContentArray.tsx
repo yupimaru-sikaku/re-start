@@ -3,13 +3,7 @@ import { RootState } from '@/ducks/root-reducer';
 import { ReturnStaff } from '@/ducks/staff/slice';
 import { useSelector } from '@/ducks/store';
 import { calcWorkTime, convertWeekItem } from '@/utils';
-import {
-  ActionIcon,
-  Paper,
-  Select,
-  Table,
-  TextInput,
-} from '@mantine/core';
+import { ActionIcon, Paper, Select, Table, TextInput } from '@mantine/core';
 import { TimeRangeInput } from '@mantine/dates';
 import { UseFormReturnType } from '@mantine/form';
 import { IconClock, IconRefresh } from '@tabler/icons';
@@ -36,6 +30,15 @@ export const RecordContentArray: NextPage<Props> = ({
   const loginProviderInfo = useSelector(
     (state: RootState) => state.provider.loginProviderInfo
   );
+  const convertTimeRange = (
+    content: ContentArr
+  ): [Date | null, Date | null] => {
+    if (content.start_time) {
+      return [new Date(content.start_time), new Date(content.end_time)];
+    }
+    return [null, null];
+  };
+
   return (
     <Paper sx={{ overflowX: 'auto' }}>
       <Table sx={{ width: '800px' }}>
@@ -48,98 +51,73 @@ export const RecordContentArray: NextPage<Props> = ({
             {loginProviderInfo.role === 'admin' && (
               <th style={{ width: '200px' }}>スタッフ名</th>
             )}
-            <th></th>
+            <th style={{ width: '80px' }}>リセット</th>
           </tr>
         </thead>
         <tbody>
-          {form.values.content_arr.map(
-            (content: ContentArr, index: number) => (
-              <tr key={index}>
+          {form.values.content_arr.map((content: ContentArr, index: number) => (
+            <tr key={index}>
+              <td>
+                <TextInput
+                  variant="filled"
+                  maxLength={2}
+                  value={content.work_date || ''}
+                  onChange={(e) => handleChangeDate(e, index)}
+                />
+              </td>
+              <td>
+                <TextInput
+                  sx={{
+                    '& input:disabled': { color: 'black' },
+                  }}
+                  value={convertWeekItem(
+                    form.values.year,
+                    form.values.month,
+                    content.work_date
+                  )}
+                  variant="filled"
+                  disabled
+                />
+              </td>
+              <td>
+                <TimeRangeInput
+                  icon={<IconClock size={16} />}
+                  variant="filled"
+                  value={convertTimeRange(content)}
+                  onChange={(e) => handleChangeTime(e[0], e[1], index)}
+                />
+              </td>
+              <td>
+                <TextInput
+                  sx={{
+                    '& input:disabled': { color: 'black' },
+                  }}
+                  value={calcWorkTime(content.start_time, content.end_time)}
+                  variant="filled"
+                  disabled
+                />
+              </td>
+              {loginProviderInfo.role === 'admin' && (
                 <td>
-                  <TextInput
+                  <Select
+                    searchable
+                    nothingFound="No Data"
+                    data={staffList.map((staff) => staff.name)}
+                    value={content.staff_name}
                     variant="filled"
-                    maxLength={2}
-                    value={content.work_date || ''}
-                    onChange={(e) => handleChangeDate(e, index)}
-                  />
-                </td>
-                <td>
-                  <TextInput
-                    sx={{
-                      '& input:disabled': { color: 'black' },
-                    }}
-                    value={convertWeekItem(
-                      form.values.year,
-                      form.values.month,
-                      content.work_date
-                    )}
-                    variant="filled"
-                    disabled
-                  />
-                </td>
-                <td>
-                  <TimeRangeInput
-                    icon={<IconClock size={16} />}
-                    variant="filled"
-                    value={
-                      content.start_time
-                        ? [
-                            new Date(content.start_time),
-                            new Date(content.end_time),
-                          ]
-                        : [null, null]
+                    onChange={(staffName: string) =>
+                      handleChangeStaff(staffName, index)
                     }
-                    onChange={(e) =>
-                      handleChangeTime(e[0], e[1], index)
-                    }
                   />
                 </td>
-                <td>
-                  <TextInput
-                    sx={{
-                      '& input:disabled': { color: 'black' },
-                    }}
-                    value={
-                      form.values.content_arr[index].start_time ||
-                      form.values.content_arr[index].end_time
-                        ? calcWorkTime(
-                            new Date(
-                              form.values.content_arr[
-                                index
-                              ].start_time!
-                            ),
-                            new Date(
-                              form.values.content_arr[index].end_time!
-                            )
-                          )
-                        : ''
-                    }
-                    variant="filled"
-                    disabled
-                  />
-                </td>
-                {loginProviderInfo.role === 'admin' && (
-                  <td>
-                    <Select
-                      searchable
-                      nothingFound="No Data"
-                      data={staffList.map((staff) => staff.name)}
-                      value={content.staff_name}
-                      variant="filled"
-                      onChange={(staffName: string) =>
-                        handleChangeStaff(staffName, index)
-                      }
-                    />
-                  </td>
-                )}
-                <td>
-                  <ActionIcon onClick={() => handleRefresh(index)}>
-                    <IconRefresh />
-                  </ActionIcon>
-                </td>
-              </tr>
-            )
-          )}
+              )}
+              <td>
+                <ActionIcon onClick={() => handleRefresh(index)}>
+                  <IconRefresh />
+                </ActionIcon>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </Table>
     </Paper>

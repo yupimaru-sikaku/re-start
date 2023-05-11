@@ -1,17 +1,11 @@
 import { getPath } from '@/utils/const/getPath';
-import {
-  Divider,
-  LoadingOverlay,
-  Paper,
-  Space,
-  Stack,
-} from '@mantine/core';
+import { Divider, LoadingOverlay, Paper, Space, Stack } from '@mantine/core';
 import { useFocusTrap } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { CustomButton } from '../Common/CustomButton';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { CustomStepper } from '../Common/CustomStepper';
@@ -21,7 +15,6 @@ import {
   ContentArr,
   CreateAccompanyParams,
   CreateAccompanyResult,
-  UpdateAccompanyParams,
   UpdateAccompanyResult,
   createInitialState,
 } from '@/ducks/accompany/slice';
@@ -33,9 +26,17 @@ import {
   useUpdateAccompanyMutation,
 } from '@/ducks/accompany/query';
 import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
-import { CreateScheduleParams } from '@/ducks/schedule/slice';
-import { useCreateScheduleMutation } from '@/ducks/schedule/query';
-import { useGetForm } from '@/hooks/form/useGetForm';
+import {
+  CreateScheduleParams,
+  CreateScheduleResult,
+  UpdateScheduleResult,
+} from '@/ducks/schedule/slice';
+import {
+  useCreateScheduleMutation,
+  useGetScheduleListQuery,
+  useUpdateScheduleMutation,
+} from '@/ducks/schedule/query';
+import { UseGetFormType, useGetForm } from '@/hooks/form/useGetForm';
 import { RecordBasicInfo } from '../Common/RecordBasicInfo';
 import { RecordContentArray } from '../Common/RecordContentArray';
 import { validate } from '@/utils/validate/accompany';
@@ -55,16 +56,17 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
   );
   const {
     data: accompanyData,
-    isLoading: accompanyLoding,
+    isLoading: accompanyLoading,
     refetch,
   } = useGetAccompanyDataQuery(AccompanyId || skipToken);
-  const { data: userList = [] } =
-    useGetUserListByServiceQuery('is_doko');
-  const { data: staffList = [] } =
-    useGetStaffListByServiceQuery('doko');
+  const { data: userList = [] } = useGetUserListByServiceQuery('is_doko');
+  const { data: staffList = [] } = useGetStaffListByServiceQuery('doko');
+  // TODO: 作成・更新の時のみ呼び出すようにしたい
+  const { data: scheduleList = [] } = useGetScheduleListQuery();
   const [createAccompany] = useCreateAccompanyMutation();
   const [updateAccompany] = useUpdateAccompanyMutation();
   const [createSchedule] = useCreateScheduleMutation();
+  const [updateSchedule] = useUpdateScheduleMutation();
   const {
     form,
     handleChangeDate,
@@ -72,27 +74,13 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
     handleChangeTime,
     handleRefresh,
     amountTime,
-  } = useGetForm(createInitialState, validate);
-  const selectedUser = userList.find(
-    (user) => user.name === form.values.name
+  }: UseGetFormType<CreateAccompanyParams> = useGetForm(
+    createInitialState,
+    accompanyData,
+    refetch,
+    validate
   );
-
-  // useFormは再レンダリングされないので
-  useEffect(() => {
-    if (!accompanyData) return;
-    refetch();
-    const newContentArr = [
-      ...accompanyData.content_arr,
-      ...Array.from(
-        { length: 40 - accompanyData.content_arr.length },
-        () => createInitialState.content_arr[0]
-      ),
-    ];
-    form.setValues({
-      ...accompanyData,
-      content_arr: newContentArr,
-    });
-  }, [accompanyData]);
+  const selectedUser = userList.find((user) => user.name === form.values.name);
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -104,76 +92,113 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
       setIsLoading(false);
       return;
     }
-    // データ整形（空欄がある場合に無視、日付順にソート）
-    const formatArr: ContentArr[] = form.values.content_arr
-      .filter((content: ContentArr) => {
-        return (
-          content.work_date && content.start_time && content.end_time
-        );
+    // 空欄がある場合に除外して市区町村とサービス種別を加えて日付順にソート
+    const formatArr = form.values.content_arr
+      .filter((content) => {
+        return content.work_date && content.start_time && content.end_time;
       })
-      .map((content: ContentArr) => {
+      .map((content) => {
         return {
           ...content,
           city: selectedUser!.city,
           service_content: '同行援護',
         };
       })
-      .sort(
-        (a: ContentArr, b: ContentArr) => a.work_date! - b.work_date!
-      );
+      .sort((a: ContentArr, b: ContentArr) => a.work_date! - b.work_date!);
     if (formatArr.length === 0) {
-      await CustomConfirm(
-        '記録は、少なくとも一行は作成ください。',
-        'Caution'
-      );
+      await CustomConfirm('記録は、少なくとも一行は作成ください。', 'Caution');
       setIsLoading(false);
       return;
     }
     try {
-      if (type === 'create') {
-        const params: CreateAccompanyParams = {
-          ...form.values,
-          content_arr: formatArr,
-          identification: selectedUser!.identification,
-          corporate_id: loginProviderInfo.corporate_id,
-          login_id: loginProviderInfo.id,
-        };
-        const { error } = (await createAccompany(
-          params
-        )) as CreateAccompanyResult;
-        if (error) {
-          throw new Error(
-            `記録票の${TITLE}に失敗しました。${error.message}`
-          );
-        }
-        showNotification({
-          icon: <IconCheckbox />,
-          message: `${TITLE}に成功しました！`,
-        });
-        router.push(getPath('ACCOMPANY'));
-      } else {
-        const params: UpdateAccompanyParams = {
-          ...form.values,
-          id: accompanyData!.id,
-          content_arr: formatArr,
-          identification: selectedUser!.identification,
-          corporate_id: loginProviderInfo.corporate_id,
-          login_id: loginProviderInfo.id,
-        };
-        const { error } = (await updateAccompany(
-          params
-        )) as UpdateAccompanyResult;
-        if (error) {
-          throw new Error(
-            `記録票の${TITLE}に失敗しました。${error.message}`
-          );
-        }
-        showNotification({
-          icon: <IconCheckbox />,
-          message: `${TITLE}に成功しました！`,
-        });
-        router.push(getPath('ACCOMPANY'));
+      const params: CreateAccompanyParams = {
+        ...form.values,
+        login_id: loginProviderInfo.id,
+        corporate_id: loginProviderInfo.corporate_id,
+        identification: selectedUser!.identification,
+        content_arr: formatArr,
+      };
+      const { error } =
+        type === 'create'
+          ? ((await createAccompany(params)) as CreateAccompanyResult)
+          : ((await updateAccompany({
+              ...params,
+              id: accompanyData!.id,
+            })) as UpdateAccompanyResult);
+      if (error) {
+        throw new Error(`記録票の${TITLE}に失敗しました。${error.message}`);
       }
+      // スタッフの名前毎に配列を作成した作成した新しい配列を作成[][]
+      const format2DArray = Object.values(
+        formatArr.reduce<{
+          [key: string]: ContentArr[];
+        }>((result, currentValue) => {
+          if (
+            currentValue['staff_name'] !== null &&
+            currentValue['staff_name'] !== undefined
+          ) {
+            (result[currentValue['staff_name']] =
+              result[currentValue['staff_name']] || []).push(currentValue);
+          }
+          return result;
+        }, {})
+      );
+      format2DArray.map(async (contentList) => {
+        const staffName = contentList[0].staff_name;
+        const selectedStaff = staffList.find(
+          (staff) => staff.name === staffName
+        );
+        const selectedSchedule = scheduleList.find(
+          (schedule) =>
+            schedule.year === form.values.year &&
+            schedule.month === form.values.month &&
+            schedule.staff_name === staffName
+        );
+        // スケジュールが存在する場合
+        let newContentArr = [];
+        if (selectedSchedule) {
+          const removeContentArr = selectedSchedule.content_arr.filter(
+            (content) =>
+              content.user_name !== selectedUser!.name &&
+              content.service_content !== '同行援護'
+          );
+          const contentNewList = contentList.map((content) => {
+            let { staff_name, ...rest } = content;
+            return { ...rest, user_name: selectedUser!.name };
+          });
+          newContentArr = [...removeContentArr, ...contentNewList];
+        } else {
+          newContentArr = contentList.map((content) => {
+            let { staff_name, ...rest } = content;
+            return { ...rest, user_name: selectedUser!.name };
+          });
+        }
+        const createScheduleParams: CreateScheduleParams = {
+          staff_id: selectedStaff!.id,
+          staff_name: selectedStaff!.name,
+          year: form.values.year,
+          month: form.values.month,
+          content_arr: newContentArr,
+        };
+        const { error } = selectedSchedule
+          ? ((await updateSchedule({
+              ...createScheduleParams,
+              id: selectedSchedule.id,
+            })) as CreateScheduleResult)
+          : ((await createSchedule(
+              createScheduleParams
+            )) as UpdateScheduleResult);
+        if (error) {
+          throw new Error(
+            `スタッフのスケジュール${TITLE}に失敗しました。${error.message}`
+          );
+        }
+      });
+      showNotification({
+        icon: <IconCheckbox />,
+        message: `${TITLE}に成功しました！`,
+      });
+      router.push(getPath('ACCOMPANY'));
     } catch (error: any) {
       await CustomConfirm(error.message, 'Caution');
       setIsLoading(false);
@@ -184,10 +209,7 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
 
   return (
     <Stack>
-      <LoadingOverlay
-        className="relative"
-        visible={accompanyLoding}
-      />
+      <LoadingOverlay className="relative" visible={accompanyLoading} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomStepper />
       </Paper>
