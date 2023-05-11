@@ -1,20 +1,13 @@
 import { Divider, LoadingOverlay, Paper, Space, Stack } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { CustomStepper } from '../Common/CustomStepper';
 import {
   CreateMobilityParams,
-  CreateMobilityResult,
-  UpdateMobilityParams,
-  UpdateMobilityResult,
   createInitialState,
 } from '@/ducks/mobility/slice';
 import { validate } from '@/utils/validate/mobility';
 import { useFocusTrap } from '@mantine/hooks';
 import { useGetUserListByServiceQuery } from '@/ducks/user/query';
-import { IconCheckbox } from '@tabler/icons';
-import { CustomConfirm } from '../Common/CustomConfirm';
-import { showNotification } from '@mantine/notifications';
-import { getPath } from '@/utils/const/getPath';
 import { useRouter } from 'next/router';
 import {
   useCreateMobilityMutation,
@@ -30,7 +23,12 @@ import { UseGetFormType, useGetForm } from '@/hooks/form/useGetForm';
 import { RecordBasicInfo } from '../Common/RecordBasicInfo';
 import { RecordContentArray } from '../Common/RecordContentArray';
 import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
-import { ContentArr } from '@/ducks/accompany/slice';
+import { submit } from '@/hooks/form/submit';
+import {
+  useCreateScheduleMutation,
+  useGetScheduleListQuery,
+  useUpdateScheduleMutation,
+} from '@/ducks/schedule/query';
 
 type Props = {
   type: 'create' | 'edit';
@@ -52,8 +50,12 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
   } = useGetMobilityDataQuery(mobilityId || skipToken);
   const { data: userList = [] } = useGetUserListByServiceQuery('is_ido');
   const { data: staffList = [] } = useGetStaffListByServiceQuery('ido');
+  // TODO: 作成・更新の時のみ呼び出すようにしたい
+  const { data: scheduleList = [] } = useGetScheduleListQuery();
   const [createMobility] = useCreateMobilityMutation();
   const [updateMobility] = useUpdateMobilityMutation();
+  const [createSchedule] = useCreateScheduleMutation();
+  const [updateSchedule] = useUpdateScheduleMutation();
   const {
     form,
     handleChangeDate,
@@ -69,99 +71,25 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
   );
   const selectedUser = userList.find((user) => user.name === form.values.name);
 
-  // useFormは再レンダリングされないので
-  useEffect(() => {
-    if (!mobilityData) return;
-    refetch();
-    const newContentArr = [
-      ...mobilityData.content_arr,
-      ...Array.from(
-        { length: 31 - mobilityData.content_arr.length },
-        () => createInitialState.content_arr[0]
-      ),
-    ];
-    form.setValues({
-      ...mobilityData,
-      content_arr: newContentArr,
-    });
-  }, [mobilityData]);
-
   const handleSubmit = async () => {
-    setIsLoading(true);
-    const isOK = await CustomConfirm(
-      `実績記録票を${TITLE}しますか？後から修正は可能です。`,
-      '確認画面'
-    );
-    if (!isOK) {
-      setIsLoading(false);
-      return;
-    }
-    // データ整形（空欄がある場合に無視、日付順にソート）
-    const formatArr: ContentArr[] = form.values.content_arr
-      .filter((content: ContentArr) => {
-        return content.work_date && content.start_time && content.end_time;
-      })
-      .map((content: ContentArr) => {
-        return {
-          ...content,
-          service_content: '行動援護',
-        };
-      })
-      .sort((a: ContentArr, b: ContentArr) => a.work_date! - b.work_date!);
-    if (formatArr.length === 0) {
-      await CustomConfirm('記録は、少なくとも一行は作成ください。', 'Caution');
-      setIsLoading(false);
-      return;
-    }
-    try {
-      if (type === 'create') {
-        const params: CreateMobilityParams = {
-          ...form.values,
-          content_arr: formatArr,
-          identification: selectedUser!.identification,
-          city: selectedUser!.city,
-          corporate_id: loginProviderInfo.corporate_id,
-          login_id: loginProviderInfo.id,
-        };
-        const { error } = (await createMobility(
-          params
-        )) as CreateMobilityResult;
-        if (error) {
-          throw new Error(`記録票の${TITLE}に失敗しました。${error}`);
-        }
-        showNotification({
-          icon: <IconCheckbox />,
-          message: `${TITLE}に成功しました！`,
-        });
-        router.push(getPath('MOBILITY'));
-      } else {
-        const params: UpdateMobilityParams = {
-          ...form.values,
-          id: mobilityData!.id,
-          content_arr: formatArr,
-          identification: selectedUser!.identification,
-          city: selectedUser!.city,
-          corporate_id: loginProviderInfo.corporate_id,
-          login_id: loginProviderInfo.id,
-        };
-        const { error } = (await updateMobility(
-          params
-        )) as UpdateMobilityResult;
-        if (error) {
-          throw new Error(`記録票の${TITLE}に失敗しました。${error}`);
-        }
-        showNotification({
-          icon: <IconCheckbox />,
-          message: `${TITLE}に成功しました！`,
-        });
-        router.push(getPath('MOBILITY'));
-      }
-    } catch (error: any) {
-      await CustomConfirm(error.message, 'Caution');
-      setIsLoading(false);
-      return;
-    }
-    setIsLoading(false);
+    submit({
+      setIsLoading: setIsLoading,
+      type,
+      TITLE,
+      SERVICE_CONTENT: '移動支援',
+      PATH: 'MOBILITY',
+      form: form,
+      selectedUser: selectedUser,
+      loginProviderInfo: loginProviderInfo,
+      creteRecord: createMobility,
+      updateRecord: updateMobility,
+      reordData: mobilityData,
+      createSchedule,
+      updateSchedule,
+      router,
+      staffList,
+      scheduleList,
+    });
   };
 
   return (

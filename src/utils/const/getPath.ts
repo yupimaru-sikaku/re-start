@@ -1,4 +1,4 @@
-const PATH = {
+export const PATH = {
   INDEX: '/',
   SIGN_UP: '/auth/sign-up',
   SIGN_IN: '/auth/sign-in',
