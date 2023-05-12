@@ -6,8 +6,8 @@ export type ContentArr = {
   service_content: string; // サービス内容
   start_time: string; // 開始時間
   end_time: string; // 終了時間
-  staff_name: string; // スタッフ名
   city: string; // 市区町村
+  staff_name: string; // スタッフ名
 };
 
 type Accompany = {

@@ -51,7 +51,8 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
   const { data: userList = [] } = useGetUserListByServiceQuery('is_doko');
   const { data: staffList = [] } = useGetStaffListByServiceQuery('doko');
   // TODO: 作成・更新の時のみ呼び出すようにしたい
-  const { data: scheduleList = [] } = useGetScheduleListQuery();
+  const { data: scheduleList = [], refetch: scheduleRefetch } =
+    useGetScheduleListQuery();
   const [createAccompany] = useCreateAccompanyMutation();
   const [updateAccompany] = useUpdateAccompanyMutation();
   const [createSchedule] = useCreateScheduleMutation();
@@ -89,6 +90,7 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
       router,
       staffList,
       scheduleList,
+      scheduleRefetch,
     });
   };
 

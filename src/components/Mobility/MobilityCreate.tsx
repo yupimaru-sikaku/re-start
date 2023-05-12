@@ -51,7 +51,8 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
   const { data: userList = [] } = useGetUserListByServiceQuery('is_ido');
   const { data: staffList = [] } = useGetStaffListByServiceQuery('ido');
   // TODO: 作成・更新の時のみ呼び出すようにしたい
-  const { data: scheduleList = [] } = useGetScheduleListQuery();
+  const { data: scheduleList = [], refetch: scheduleRefetch } =
+    useGetScheduleListQuery();
   const [createMobility] = useCreateMobilityMutation();
   const [updateMobility] = useUpdateMobilityMutation();
   const [createSchedule] = useCreateScheduleMutation();
@@ -89,6 +90,7 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
       router,
       staffList,
       scheduleList,
+      scheduleRefetch,
     });
   };
 

@@ -46,12 +46,12 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
   const {
     data: behaviorData,
     isLoading: behaviorLoding,
-    refetch,
+    refetch: behaviorRefetch,
   } = useGetBehaviorDataQuery(BehaviorId || skipToken);
   const { data: userList = [] } = useGetUserListByServiceQuery('is_kodo');
   const { data: staffList = [] } = useGetStaffListByServiceQuery('kodo');
   // TODO: 作成・更新の時のみ呼び出すようにしたい
-  const { data: scheduleList = [] } = useGetScheduleListQuery();
+  const { data: scheduleList = [], refetch: scheduleRefetch } = useGetScheduleListQuery();
   const [createSchedule] = useCreateScheduleMutation();
   const [updateSchedule] = useUpdateScheduleMutation();
   const [createBehavior] = useCreateBehaviorMutation();
@@ -66,7 +66,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
   }: UseGetFormType<CreateBehaviorParams> = useGetForm(
     createInitialState,
     behaviorData,
-    refetch,
+    behaviorRefetch,
     validate
   );
   const selectedUser = userList.find((user) => user.name === form.values.name);
@@ -89,6 +89,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
       router,
       staffList,
       scheduleList,
+      scheduleRefetch,
     });
   };
 

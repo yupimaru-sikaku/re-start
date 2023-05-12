@@ -97,9 +97,9 @@ export const TableList = ({
                   </ActionIcon>
                 </a>
               </Link>
-              <ActionIcon color="red" onClick={() => handleDelete(service.id)}>
+              {/* <ActionIcon color="red" onClick={() => handleDelete(service.id)}>
                 <IconTrash size={20} />
-              </ActionIcon>
+              </ActionIcon> */}
             </Group>
           ),
         },

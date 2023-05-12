@@ -6,8 +6,8 @@ export type ScheduleContentArr = {
   service_content: string; // サービス内容
   start_time: string; // 開始時間
   end_time: string; // 終了時間
-  user_name: string; // 利用者名
   city: string; // 市区町村
+  user_name: string; // 利用者名
 };
 
 type Schedule = {
