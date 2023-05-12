@@ -6,9 +6,9 @@ import {
 export const PAGE_SIZE = 5;
 
 export const dokoColor = '#008000';
-export const kodoColor = '#fce2c4';
-export const idoColor = '#ffdc00';
-export const kyotakuColor = '#87cefa';
+export const kodoColor = '#fd7e00';
+export const idoColor = '#e6ca19';
+export const kyotakuColor = '#0023ff';
 
 // 法人IDを自動生成
 export const generateRandomCorporateId = (): string => {

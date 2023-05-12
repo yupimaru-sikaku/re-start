@@ -5,14 +5,10 @@ import { StaffList } from '@/components/Staff/StaffList';
 import { ReturnStaff } from '@/ducks/staff/slice';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { getPath } from '@/utils/const/getPath';
-import { Box, Group, Space } from '@mantine/core';
+import { Box, Button, Group, SimpleGrid, Space } from '@mantine/core';
 import { useRouter } from 'next/router';
 import React, { useCallback, useMemo } from 'react';
-import {
-  GetStaticPaths,
-  GetStaticPropsContext,
-  NextPage,
-} from 'next';
+import { GetStaticPaths, GetStaticPropsContext, NextPage } from 'next';
 
 import { useEffect, useState } from 'react';
 import moment, { Moment } from 'moment';
@@ -25,20 +21,12 @@ import {
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'moment/locale/ja';
 import { CustomToolbar } from '@/components/StaffSchedule/CustomToolbar';
-import {
-  GetScheduleParams,
-  ScheduleContentArr,
-} from '@/ducks/schedule/slice';
+import { GetScheduleParams, ScheduleContentArr } from '@/ducks/schedule/slice';
 import { title } from 'process';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
 import { useGetStaffByIdQuery } from '@/ducks/staff/query';
 import { useGetScheduleQuery } from '@/ducks/schedule/query';
-import {
-  dokoColor,
-  idoColor,
-  kodoColor,
-  kyotakuColor,
-} from '@/utils';
+import { dokoColor, idoColor, kodoColor, kyotakuColor } from '@/utils';
 
 type EventStyleGetter = {
   color: string;
@@ -53,9 +41,7 @@ const SchedulePage: NextPage = () => {
   const currentDate = new Date();
   const [year, setYeart] = useState(currentDate.getFullYear());
   const [month, setMonth] = useState(currentDate.getMonth());
-  const { data: staffData } = useGetStaffByIdQuery(
-    staffId || skipToken
-  );
+  const { data: staffData } = useGetStaffByIdQuery(staffId || skipToken);
 
   const params = useMemo(() => {
     if (staffData) {
@@ -85,9 +71,7 @@ const SchedulePage: NextPage = () => {
     monthHeaderFormat: 'YYYY年M月',
     dayHeaderFormat: 'M月D日(ddd)',
     dayRangeHeaderFormat: ({ start, end }, culture, local) => {
-      const startDate = moment.isMoment(start)
-        ? start.toDate()
-        : start;
+      const startDate = moment.isMoment(start) ? start.toDate() : start;
       const endDate = moment.isMoment(end) ? end.toDate() : end;
       return `${local!.format(startDate, 'MMMD日')} - ${local!.format(
         endDate,
@@ -112,6 +96,7 @@ const SchedulePage: NextPage = () => {
         title: `${content.user_name}[${content.service_content}]`,
         start: new Date(content.start_time),
         end: new Date(content.end_time),
+        textColor: 'black',
         color: bgColor,
       };
     });
@@ -121,18 +106,67 @@ const SchedulePage: NextPage = () => {
     <DashboardLayout title="勤怠状況">
       <PageContainer title="勤怠状況" fluid>
         {scheduleList && (
-          <Calendar
-            localizer={localizer}
-            events={formatScheduleArr(scheduleList.content_arr)}
-            defaultView="week"
-            views={['week']}
-            formats={formats}
-            style={{ height: '100%' }}
-            min={moment('07:00', 'HH:mm').toDate()}
-            max={moment('23:00', 'HH:mm').toDate()}
-            eventPropGetter={eventStyleGetter}
-            components={{ toolbar: CustomToolbar }}
-          />
+          <>
+            <Calendar
+              localizer={localizer}
+              events={formatScheduleArr(scheduleList.content_arr)}
+              defaultView="week"
+              views={['week']}
+              formats={formats}
+              style={{ height: '100%' }}
+              min={moment('07:00', 'HH:mm').toDate()}
+              max={moment('23:00', 'HH:mm').toDate()}
+              eventPropGetter={eventStyleGetter}
+              components={{ toolbar: CustomToolbar }}
+            />
+            <Space h="md" />
+            <SimpleGrid cols={4}>
+              <Box
+                sx={{
+                  backgroundColor: kodoColor,
+                  padding: '8px',
+                  textAlign: 'center',
+                  borderRadius: '8px',
+                  color: 'white',
+                }}
+              >
+                行動援護
+              </Box>
+              <Box
+                sx={{
+                  backgroundColor: dokoColor,
+                  padding: '8px',
+                  textAlign: 'center',
+                  borderRadius: '8px',
+                  color: 'white',
+                }}
+              >
+                同行援護
+              </Box>
+              <Box
+                sx={{
+                  backgroundColor: idoColor,
+                  padding: '8px',
+                  textAlign: 'center',
+                  borderRadius: '8px',
+                  color: 'white',
+                }}
+              >
+                移動支援
+              </Box>
+              <Box
+                sx={{
+                  backgroundColor: kyotakuColor,
+                  padding: '8px',
+                  textAlign: 'center',
+                  borderRadius: '8px',
+                  color: 'white',
+                }}
+              >
+                居宅介護
+              </Box>
+            </SimpleGrid>
+          </>
         )}
       </PageContainer>
     </DashboardLayout>
