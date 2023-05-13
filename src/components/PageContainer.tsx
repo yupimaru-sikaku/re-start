@@ -8,6 +8,7 @@ import {
   Space,
   Title,
 } from '@mantine/core';
+import { getPath } from '@/utils/const/getPath';
 
 type PageContainerProps = {
   children: ReactNode;
@@ -33,7 +34,9 @@ export const PageContainer: FC<PageContainerProps> = ({
         </Breadcrumbs>
       ) : null}
       <Title order={1} color="gray" pb="md">
-        {title}
+        <Link href={getPath('INDEX')}>
+          <a style={{ color: 'gray' }}>{title}</a>
+        </Link>
       </Title>
       {children}
     </Container>

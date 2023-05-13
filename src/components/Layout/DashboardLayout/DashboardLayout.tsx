@@ -20,10 +20,7 @@ const SideNav = dynamic(async () => {
   return SideNav;
 });
 
-export const DashboardLayout: CustomLayout = ({
-  children,
-  title,
-}) => {
+export const DashboardLayout: CustomLayout = ({ children, title }) => {
   const [opened, handlers] = useDisclosure(false);
 
   return (
@@ -43,10 +40,7 @@ export const DashboardLayout: CustomLayout = ({
               <SideNav />
             </MediaQuery>
             <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
-              <DrawerNav
-                opened={opened}
-                handleClose={handlers.close}
-              />
+              <DrawerNav opened={opened} handleClose={handlers.close} />
             </MediaQuery>
           </>
         }
