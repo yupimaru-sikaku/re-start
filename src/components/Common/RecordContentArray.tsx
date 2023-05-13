@@ -3,7 +3,14 @@ import { RootState } from '@/ducks/root-reducer';
 import { ReturnStaff } from '@/ducks/staff/slice';
 import { useSelector } from '@/ducks/store';
 import { calcWorkTime, convertWeekItem } from '@/utils';
-import { ActionIcon, Paper, Select, Table, TextInput } from '@mantine/core';
+import {
+  ActionIcon,
+  Group,
+  Paper,
+  Select,
+  Table,
+  TextInput,
+} from '@mantine/core';
 import { TimeRangeInput } from '@mantine/dates';
 import { UseFormReturnType } from '@mantine/form';
 import { IconClock, IconRefresh } from '@tabler/icons';
@@ -33,7 +40,7 @@ export const RecordContentArray: NextPage<Props> = ({
   const convertTimeRange = (
     content: ContentArr
   ): [Date | null, Date | null] => {
-    if (content.start_time) {
+    if (content.start_time && content.end_time) {
       return [new Date(content.start_time), new Date(content.end_time)];
     }
     return [null, null];
@@ -84,7 +91,7 @@ export const RecordContentArray: NextPage<Props> = ({
                   icon={<IconClock size={16} />}
                   variant="filled"
                   value={convertTimeRange(content)}
-                  onChange={(e) => handleChangeTime(e[0], e[1], index)}
+                  onChange={(e) => handleChangeTime(e, index)}
                 />
               </td>
               <td>
@@ -112,9 +119,11 @@ export const RecordContentArray: NextPage<Props> = ({
                 </td>
               )}
               <td>
-                <ActionIcon onClick={() => handleRefresh(index)}>
-                  <IconRefresh />
-                </ActionIcon>
+                <Group position="center">
+                  <ActionIcon onClick={() => handleRefresh(index)}>
+                    <IconRefresh />
+                  </ActionIcon>
+                </Group>
               </td>
             </tr>
           ))}

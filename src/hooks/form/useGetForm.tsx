@@ -1,13 +1,13 @@
 import { ContentArr, ReturnAccompany } from '@/ducks/accompany/slice';
 import { calcWorkTime } from '@/utils';
 import { UseFormReturnType, useForm } from '@mantine/form';
-import { ChangeEvent, useEffect } from 'react';
+import { ChangeEvent, useCallback, useEffect } from 'react';
 
 export type UseGetFormType<T> = {
   form: UseFormReturnType<T>;
   handleChangeDate: (e: ChangeEvent<HTMLInputElement>, index: number) => void;
   handleChangeStaff: (staffName: string, index: number) => void;
-  handleChangeTime: (start_time: Date, end_time: Date, index: number) => void;
+  handleChangeTime: (time: Date[], index: number) => void;
   handleRefresh: (index: number) => void;
   amountTime: number;
 };
@@ -59,9 +59,6 @@ export const useGetForm = (
           ? {
               ...content,
               work_date: Number(e.target.value),
-              service_content: `${
-                e.target.value !== '' ? '同行（初任者等）' : ''
-              }`,
             }
           : content;
       }
@@ -81,27 +78,26 @@ export const useGetForm = (
     );
     form.setFieldValue('content_arr', newContentArr);
   };
-  const handleChangeTime = (
-    start_time: Date,
-    end_time: Date,
-    index: number
-  ) => {
-    if (!start_time || !end_time) return;
+
+  const handleChangeTime = (time: Date[], index: number) => {
+    const startTime = time[0];
+    const endTime = time[1];
+    if (!startTime || !endTime) return;
     const formatStartTime = new Date(
       form.values.year,
       form.values.month - 1,
       form.values.content_arr[index].work_date,
-      start_time.getHours(),
-      start_time.getMinutes(),
-      start_time.getSeconds()
+      startTime.getHours(),
+      startTime.getMinutes(),
+      startTime.getSeconds()
     ).toString();
     const formatEndTime = new Date(
       form.values.year,
       form.values.month - 1,
       form.values.content_arr[index].work_date,
-      end_time.getHours(),
-      end_time.getMinutes(),
-      end_time.getSeconds()
+      endTime.getHours(),
+      endTime.getMinutes(),
+      endTime.getSeconds()
     ).toString();
     const newContentArr = form.values.content_arr.map(
       (content: ContentArr, contentIndex: number) => {
@@ -144,6 +140,7 @@ export const useGetForm = (
     },
     0
   );
+
   return {
     form,
     handleChangeDate,

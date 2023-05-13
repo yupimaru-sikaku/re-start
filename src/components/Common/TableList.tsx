@@ -39,20 +39,20 @@ export const TableList = ({
     // link.click();
   };
 
-  const handleDelete = async (id: string) => {
-    const isOK = await CustomConfirm('本当に削除しますか？', '確認画面');
-    if (!isOK) return;
-    try {
-      const { error } = await deleteAction(id);
-      if (error) {
-        throw new Error(`記録票の削除に失敗しました。${error.message}`);
-      }
-      refetch();
-    } catch (error: any) {
-      await CustomConfirm(error.message, 'Caution');
-      return;
-    }
-  };
+  // const handleDelete = async (id: string) => {
+  //   const isOK = await CustomConfirm('本当に削除しますか？', '確認画面');
+  //   if (!isOK) return;
+  //   try {
+  //     const { error } = await deleteAction(id);
+  //     if (error) {
+  //       throw new Error(`記録票の削除に失敗しました。${error.message}`);
+  //     }
+  //     refetch();
+  //   } catch (error: any) {
+  //     await CustomConfirm(error.message, 'Caution');
+  //     return;
+  //   }
+  // };
 
   return (
     <DataTable
@@ -89,7 +89,7 @@ export const TableList = ({
           title: 'アクション',
           width: 90,
           render: (service: any) => (
-            <Group spacing={4} position="right" noWrap>
+            <Group spacing={4} position="center" noWrap>
               <Link href={getPath(path, service.id)}>
                 <a>
                   <ActionIcon color="blue">

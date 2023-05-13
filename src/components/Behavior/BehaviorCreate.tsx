@@ -23,7 +23,7 @@ import { UseGetFormType, useGetForm } from '@/hooks/form/useGetForm';
 import { RecordBasicInfo } from '../Common/RecordBasicInfo';
 import { RecordContentArray } from '../Common/RecordContentArray';
 import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
-import { submit } from '@/hooks/form/submit';
+import { recordSubmit } from '@/hooks/form/recordSubmit';
 import {
   useCreateScheduleMutation,
   useGetScheduleListQuery,
@@ -82,7 +82,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
   const selectedUser = userList.find((user) => user.name === form.values.name);
 
   const handleSubmit = async () => {
-    submit({
+    recordSubmit({
       setIsLoading: setIsLoading,
       type,
       TITLE,

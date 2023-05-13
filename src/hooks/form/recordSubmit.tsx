@@ -30,7 +30,7 @@ type Props = {
   scheduleRefetch: any;
 };
 
-export const submit = async ({
+export const recordSubmit = async ({
   setIsLoading,
   type,
   TITLE,
@@ -93,69 +93,73 @@ export const submit = async ({
     if (error) {
       throw new Error(`記録票の${TITLE}に失敗しました。${error.message}`);
     }
-    // スタッフの名前毎に配列を作成した作成した新しい配列を作成[][]
-    const format2DArray = Object.values(
-      formatArr.reduce<{
-        [key: string]: ContentArr[];
-      }>((result, currentValue) => {
-        if (
-          currentValue['staff_name'] !== null &&
-          currentValue['staff_name'] !== undefined
-        ) {
-          (result[currentValue['staff_name']] =
-            result[currentValue['staff_name']] || []).push(currentValue);
-        }
-        return result;
-      }, {})
-    );
-    format2DArray.map(async (contentList) => {
-      const staffName = contentList[0].staff_name;
-      const selectedStaff = staffList.find((staff) => staff.name === staffName);
-      const selectedSchedule = scheduleList.find(
-        (schedule) =>
-          schedule.year === form.values.year &&
-          schedule.month === form.values.month &&
-          schedule.staff_name === staffName
+    if (loginProviderInfo.role === 'admin') {
+      // スタッフの名前毎に配列を作成した作成した新しい配列を作成[][]
+      const format2DArray = Object.values(
+        formatArr.reduce<{
+          [key: string]: ContentArr[];
+        }>((result, currentValue) => {
+          if (
+            currentValue['staff_name'] !== null &&
+            currentValue['staff_name'] !== undefined
+          ) {
+            (result[currentValue['staff_name']] =
+              result[currentValue['staff_name']] || []).push(currentValue);
+          }
+          return result;
+        }, {})
       );
-      // スケジュールが存在する場合
-      let newContentArr = [];
-      if (selectedSchedule) {
-        const removeContentArr = selectedSchedule.content_arr.filter(
-          (content) =>
-            content.user_name !== selectedUser!.name &&
-            content.service_content !== SERVICE_CONTENT
+      format2DArray.map(async (contentList) => {
+        const staffName = contentList[0].staff_name;
+        const selectedStaff = staffList.find(
+          (staff) => staff.name === staffName
         );
-        const contentNewList = contentList.map((content) => {
-          let { staff_name, ...rest } = content;
-          return { ...rest, user_name: selectedUser!.name };
-        });
-        newContentArr = [...removeContentArr, ...contentNewList];
-      } else {
-        newContentArr = contentList.map((content) => {
-          let { staff_name, ...rest } = content;
-          return { ...rest, user_name: selectedUser!.name };
-        });
-      }
-      const createScheduleParams = {
-        staff_id: selectedStaff!.id,
-        staff_name: selectedStaff!.name,
-        year: form.values.year,
-        month: form.values.month,
-        content_arr: newContentArr,
-      };
-      const { error } = selectedSchedule
-        ? await updateSchedule({
-            ...createScheduleParams,
-            id: selectedSchedule.id,
-          })
-        : await createSchedule(createScheduleParams);
-      scheduleRefetch();
-      if (error) {
-        throw new Error(
-          `スタッフのスケジュール${TITLE}に失敗しました。${error.message}`
+        const selectedSchedule = scheduleList.find(
+          (schedule) =>
+            schedule.year === form.values.year &&
+            schedule.month === form.values.month &&
+            schedule.staff_name === staffName
         );
-      }
-    });
+        // スケジュールが存在する場合
+        let newContentArr = [];
+        if (selectedSchedule) {
+          const removeContentArr = selectedSchedule.content_arr.filter(
+            (content) =>
+              content.user_name !== selectedUser!.name &&
+              content.service_content !== SERVICE_CONTENT
+          );
+          const contentNewList = contentList.map((content) => {
+            let { staff_name, ...rest } = content;
+            return { ...rest, user_name: selectedUser!.name };
+          });
+          newContentArr = [...removeContentArr, ...contentNewList];
+        } else {
+          newContentArr = contentList.map((content) => {
+            let { staff_name, ...rest } = content;
+            return { ...rest, user_name: selectedUser!.name };
+          });
+        }
+        const createScheduleParams = {
+          staff_id: selectedStaff!.id,
+          staff_name: selectedStaff!.name,
+          year: form.values.year,
+          month: form.values.month,
+          content_arr: newContentArr,
+        };
+        const { error } = selectedSchedule
+          ? await updateSchedule({
+              ...createScheduleParams,
+              id: selectedSchedule.id,
+            })
+          : await createSchedule(createScheduleParams);
+        scheduleRefetch();
+        if (error) {
+          throw new Error(
+            `スタッフのスケジュール${TITLE}に失敗しました。${error.message}`
+          );
+        }
+      });
+    }
     showNotification({
       icon: <IconCheckbox />,
       message: `${TITLE}に成功しました！`,

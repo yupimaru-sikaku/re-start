@@ -28,7 +28,7 @@ import { UseGetFormType, useGetForm } from '@/hooks/form/useGetForm';
 import { RecordBasicInfo } from '../Common/RecordBasicInfo';
 import { RecordContentArray } from '../Common/RecordContentArray';
 import { validate } from '@/utils/validate/accompany';
-import { submit } from '@/hooks/form/submit';
+import { recordSubmit } from '@/hooks/form/recordSubmit';
 import { excludingSelected } from '@/utils';
 
 type Props = {
@@ -82,7 +82,7 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
   const selectedUser = userList.find((user) => user.name === form.values.name);
 
   const handleSubmit = async () => {
-    submit({
+    recordSubmit({
       setIsLoading: setIsLoading,
       type,
       TITLE,
