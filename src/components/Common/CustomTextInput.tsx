@@ -14,6 +14,7 @@ type Props = {
   maxLength?: number;
   defaultValue?: string;
   onChange?: any;
+  pattern?: any;
 };
 export const CustomTextInput = ({
   idText,
@@ -27,6 +28,7 @@ export const CustomTextInput = ({
   maxLength,
   defaultValue,
   onChange,
+  pattern,
 }: Props) => {
   return (
     <TextInput
@@ -45,6 +47,7 @@ export const CustomTextInput = ({
       maxLength={maxLength}
       defaultValue={defaultValue}
       onChange={onChange}
+      pattern={pattern}
       {...form.getInputProps(formValue)}
     />
   );

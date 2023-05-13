@@ -39,6 +39,7 @@ export const RecordBasicInfo: NextPage<Props> = ({
         formValue="year"
         minLength={4}
         maxLength={4}
+        pattern="\d*"
       />
       <CustomTextInput
         disabled={isEdit}
@@ -50,6 +51,7 @@ export const RecordBasicInfo: NextPage<Props> = ({
         formValue="month"
         minLength={1}
         maxLength={2}
+        pattern="\d*"
       />
       <Select
         disabled={isEdit}
