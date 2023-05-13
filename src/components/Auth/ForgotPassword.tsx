@@ -37,9 +37,7 @@ const useStyles = createStyles((theme) => ({
 
 export const ForgotPassword = () => {
   const { classes } = useStyles();
-  const handleClick = () => {
-    console.log('clicked');
-  };
+  const handleClick = () => {};
   return (
     <AuthLayout>
       <Title className={classes.title} align="center">

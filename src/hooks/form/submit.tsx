@@ -21,7 +21,7 @@ type Props = {
   loginProviderInfo: LoginProviderInfoType;
   creteRecord: any;
   updateRecord: any;
-  reordData: any;
+  recordData: any;
   createSchedule: any;
   updateSchedule: any;
   router: NextRouter;
@@ -41,7 +41,7 @@ export const submit = async ({
   loginProviderInfo,
   creteRecord,
   updateRecord,
-  reordData,
+  recordData,
   createSchedule,
   updateSchedule,
   router,
@@ -88,7 +88,7 @@ export const submit = async ({
         ? await creteRecord(params)
         : await updateRecord({
             ...params,
-            id: reordData!.id,
+            id: recordData!.id,
           });
     if (error) {
       throw new Error(`記録票の${TITLE}に失敗しました。${error.message}`);
@@ -108,7 +108,6 @@ export const submit = async ({
         return result;
       }, {})
     );
-    console.log('format2DArray', format2DArray);
     format2DArray.map(async (contentList) => {
       const staffName = contentList[0].staff_name;
       const selectedStaff = staffList.find((staff) => staff.name === staffName);
@@ -119,8 +118,6 @@ export const submit = async ({
           schedule.staff_name === staffName
       );
       // スケジュールが存在する場合
-      console.log('staffName', staffName);
-      console.log('selectedSchedule', selectedSchedule);
       let newContentArr = [];
       if (selectedSchedule) {
         const removeContentArr = selectedSchedule.content_arr.filter(
@@ -133,13 +130,11 @@ export const submit = async ({
           return { ...rest, user_name: selectedUser!.name };
         });
         newContentArr = [...removeContentArr, ...contentNewList];
-        console.log('更新newContentArr', newContentArr);
       } else {
         newContentArr = contentList.map((content) => {
           let { staff_name, ...rest } = content;
           return { ...rest, user_name: selectedUser!.name };
         });
-        console.log('作成newContentArr', newContentArr);
       }
       const createScheduleParams = {
         staff_id: selectedStaff!.id,
@@ -148,7 +143,6 @@ export const submit = async ({
         month: form.values.month,
         content_arr: newContentArr,
       };
-      console.log('createScheduleParams', createScheduleParams);
       const { error } = selectedSchedule
         ? await updateSchedule({
             ...createScheduleParams,

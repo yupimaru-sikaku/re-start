@@ -5,7 +5,7 @@ import { StaffList } from '@/components/Staff/StaffList';
 import { ReturnStaff } from '@/ducks/staff/slice';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { getPath } from '@/utils/const/getPath';
-import { Box, Button, Group, SimpleGrid, Space } from '@mantine/core';
+import { Badge, Box, Button, Group, SimpleGrid, Space } from '@mantine/core';
 import { useRouter } from 'next/router';
 import React, { useCallback, useMemo } from 'react';
 import { GetStaticPaths, GetStaticPropsContext, NextPage } from 'next';
@@ -54,8 +54,6 @@ const SchedulePage: NextPage = () => {
     }
     return null;
   }, [year, month, staffData]);
-  console.log('staffData', staffData);
-  console.log('params', params);
   const { data: scheduleList, isLoading: scheduleLoading } =
     useGetScheduleQuery(params || skipToken);
 
@@ -101,7 +99,6 @@ const SchedulePage: NextPage = () => {
       };
     });
   };
-  console.log('scheduleList', scheduleList);
   return (
     <DashboardLayout title="勤怠状況">
       <PageContainer title="勤怠状況" fluid>
@@ -115,56 +112,24 @@ const SchedulePage: NextPage = () => {
               formats={formats}
               style={{ height: '100%' }}
               min={moment('07:00', 'HH:mm').toDate()}
-              max={moment('23:00', 'HH:mm').toDate()}
+              max={moment('22:00', 'HH:mm').toDate()}
               eventPropGetter={eventStyleGetter}
               components={{ toolbar: CustomToolbar }}
             />
             <Space h="md" />
-            <SimpleGrid cols={4}>
-              <Box
-                sx={{
-                  backgroundColor: kodoColor,
-                  padding: '8px',
-                  textAlign: 'center',
-                  borderRadius: '8px',
-                  color: 'white',
-                }}
-              >
+            <SimpleGrid breakpoints={[{ minWidth: 'xs', cols: 4 }]}>
+              <Badge variant="filled" sx={{ backgroundColor: dokoColor }}>
                 行動援護
-              </Box>
-              <Box
-                sx={{
-                  backgroundColor: dokoColor,
-                  padding: '8px',
-                  textAlign: 'center',
-                  borderRadius: '8px',
-                  color: 'white',
-                }}
-              >
+              </Badge>
+              <Badge variant="filled" sx={{ backgroundColor: kodoColor }}>
                 同行援護
-              </Box>
-              <Box
-                sx={{
-                  backgroundColor: idoColor,
-                  padding: '8px',
-                  textAlign: 'center',
-                  borderRadius: '8px',
-                  color: 'white',
-                }}
-              >
+              </Badge>
+              <Badge variant="filled" sx={{ backgroundColor: idoColor }}>
                 移動支援
-              </Box>
-              <Box
-                sx={{
-                  backgroundColor: kyotakuColor,
-                  padding: '8px',
-                  textAlign: 'center',
-                  borderRadius: '8px',
-                  color: 'white',
-                }}
-              >
+              </Badge>
+              <Badge variant="filled" sx={{ backgroundColor: kyotakuColor }}>
                 居宅介護
-              </Box>
+              </Badge>
             </SimpleGrid>
           </>
         )}

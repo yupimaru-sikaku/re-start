@@ -1,5 +1,5 @@
 import { Divider, LoadingOverlay, Paper, Space, Stack } from '@mantine/core';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { CustomStepper } from '../Common/CustomStepper';
 import {
   CreateBehaviorParams,
@@ -29,6 +29,7 @@ import {
   useGetScheduleListQuery,
   useUpdateScheduleMutation,
 } from '@/ducks/schedule/query';
+import { excludingSelected } from '@/utils';
 
 type Props = {
   type: 'create' | 'edit';
@@ -38,20 +39,24 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
   const TITLE = type === 'create' ? '登録' : '更新';
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
-  const BehaviorId = router.query.id as string;
+  const behaviorId = router.query.id as string;
   const [isLoading, setIsLoading] = useState(false);
   const loginProviderInfo = useSelector(
     (state: RootState) => state.provider.loginProviderInfo
+  );
+  const behaviorList = useSelector(
+    (state: RootState) => state.behavior.behaviorList
   );
   const {
     data: behaviorData,
     isLoading: behaviorLoding,
     refetch: behaviorRefetch,
-  } = useGetBehaviorDataQuery(BehaviorId || skipToken);
+  } = useGetBehaviorDataQuery(behaviorId || skipToken);
   const { data: userList = [] } = useGetUserListByServiceQuery('is_kodo');
   const { data: staffList = [] } = useGetStaffListByServiceQuery('kodo');
   // TODO: 作成・更新の時のみ呼び出すようにしたい
-  const { data: scheduleList = [], refetch: scheduleRefetch } = useGetScheduleListQuery();
+  const { data: scheduleList = [], refetch: scheduleRefetch } =
+    useGetScheduleListQuery();
   const [createSchedule] = useCreateScheduleMutation();
   const [updateSchedule] = useUpdateScheduleMutation();
   const [createBehavior] = useCreateBehaviorMutation();
@@ -69,6 +74,11 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
     behaviorRefetch,
     validate
   );
+
+  const userListExcludingSelected = useMemo(() => {
+    return excludingSelected(userList, behaviorList, form);
+  }, [userList, behaviorList, form.values.year, form.values.month]);
+
   const selectedUser = userList.find((user) => user.name === form.values.name);
 
   const handleSubmit = async () => {
@@ -83,7 +93,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
       loginProviderInfo: loginProviderInfo,
       creteRecord: createBehavior,
       updateRecord: updateBehavior,
-      reordData: behaviorData,
+      recordData: behaviorData,
       createSchedule,
       updateSchedule,
       router,
@@ -104,7 +114,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
           <RecordBasicInfo
             type={type}
             form={form}
-            userList={userList}
+            userList={userListExcludingSelected}
             selectedUser={selectedUser}
             amountTime={amountTime}
           />

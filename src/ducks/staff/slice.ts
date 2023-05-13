@@ -20,19 +20,13 @@ type Staff = {
   updated_at: string; // 更新日時
 };
 
-export type CreateStaffParams = Omit<
-  Staff,
-  'id' | 'created_at' | 'updated_at'
->;
+export type CreateStaffParams = Omit<Staff, 'id' | 'created_at' | 'updated_at'>;
 
 export type CreateStaffResult = {
   error: PostgrestError | null;
 };
 
-export type UpdateStaffParams = Omit<
-  Staff,
-  'created_at' | 'updated_at'
->;
+export type UpdateStaffParams = Omit<Staff, 'created_at' | 'updated_at'>;
 
 export type ReturnStaff = Staff;
 
@@ -87,7 +81,6 @@ const staffSlice = createSlice({
   //   builder.addMatcher(
   //     staffApi.endpoints.getStaffList.matchFulfilled,
   //     (state, action) => {
-  //       console.log('Action payload:', action.payload);
   //       state.staffList = action.payload;
   //     }
   //   );

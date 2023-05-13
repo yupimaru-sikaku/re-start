@@ -1,5 +1,5 @@
 import { Divider, LoadingOverlay, Paper, Space, Stack } from '@mantine/core';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { CustomStepper } from '../Common/CustomStepper';
 import {
   CreateMobilityParams,
@@ -29,6 +29,7 @@ import {
   useGetScheduleListQuery,
   useUpdateScheduleMutation,
 } from '@/ducks/schedule/query';
+import { excludingSelected } from '@/utils';
 
 type Props = {
   type: 'create' | 'edit';
@@ -42,6 +43,9 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
   const [isLoading, setIsLoading] = useState(false);
   const loginProviderInfo = useSelector(
     (state: RootState) => state.provider.loginProviderInfo
+  );
+  const mobilityList = useSelector(
+    (state: RootState) => state.mobility.mobilityList
   );
   const {
     data: mobilityData,
@@ -70,6 +74,11 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
     refetch,
     validate
   );
+
+  const userListExcludingSelected = useMemo(() => {
+    return excludingSelected(userList, mobilityList, form);
+  }, [userList, mobilityList, form.values.year, form.values.month]);
+
   const selectedUser = userList.find((user) => user.name === form.values.name);
 
   const handleSubmit = async () => {
@@ -84,7 +93,7 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
       loginProviderInfo: loginProviderInfo,
       creteRecord: createMobility,
       updateRecord: updateMobility,
-      reordData: mobilityData,
+      recordData: mobilityData,
       createSchedule,
       updateSchedule,
       router,
@@ -105,7 +114,7 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
           <RecordBasicInfo
             type={type}
             form={form}
-            userList={userList}
+            userList={userListExcludingSelected}
             selectedUser={selectedUser}
             amountTime={amountTime}
           />

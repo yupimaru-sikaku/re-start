@@ -2,7 +2,7 @@ import { Divider, LoadingOverlay, Paper, Space, Stack } from '@mantine/core';
 import { useFocusTrap } from '@mantine/hooks';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { CustomButton } from '../Common/CustomButton';
 import { CustomStepper } from '../Common/CustomStepper';
 import { useSelector } from '@/ducks/store';
@@ -29,6 +29,7 @@ import { RecordBasicInfo } from '../Common/RecordBasicInfo';
 import { RecordContentArray } from '../Common/RecordContentArray';
 import { validate } from '@/utils/validate/accompany';
 import { submit } from '@/hooks/form/submit';
+import { excludingSelected } from '@/utils';
 
 type Props = {
   type: 'create' | 'edit';
@@ -38,16 +39,19 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
   const TITLE = type === 'create' ? '登録' : '更新';
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
-  const AccompanyId = router.query.id as string;
+  const accompanyId = router.query.id as string;
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const loginProviderInfo = useSelector(
     (state: RootState) => state.provider.loginProviderInfo
   );
+  const accompanyList = useSelector(
+    (state: RootState) => state.accompany.accompanyList
+  );
   const {
     data: accompanyData,
     isLoading: accompanyLoading,
-    refetch,
-  } = useGetAccompanyDataQuery(AccompanyId || skipToken);
+    refetch: accompanyRefetch,
+  } = useGetAccompanyDataQuery(accompanyId || skipToken);
   const { data: userList = [] } = useGetUserListByServiceQuery('is_doko');
   const { data: staffList = [] } = useGetStaffListByServiceQuery('doko');
   // TODO: 作成・更新の時のみ呼び出すようにしたい
@@ -67,9 +71,14 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
   }: UseGetFormType<CreateAccompanyParams> = useGetForm(
     createInitialState,
     accompanyData,
-    refetch,
+    accompanyRefetch,
     validate
   );
+
+  const userListExcludingSelected = useMemo(() => {
+    return excludingSelected(userList, accompanyList, form);
+  }, [userList, accompanyList, form.values.year, form.values.month]);
+
   const selectedUser = userList.find((user) => user.name === form.values.name);
 
   const handleSubmit = async () => {
@@ -84,7 +93,7 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
       loginProviderInfo: loginProviderInfo,
       creteRecord: createAccompany,
       updateRecord: updateAccompany,
-      reordData: accompanyData,
+      recordData: accompanyData,
       createSchedule,
       updateSchedule,
       router,
@@ -105,7 +114,7 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
           <RecordBasicInfo
             type={type}
             form={form}
-            userList={userList}
+            userList={userListExcludingSelected}
             selectedUser={selectedUser}
             amountTime={amountTime}
           />

@@ -20,7 +20,7 @@ const rootReducer = combineReducers({
   behavior: behaviorSlice.reducer,
   mobility: mobilitySlice.reducer,
   schedule: scheduleSlice.reducer,
-  accompnay: accompanySlice.reducer,
+  accompany: accompanySlice.reducer,
   [providerApi.reducerPath]: providerApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [staffApi.reducerPath]: staffApi.reducer,

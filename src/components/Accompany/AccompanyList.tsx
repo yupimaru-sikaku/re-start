@@ -5,11 +5,13 @@ import {
   useGetAccompanyListByLoginIdQuery,
   useGetAccompanyListQuery,
 } from '@/ducks/accompany/query';
-import { useSelector } from '@/ducks/store';
+import { useAppDispatch, useSelector } from '@/ducks/store';
 import { RootState } from '@/ducks/root-reducer';
 import { TableList } from '../Common/TableList';
+import { ReturnAccompany, setAccompanyList } from '@/ducks/accompany/slice';
 
 export const AccompanyList = () => {
+  const dispatch = useAppDispatch();
   const loginProviderInfo = useSelector(
     (state: RootState) => state.provider.loginProviderInfo
   );
@@ -31,6 +33,11 @@ export const AccompanyList = () => {
       return data3;
     }
   }, [data1, data2, data3]);
+
+  useEffect(() => {
+    dispatch(setAccompanyList(accompanyList || []));
+  }, [accompanyList]);
+
   const [deleteAccompany] = useDeleteAccompanyMutation();
 
   useEffect(() => {

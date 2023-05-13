@@ -1,5 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { PostgrestError } from '@supabase/supabase-js';
+import { behaviorApi } from './query';
 import { ContentArr } from '../accompany/slice';
 
 type Behavior = {
@@ -58,12 +59,29 @@ export const createInitialState: CreateBehaviorParams = {
   login_id: '',
 };
 
-const initialState = {};
+const initialState = {
+  behaviorData: {} as ReturnBehavior,
+  behaviorList: [] as ReturnBehavior[],
+};
 
-export const BehaviorSlice = createSlice({
-  name: 'Behavior',
+const behaviorSlice = createSlice({
+  name: 'behavior',
   initialState,
-  reducers: {},
+  reducers: {
+    setBehaviorList: (state, action: PayloadAction<ReturnBehavior[]>) => {
+      state.behaviorList = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      behaviorApi.endpoints.getBehaviorData.matchFulfilled,
+      (state, action: PayloadAction<ReturnBehavior>) => {
+        state.behaviorData = action.payload;
+      }
+    );
+  },
 });
 
-export default BehaviorSlice;
+export default behaviorSlice;
+
+export const { setBehaviorList } = behaviorSlice.actions;

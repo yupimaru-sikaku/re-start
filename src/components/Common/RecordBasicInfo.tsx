@@ -1,10 +1,4 @@
-import {
-  Divider,
-  Select,
-  SimpleGrid,
-  Space,
-  TextInput,
-} from '@mantine/core';
+import { Select, SimpleGrid, TextInput } from '@mantine/core';
 import React from 'react';
 import { CustomTextInput } from './CustomTextInput';
 import { ReturnUser } from '@/ducks/user/slice';
@@ -14,7 +8,7 @@ import { NextPage } from 'next';
 type Props = {
   type: 'create' | 'edit';
   form: UseFormReturnType<any>;
-  userList: ReturnUser[];
+  userList: { value: string; disabled: boolean }[];
   selectedUser: ReturnUser | undefined;
   amountTime: number;
 };
@@ -62,7 +56,11 @@ export const RecordBasicInfo: NextPage<Props> = ({
         label="利用者名"
         searchable
         nothingFound="No Data"
-        data={userList.map((user) => user.name)}
+        data={userList.map((user) => ({
+          value: user.value,
+          label: user.value,
+          disabled: user.disabled,
+        }))}
         variant="filled"
         {...form.getInputProps('name')}
         sx={{ '& input:disabled': { color: 'black' } }}

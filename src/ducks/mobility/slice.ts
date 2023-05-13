@@ -1,5 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { PostgrestError } from '@supabase/supabase-js';
+import { mobilityApi } from './query';
 import { ContentArr } from '../accompany/slice';
 
 type Mobility = {
@@ -60,12 +61,32 @@ export const createInitialState: CreateMobilityParams = {
   status: 0,
 };
 
-const initialState = {};
+const initialState = {
+  mobilityData: {} as ReturnMobility,
+  mobilityList: [] as ReturnMobility[],
+};
 
-export const MobilitySlice = createSlice({
+const mobilitySlice = createSlice({
   name: 'mobility',
   initialState,
-  reducers: {},
+  reducers: {
+    setMoReturnMobilityList: (
+      state,
+      action: PayloadAction<ReturnMobility[]>
+    ) => {
+      state.mobilityList = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      mobilityApi.endpoints.getMobilityData.matchFulfilled,
+      (state, action: PayloadAction<ReturnMobility>) => {
+        state.mobilityData = action.payload;
+      }
+    );
+  },
 });
 
-export default MobilitySlice;
+export default mobilitySlice;
+
+export const { setMoReturnMobilityList } = mobilitySlice.actions;

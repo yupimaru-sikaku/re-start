@@ -1,9 +1,7 @@
-import {
-  CreateHomeCare,
-  ReturnHomeCare,
-} from '@/ducks/home-care/slice';
+import { CreateHomeCare, ReturnHomeCare } from '@/ducks/home-care/slice';
+import { ReturnUser } from '@/ducks/user/slice';
 
-export const PAGE_SIZE = 5;
+export const PAGE_SIZE = 10;
 
 export const dokoColor = '#008000';
 export const kodoColor = '#fd7e00';
@@ -59,10 +57,7 @@ export const convertWeekItem = (
   }
 };
 // Date型の開始時間と終了時間から働いた時間をString型で返す
-export const calcWorkTime = (
-  start_time: string,
-  end_time: string
-): string => {
+export const calcWorkTime = (start_time: string, end_time: string): string => {
   if (!start_time || !end_time) return '0';
   const startTime = new Date(start_time);
   const endTime = new Date(end_time);
@@ -93,9 +88,7 @@ export const convertStartEndTimeFromString2Date = (
 };
 
 // サービスの種類を改行して表示
-export const formatServiceContent = (
-  serviceContent: string
-): string => {
+export const formatServiceContent = (serviceContent: string): string => {
   if (serviceContent === '通院等介助（伴う）') {
     return '通院等介助\n    (伴う)';
   } else if (serviceContent === '通院等介助（伴わない）') {
@@ -106,9 +99,7 @@ export const formatServiceContent = (
 
 // （居宅介護専用）記録票のオブジェクトから各サービスの合計算定時間を算出
 export const calcEachWorkTime = (
-  contentArr:
-    | CreateHomeCare['content_arr']
-    | ReturnHomeCare['content_arr']
+  contentArr: CreateHomeCare['content_arr'] | ReturnHomeCare['content_arr']
 ) => {
   let kaziAmount = 0;
   let shintaiAmount = 0;
@@ -141,4 +132,26 @@ export const calcEachWorkTime = (
     withTsuinAmount: withTsuinAmount.toString(),
     tsuinAmount: tsuinAmount.toString(),
   };
+};
+
+// 任意の年月で、記録票に既に存在してる場合はリストから除外
+export const excludingSelected = (
+  userList: ReturnUser[],
+  recordList: any,
+  form: any
+) => {
+  return userList.map((user) => {
+    const isDisabled = recordList.some((record: any) => {
+      return (
+        // 等価演算子になっていることに注意
+        record.year == form.values.year &&
+        record.month == form.values.month &&
+        record.name === user.name
+      );
+    });
+    return {
+      value: user.name,
+      disabled: isDisabled,
+    };
+  });
 };

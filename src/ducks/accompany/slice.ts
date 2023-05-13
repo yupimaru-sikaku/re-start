@@ -1,5 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { PostgrestError } from '@supabase/supabase-js';
+import { accompanyApi } from './query';
 
 export type ContentArr = {
   work_date: number; // サービス提供日
@@ -68,13 +69,29 @@ export const createInitialState: CreateAccompanyParams = {
   is_display: false,
 };
 
-const initialState = {};
+const initialState = {
+  accompanyData: {} as ReturnAccompany,
+  accompanyList: [] as ReturnAccompany[],
+};
 
 const accompanySlice = createSlice({
-  name: 'accompnay',
+  name: 'accompany',
   initialState,
-  reducers: {},
-  extraReducers: {},
+  reducers: {
+    setAccompanyList: (state, action: PayloadAction<ReturnAccompany[]>) => {
+      state.accompanyList = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      accompanyApi.endpoints.getAccompanyData.matchFulfilled,
+      (state, action: PayloadAction<ReturnAccompany>) => {
+        state.accompanyData = action.payload;
+      }
+    );
+  },
 });
 
 export default accompanySlice;
+
+export const { setAccompanyList } = accompanySlice.actions;

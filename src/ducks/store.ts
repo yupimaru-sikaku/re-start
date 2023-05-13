@@ -36,6 +36,7 @@ const persistConfig = {
     'homeCare',
     'behavior',
     'mobility',
+    'accompany',
     'schedule',
   ],
 };
@@ -47,14 +48,7 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         // redux-persist の非シリアライズ可能なアクションを無視
-        ignoredActions: [
-          FLUSH,
-          REHYDRATE,
-          PAUSE,
-          PERSIST,
-          PURGE,
-          REGISTER,
-        ],
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }).concat(
       providerApi.middleware,
@@ -72,6 +66,5 @@ setupListeners(store.dispatch);
 
 export type AppDispatch = typeof store.dispatch;
 export const useAppDispatch = () => rawUseDispatch<AppDispatch>();
-export const useSelector: TypedUseSelectorHook<RootState> =
-  rawUseSelector;
+export const useSelector: TypedUseSelectorHook<RootState> = rawUseSelector;
 export const persistor = persistStore(store);
