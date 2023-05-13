@@ -70,6 +70,7 @@ export const RecordContentArray: NextPage<Props> = ({
                   maxLength={2}
                   value={content.work_date || ''}
                   onChange={(e) => handleChangeDate(e, index)}
+                  pattern="\d*"
                 />
               </td>
               <td>
