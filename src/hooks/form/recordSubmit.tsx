@@ -9,6 +9,7 @@ import { LoginProviderInfoType } from '@/ducks/provider/slice';
 import { ReturnStaff } from '@/ducks/staff/slice';
 import { ReturnSchedule } from '@/ducks/schedule/slice';
 import { ContentArr } from '@/ducks/accompany/slice';
+import { checkOverlap } from './checkOverlap';
 
 type Props = {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -70,10 +71,42 @@ export const recordSubmit = async ({
       };
     })
     .sort((a: ContentArr, b: ContentArr) => a.work_date! - b.work_date!);
+  // スタッフの名前毎に配列を作成した作成した新しい配列を作成[][]
+  const format2DArray = Object.values(
+    formatArr.reduce<{
+      [key: string]: ContentArr[];
+    }>((result, currentValue) => {
+      if (
+        currentValue['staff_name'] !== null &&
+        currentValue['staff_name'] !== undefined
+      ) {
+        (result[currentValue['staff_name']] =
+          result[currentValue['staff_name']] || []).push(currentValue);
+      }
+      return result;
+    }, {})
+  );
   if (formatArr.length === 0) {
     await CustomConfirm('記録は、少なくとも一行は作成ください。', 'Caution');
     setIsLoading(false);
     return;
+  }
+  if (loginProviderInfo.role === 'admin') {
+    const errorMessageList = checkOverlap(
+      format2DArray,
+      scheduleList,
+      selectedUser,
+      form
+    );
+    console.log('errorMessageList', errorMessageList);
+    if (errorMessageList.length) {
+      await CustomConfirm(
+        `スケジュールの時間が重複しています。${errorMessageList.join(' ')}`,
+        'Caution'
+      );
+      setIsLoading(false);
+      return;
+    }
   }
   try {
     const params = {
@@ -94,21 +127,6 @@ export const recordSubmit = async ({
       throw new Error(`記録票の${TITLE}に失敗しました。${error.message}`);
     }
     if (loginProviderInfo.role === 'admin') {
-      // スタッフの名前毎に配列を作成した作成した新しい配列を作成[][]
-      const format2DArray = Object.values(
-        formatArr.reduce<{
-          [key: string]: ContentArr[];
-        }>((result, currentValue) => {
-          if (
-            currentValue['staff_name'] !== null &&
-            currentValue['staff_name'] !== undefined
-          ) {
-            (result[currentValue['staff_name']] =
-              result[currentValue['staff_name']] || []).push(currentValue);
-          }
-          return result;
-        }, {})
-      );
       format2DArray.map(async (contentList) => {
         const staffName = contentList[0].staff_name;
         const selectedStaff = staffList.find(
