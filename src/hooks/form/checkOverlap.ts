@@ -46,10 +46,17 @@ const hasOverlap = (
     return contentList.some((contentItem) => {
       const contentStart = new Date(contentItem.start_time);
       const contentEnd = new Date(contentItem.end_time);
+
+      const isSameDay =
+        removeStart.getFullYear() === contentStart.getFullYear() &&
+        removeStart.getMonth() === contentStart.getMonth() &&
+        removeStart.getDate() === contentStart.getDate();
+
       return (
-        (contentStart >= removeStart && contentStart < removeEnd) ||
-        (contentEnd > removeStart && contentEnd <= removeEnd) ||
-        (contentStart <= removeStart && contentEnd >= removeEnd)
+        isSameDay &&
+        ((contentStart >= removeStart && contentStart < removeEnd) ||
+          (contentEnd > removeStart && contentEnd <= removeEnd) ||
+          (contentStart <= removeStart && contentEnd >= removeEnd))
       );
     });
   });
