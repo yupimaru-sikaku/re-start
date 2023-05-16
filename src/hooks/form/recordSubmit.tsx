@@ -1,42 +1,60 @@
 import React from 'react';
 import { CustomConfirm } from '@/components/Common/CustomConfirm';
-import { PATH, getPath } from '@/utils/const/getPath';
+import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
 import { NextRouter } from 'next/router';
 import { User } from '@/ducks/user/slice';
 import { LoginProviderInfoType } from '@/ducks/provider/slice';
 import { ReturnStaff } from '@/ducks/staff/slice';
-import { ReturnSchedule } from '@/ducks/schedule/slice';
+import {
+  CreateScheduleParams,
+  CreateScheduleResult,
+  ReturnSchedule,
+  UpdateScheduleParams,
+  UpdateScheduleResult,
+} from '@/ducks/schedule/slice';
 import { ContentArr } from '@/ducks/accompany/slice';
 import { checkOverlap } from './checkOverlap';
+import { MutationTrigger } from '@reduxjs/toolkit/dist/query/react/buildHooks';
+import { BaseQueryFn, MutationDefinition } from '@rtk-incubator/rtk-query/dist';
+import { UseFormReturnType } from '@mantine/form';
 
 type Props = {
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   type: 'create' | 'edit';
-  TITLE: '登録' | '更新';
   SERVICE_CONTENT: '同行援護' | '行動援護' | '移動支援';
-  PATH: keyof typeof PATH;
-  form: any;
+  form: UseFormReturnType<any>;
   selectedUser: User | undefined;
   loginProviderInfo: LoginProviderInfoType;
   creteRecord: any;
   updateRecord: any;
   recordData: any;
-  createSchedule: any;
-  updateSchedule: any;
+  createSchedule: MutationTrigger<
+    MutationDefinition<
+      CreateScheduleParams,
+      BaseQueryFn,
+      'Schedule',
+      CreateScheduleResult,
+      'scheduleApi'
+    >
+  >;
+  updateSchedule: MutationTrigger<
+    MutationDefinition<
+      UpdateScheduleParams,
+      BaseQueryFn,
+      'Schedule',
+      UpdateScheduleResult,
+      'scheduleApi'
+    >
+  >;
   router: NextRouter;
   staffList: ReturnStaff[];
   scheduleList: ReturnSchedule[];
-  scheduleRefetch: any;
 };
 
 export const recordSubmit = async ({
-  setIsLoading,
   type,
-  TITLE,
   SERVICE_CONTENT,
-  PATH,
   form,
   selectedUser,
   loginProviderInfo,
@@ -48,16 +66,21 @@ export const recordSubmit = async ({
   router,
   staffList,
   scheduleList,
-  scheduleRefetch,
 }: Props) => {
+  const TITLE = type === 'create' ? '登録' : '更新';
+  const PATH =
+    SERVICE_CONTENT === '同行援護'
+      ? 'ACCOMPANY'
+      : SERVICE_CONTENT === '移動支援'
+      ? 'MOBILITY'
+      : 'BEHAVIOR';
+
   const isOK = await CustomConfirm(
     `実績記録票を${TITLE}しますか？後から修正は可能です。`,
     '確認画面'
   );
-  if (!isOK) {
-    setIsLoading(false);
-    return;
-  }
+  if (!isOK) return;
+
   // 空欄がある場合に除外して市区町村とサービス種別を加えて日付順にソート
   const formatArr: ContentArr[] = form.values.content_arr
     .filter((content: ContentArr) => {
@@ -88,43 +111,45 @@ export const recordSubmit = async ({
   );
   if (formatArr.length === 0) {
     await CustomConfirm('記録は、少なくとも一行は作成ください。', 'Caution');
-    setIsLoading(false);
     return;
   }
+  // カレンダーが重複していないか確認
   if (loginProviderInfo.role === 'admin') {
     const errorMessageList = checkOverlap(
       format2DArray,
       scheduleList,
       selectedUser,
-      form
+      SERVICE_CONTENT,
+      form.values.year,
+      form.values.month
     );
-    console.log('errorMessageList', errorMessageList);
     if (errorMessageList.length) {
       await CustomConfirm(
         `スケジュールの時間が重複しています。${errorMessageList.join(' ')}`,
         'Caution'
       );
-      setIsLoading(false);
       return;
     }
   }
   try {
-    const params = {
+    const createRecordParams = {
       ...form.values,
       login_id: loginProviderInfo.id,
       corporate_id: loginProviderInfo.corporate_id,
       identification: selectedUser!.identification,
       content_arr: formatArr,
     };
-    const { error } =
+    const { createRecordError } =
       type === 'create'
-        ? await creteRecord(params)
+        ? await creteRecord(createRecordParams)
         : await updateRecord({
-            ...params,
+            ...createRecordParams,
             id: recordData!.id,
           });
-    if (error) {
-      throw new Error(`記録票の${TITLE}に失敗しました。${error.message}`);
+    if (createRecordError) {
+      throw new Error(
+        `記録票の${TITLE}に失敗しました。${createRecordError.message}`
+      );
     }
     if (loginProviderInfo.role === 'admin') {
       format2DArray.map(async (contentList) => {
@@ -143,7 +168,7 @@ export const recordSubmit = async ({
         if (selectedSchedule) {
           const removeContentArr = selectedSchedule.content_arr.filter(
             (content) =>
-              content.user_name !== selectedUser!.name &&
+              content.user_name !== selectedUser!.name ||
               content.service_content !== SERVICE_CONTENT
           );
           const contentNewList = contentList.map((content) => {
@@ -165,12 +190,13 @@ export const recordSubmit = async ({
           content_arr: newContentArr,
         };
         const { error } = selectedSchedule
-          ? await updateSchedule({
+          ? ((await updateSchedule({
               ...createScheduleParams,
               id: selectedSchedule.id,
-            })
-          : await createSchedule(createScheduleParams);
-        scheduleRefetch();
+            })) as UpdateScheduleResult)
+          : ((await createSchedule(
+              createScheduleParams
+            )) as CreateScheduleResult);
         if (error) {
           throw new Error(
             `スタッフのスケジュール${TITLE}に失敗しました。${error.message}`
@@ -185,8 +211,6 @@ export const recordSubmit = async ({
     router.push(getPath(PATH));
   } catch (error: any) {
     await CustomConfirm(error.message, 'Caution');
-    setIsLoading(false);
     return;
   }
-  setIsLoading(false);
 };

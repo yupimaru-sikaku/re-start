@@ -54,7 +54,9 @@ export const scheduleApi = createApi({
       CreateScheduleResult,
       CreateScheduleParams
     >({
-      queryFn: async (params: CreateScheduleParams): Promise<CreateScheduleResult> => {
+      queryFn: async (
+        params: CreateScheduleParams
+      ): Promise<CreateScheduleResult> => {
         const { error } = await supabase.from(getDb('SCHEDULE')).insert({
           staff_id: params.staff_id,
           staff_name: params.staff_name,
@@ -64,6 +66,10 @@ export const scheduleApi = createApi({
         });
         return { error };
       },
+      invalidatesTags: [
+        { type: 'Schedule', id: 'getSchedule' },
+        { type: 'Schedule', id: 'getScheduleList' },
+      ],
     }),
     /**
      * PUP/スケジュールを更新
@@ -86,6 +92,10 @@ export const scheduleApi = createApi({
           .eq('id', params.id);
         return { error };
       },
+      invalidatesTags: [
+        { type: 'Schedule', id: 'getSchedule' },
+        { type: 'Schedule', id: 'getScheduleList' },
+      ],
     }),
   }),
 });

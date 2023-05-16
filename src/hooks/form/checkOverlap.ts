@@ -6,20 +6,24 @@ export const checkOverlap = (
   format2DArray: ContentArr[][],
   scheduleList: ReturnSchedule[],
   selectedUser: ReturnUser | undefined,
-  form: any
+  SERVICE_CONTENT: string,
+  year: number,
+  month: number
 ) => {
-  const errorMessageList = format2DArray
+  const errorMessasgeList = format2DArray
     .map((contentList) => {
       const staffName = contentList[0].staff_name;
       const selectedSchedule = scheduleList.find(
         (schedule) =>
-          schedule.year === form.values.year &&
-          schedule.month === form.values.month &&
+          schedule.year === year &&
+          schedule.month === month &&
           schedule.staff_name === staffName
       );
       if (selectedSchedule) {
         const removeContentArr = selectedSchedule.content_arr.filter(
-          (content) => content.user_name !== selectedUser!.name
+          (content) =>
+            content.user_name !== selectedUser!.name ||
+            content.service_content !== SERVICE_CONTENT
         );
         const isOverlap = hasOverlap(removeContentArr, contentList);
         if (isOverlap) {
@@ -29,7 +33,7 @@ export const checkOverlap = (
       return null;
     })
     .filter((errorMessage) => errorMessage !== null);
-  return errorMessageList;
+  return errorMessasgeList;
 };
 
 const hasOverlap = (
@@ -43,9 +47,9 @@ const hasOverlap = (
       const contentStart = new Date(contentItem.start_time);
       const contentEnd = new Date(contentItem.end_time);
       return (
-        (removeStart > contentStart && removeStart < contentEnd) ||
-        (removeEnd > contentStart && removeEnd < contentEnd) ||
-        (removeStart < contentStart && removeEnd > contentEnd)
+        (contentStart >= removeStart && contentStart < removeEnd) ||
+        (contentEnd > removeStart && contentEnd <= removeEnd) ||
+        (contentStart <= removeStart && contentEnd >= removeEnd)
       );
     });
   });

@@ -82,12 +82,10 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
   const selectedUser = userList.find((user) => user.name === form.values.name);
 
   const handleSubmit = async () => {
+    setIsLoading(true);
     recordSubmit({
-      setIsLoading: setIsLoading,
       type,
-      TITLE,
       SERVICE_CONTENT: '同行援護',
-      PATH: 'ACCOMPANY',
       form: form,
       selectedUser: selectedUser,
       loginProviderInfo: loginProviderInfo,
@@ -99,8 +97,8 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
       router,
       staffList,
       scheduleList,
-      scheduleRefetch,
     });
+    setIsLoading(false);
   };
 
   return (

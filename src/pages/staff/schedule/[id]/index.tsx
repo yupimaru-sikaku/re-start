@@ -119,10 +119,10 @@ const SchedulePage: NextPage = () => {
             <Space h="md" />
             <SimpleGrid breakpoints={[{ minWidth: 'xs', cols: 4 }]}>
               <Badge variant="filled" sx={{ backgroundColor: dokoColor }}>
-                行動援護
+                同行援護
               </Badge>
               <Badge variant="filled" sx={{ backgroundColor: kodoColor }}>
-                同行援護
+                行動援護
               </Badge>
               <Badge variant="filled" sx={{ backgroundColor: idoColor }}>
                 移動支援

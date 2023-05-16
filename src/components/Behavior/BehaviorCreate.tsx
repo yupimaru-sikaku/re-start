@@ -82,12 +82,10 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
   const selectedUser = userList.find((user) => user.name === form.values.name);
 
   const handleSubmit = async () => {
+    setIsLoading(true);
     recordSubmit({
-      setIsLoading: setIsLoading,
       type,
-      TITLE,
       SERVICE_CONTENT: '行動援護',
-      PATH: 'BEHAVIOR',
       form: form,
       selectedUser: selectedUser,
       loginProviderInfo: loginProviderInfo,
@@ -99,8 +97,8 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
       router,
       staffList,
       scheduleList,
-      scheduleRefetch,
     });
+    setIsLoading(false);
   };
 
   return (
