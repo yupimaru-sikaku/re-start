@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { DataTable } from 'mantine-datatable';
 import { NextPage } from 'next';
 import { CustomConfirm } from 'src/components/Common/CustomConfirm';
@@ -6,7 +6,6 @@ import { UserListRecords } from 'src/components/User/UserListRecords';
 import {
   useDeleteUserMutation,
   useGetUserListByCorporateIdQuery,
-  useGetUserListByLoginIdQuery,
   useGetUserListQuery,
 } from '@/ducks/user/query';
 import { useGetTablePage } from '@/hooks/table/useGetTablePage';
@@ -33,6 +32,11 @@ export const UserList: NextPage = () => {
       return data2;
     }
   }, [data1, data2]);
+
+  useEffect(() => {
+    refetch();
+  }, []);
+
   const [deleteUser] = useDeleteUserMutation();
   const { records, PAGE_SIZE } = useGetTablePage(page, userList);
   const handleDelete = async (id: string) => {

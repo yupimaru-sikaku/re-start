@@ -18,6 +18,10 @@ export const StaffList: NextPage = () => {
   } = useGetStaffListQuery();
   const [deleteStaff] = useDeleteStaffMutation();
   const { records, PAGE_SIZE } = useGetTablePage(page, staffList);
+  
+  useEffect(() => {
+    refetch();
+  }, []);
 
   const handleDelete = async (id: string) => {
     const isOK = await CustomConfirm(
