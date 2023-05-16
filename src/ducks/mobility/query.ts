@@ -1,8 +1,5 @@
 import { getDb, supabase } from '@/libs/supabase/supabase';
-import {
-  createApi,
-  fakeBaseQuery,
-} from '@reduxjs/toolkit/query/react';
+import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   DeleteMobilityResult,
   ReturnMobility,
@@ -37,10 +34,7 @@ export const mobilityApi = createApi({
      * @param {string} corporateId
      * @return {ReturnMobility[][]}
      */
-    getMobilityListByCorporateId: builder.query<
-      ReturnMobility[],
-      string
-    >({
+    getMobilityListByCorporateId: builder.query<ReturnMobility[], string>({
       queryFn: async (corporateId: string): Promise<any> => {
         const { data, error } = await supabase
           .from(getDb('MOBILITY'))
@@ -56,19 +50,17 @@ export const mobilityApi = createApi({
      * @param {string} loginId
      * @return {ReturnMobility[]}
      */
-    getMobilityListByLoginId: builder.query<ReturnMobility[], string>(
-      {
-        queryFn: async (loginId: string): Promise<any> => {
-          const { data, error } = await supabase
-            .from(getDb('MOBILITY'))
-            .select('*')
-            .eq('login_id', loginId)
-            .eq('is_display', true)
-            .order('updated_at', { ascending: false });
-          return { data, error };
-        },
-      }
-    ),
+    getMobilityListByLoginId: builder.query<ReturnMobility[], string>({
+      queryFn: async (loginId: string): Promise<any> => {
+        const { data, error } = await supabase
+          .from(getDb('MOBILITY'))
+          .select('*')
+          .eq('login_id', loginId)
+          .eq('is_display', true)
+          .order('updated_at', { ascending: false });
+        return { data, error };
+      },
+    }),
     /**
      * GET/IDに該当する実績記録票を取得
      * @param {string} id
@@ -94,18 +86,16 @@ export const mobilityApi = createApi({
       queryFn: async (
         params: CreateMobilityParams
       ): Promise<CreateMobilityResult> => {
-        const { error } = await supabase
-          .from(getDb('MOBILITY'))
-          .insert({
-            corporate_id: params.corporate_id,
-            login_id: params.login_id,
-            year: params.year,
-            month: params.month,
-            identification: params.identification,
-            name: params.name,
-            content_arr: params.content_arr,
-            status: params.status,
-          });
+        const { error } = await supabase.from(getDb('MOBILITY')).insert({
+          corporate_id: params.corporate_id,
+          login_id: params.login_id,
+          year: params.year,
+          month: params.month,
+          identification: params.identification,
+          name: params.name,
+          content_arr: params.content_arr,
+          status: params.status,
+        });
         return { error };
       },
     }),

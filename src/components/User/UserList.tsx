@@ -5,6 +5,7 @@ import { CustomConfirm } from 'src/components/Common/CustomConfirm';
 import { UserListRecords } from 'src/components/User/UserListRecords';
 import {
   useDeleteUserMutation,
+  useGetUserListByCorporateIdQuery,
   useGetUserListByLoginIdQuery,
   useGetUserListQuery,
 } from '@/ducks/user/query';
@@ -18,8 +19,8 @@ export const UserList: NextPage = () => {
     (state: RootState) => state.provider.loginProviderInfo
   );
   const data1 = useGetUserListQuery();
-  const data2 = useGetUserListByLoginIdQuery(
-    loginProviderInfo.id || ''
+  const data2 = useGetUserListByCorporateIdQuery(
+    loginProviderInfo.corporate_id || ''
   );
   const {
     data: userList,

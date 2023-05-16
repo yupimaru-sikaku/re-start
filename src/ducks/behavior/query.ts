@@ -1,8 +1,5 @@
 import { getDb, supabase } from '@/libs/supabase/supabase';
-import {
-  createApi,
-  fakeBaseQuery,
-} from '@reduxjs/toolkit/query/react';
+import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   DeleteBehaviorResult,
   ReturnBehavior,
@@ -37,10 +34,7 @@ export const behaviorApi = createApi({
      * @param {string} corporateId
      * @return {ReturnBehavior[]}
      */
-    getBehaviorListByCorporateId: builder.query<
-      ReturnBehavior[],
-      string
-    >({
+    getBehaviorListByCorporateId: builder.query<ReturnBehavior[], string>({
       queryFn: async (corporateId: string): Promise<any> => {
         const { data, error } = await supabase
           .from(getDb('BEHAVIOR'))
@@ -56,19 +50,17 @@ export const behaviorApi = createApi({
      * @param {string} loginId
      * @return {ReturnBehavior[]}
      */
-    getBehaviorListByLoginId: builder.query<ReturnBehavior[], string>(
-      {
-        queryFn: async (loginId: string): Promise<any> => {
-          const { data, error } = await supabase
-            .from(getDb('BEHAVIOR'))
-            .select('*')
-            .eq('login_id', loginId)
-            .eq('is_display', true)
-            .order('updated_at', { ascending: false });
-          return { data, error };
-        },
-      }
-    ),
+    getBehaviorListByLoginId: builder.query<ReturnBehavior[], string>({
+      queryFn: async (loginId: string): Promise<any> => {
+        const { data, error } = await supabase
+          .from(getDb('BEHAVIOR'))
+          .select('*')
+          .eq('login_id', loginId)
+          .eq('is_display', true)
+          .order('updated_at', { ascending: false });
+        return { data, error };
+      },
+    }),
     /**
      * GET/IDに該当する実績記録票を取得
      * @param {string} id
@@ -94,20 +86,23 @@ export const behaviorApi = createApi({
       queryFn: async (
         params: CreateBehaviorParams
       ): Promise<CreateBehaviorResult> => {
-        const { error } = await supabase
-          .from(getDb('BEHAVIOR'))
-          .insert({
-            corporate_id: params.corporate_id,
-            login_id: params.login_id,
-            year: params.year,
-            month: params.month,
-            identification: params.identification,
-            name: params.name,
-            content_arr: params.content_arr,
-            status: params.status,
-          });
+        const { error } = await supabase.from(getDb('BEHAVIOR')).insert({
+          corporate_id: params.corporate_id,
+          login_id: params.login_id,
+          year: params.year,
+          month: params.month,
+          identification: params.identification,
+          name: params.name,
+          content_arr: params.content_arr,
+          status: params.status,
+        });
         return { error };
       },
+      invalidatesTags: [
+        { type: 'BehaviorApi', id: 'getBehaviorList' },
+        { type: 'BehaviorApi', id: 'getBehaviorListByCorporateId' },
+        { type: 'BehaviorApi', id: 'getBehaviorListByLoginId' },
+      ],
     }),
     /**
      * PUT/IDの該当する実績記録票を更新
@@ -133,6 +128,11 @@ export const behaviorApi = createApi({
           .eq('id', params.id);
         return { error };
       },
+      invalidatesTags: [
+        { type: 'BehaviorApi', id: 'getBehaviorList' },
+        { type: 'BehaviorApi', id: 'getBehaviorListByCorporateId' },
+        { type: 'BehaviorApi', id: 'getBehaviorListByLoginId' },
+      ],
     }),
     /**
      * PUT/IDに実績記録票を理論削除
@@ -147,6 +147,11 @@ export const behaviorApi = createApi({
           .eq('id', id);
         return { error };
       },
+      invalidatesTags: [
+        { type: 'BehaviorApi', id: 'getBehaviorList' },
+        { type: 'BehaviorApi', id: 'getBehaviorListByCorporateId' },
+        { type: 'BehaviorApi', id: 'getBehaviorListByLoginId' },
+      ],
     }),
   }),
 });

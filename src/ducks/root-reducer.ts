@@ -13,9 +13,11 @@ import { scheduleApi } from './schedule/query';
 import { homeCareApi } from './home-care/query';
 import accompanySlice from './accompany/slice';
 import { accompanyApi } from './accompany/query';
+import userSlice from './user/slice';
 
 const rootReducer = combineReducers({
   provider: providerSlice.reducer,
+  user: userSlice.reducer,
   staff: staffSlice.reducer,
   behavior: behaviorSlice.reducer,
   mobility: mobilitySlice.reducer,

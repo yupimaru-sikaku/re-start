@@ -1,4 +1,6 @@
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { PostgrestError } from '@supabase/supabase-js';
+import { userApi } from './query';
 
 export type User = {
   id: string;
@@ -30,18 +32,12 @@ export type User = {
   updated_at: string; // 更新日時
 };
 
-export type CreateUserParams = Omit<
-  User,
-  'id' | 'created_at' | 'updated_at'
->;
+export type CreateUserParams = Omit<User, 'id' | 'created_at' | 'updated_at'>;
 export type CreateUserResult = {
   error: PostgrestError | null;
 };
 
-export type UpdateUserParams = Omit<
-  User,
-  'created_at' | 'updated_at'
->;
+export type UpdateUserParams = Omit<User, 'created_at' | 'updated_at'>;
 export type UpdateUserResult = {
   error: PostgrestError | null;
 };
@@ -79,28 +75,29 @@ export const createInitialState: CreateUserParams = {
   is_display: true,
 };
 
-export const initialState = {
-  id: '',
-  user_id: '',
-  name: '',
-  identification: '',
-  gender: '男性' as '男性' | '女性',
-  is_gender_specification: false,
-  gender_specification: '' as '' | '男性' | '女性' | '無し',
-  is_ido: false,
-  ido_amount: 0,
-  is_kodo: false,
-  kodo_amount: 0,
-  is_doko: false,
-  doko_amount: 0,
-  is_kazi: false,
-  kazi_amount: 0,
-  is_shintai: false,
-  shintai_amount: 0,
-  is_with_tsuin: false,
-  with_tsuin_amount: 0,
-  is_tsuin: false,
-  tsuin_amount: 0,
-  created_at: '',
-  updated_at: '',
+const initialState = {
+  userData: {} as ReturnUser,
+  userList: [] as ReturnUser[],
 };
+
+const userSlice = createSlice({
+  name: 'user',
+  initialState,
+  reducers: {
+    setUserList: (state, action: PayloadAction<ReturnUser[]>) => {
+      state.userList = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      userApi.endpoints.getUserById.matchFulfilled,
+      (state, action: PayloadAction<ReturnUser>) => {
+        state.userData = action.payload;
+      }
+    );
+  },
+});
+
+export default userSlice;
+
+export const { setUserList } = userSlice.actions;

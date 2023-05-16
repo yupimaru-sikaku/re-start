@@ -1,8 +1,5 @@
 import { getDb, supabase } from '@/libs/supabase/supabase';
-import {
-  createApi,
-  fakeBaseQuery,
-} from '@reduxjs/toolkit/query/react';
+import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 import { PostgrestError } from '@supabase/supabase-js';
 import {
   CreateUserParams,

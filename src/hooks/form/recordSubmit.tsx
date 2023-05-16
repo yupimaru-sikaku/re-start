@@ -151,7 +151,10 @@ export const recordSubmit = async ({
         `記録票の${TITLE}に失敗しました。${createRecordError.message}`
       );
     }
-    if (loginProviderInfo.role === 'admin') {
+    const allStaffNameEmpty = format2DArray.every((subArray) =>
+      subArray.every((content) => content.staff_name === '')
+    );
+    if (loginProviderInfo.role === 'admin' && !allStaffNameEmpty) {
       format2DArray.map(async (contentList) => {
         const staffName = contentList[0].staff_name;
         const selectedStaff = staffList.find(
