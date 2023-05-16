@@ -139,7 +139,7 @@ export const excludingSelected = (
   userList: ReturnUser[],
   recordList: any,
   form: any
-) => {
+): { value: string; disabled: boolean }[] => {
   return userList.map((user) => {
     const isDisabled = recordList.some((record: any) => {
       return (

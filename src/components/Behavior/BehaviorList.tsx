@@ -1,29 +1,29 @@
+import React, { useMemo } from 'react';
 import {
   useDeleteBehaviorMutation,
   useGetBehaviorListByCorporateIdQuery,
   useGetBehaviorListByLoginIdQuery,
   useGetBehaviorListQuery,
 } from '@/ducks/behavior/query';
-import { RootState } from '@/ducks/root-reducer';
 import { useSelector } from '@/ducks/store';
-import React, { useEffect, useMemo } from 'react';
-import { NextPage } from 'next';
+import { RootState } from '@/ducks/root-reducer';
 import { TableList } from '../Common/TableList';
 
-export const BehaviorList: NextPage = () => {
+export const BehaviorList = () => {
   const loginProviderInfo = useSelector(
     (state: RootState) => state.provider.loginProviderInfo
   );
-  const data1 = useGetBehaviorListQuery();
+  const data1 = useGetBehaviorListQuery(undefined, {
+    skip: loginProviderInfo.role !== 'admin',
+  });
   const data2 = useGetBehaviorListByCorporateIdQuery(
-    loginProviderInfo.corporate_id
+    loginProviderInfo.corporate_id,
+    { skip: loginProviderInfo.role !== 'corporate' }
   );
-  const data3 = useGetBehaviorListByLoginIdQuery(loginProviderInfo.id);
-  const {
-    data: behaviorList,
-    isLoading: behaviorLoading,
-    refetch,
-  } = useMemo(() => {
+  const data3 = useGetBehaviorListByLoginIdQuery(loginProviderInfo.id, {
+    skip: loginProviderInfo.role !== 'office',
+  });
+  const { data: behaviorList, isLoading: behaviorLoading } = useMemo(() => {
     if (loginProviderInfo.role === 'admin') {
       return data1;
     } else if (loginProviderInfo.role === 'corporate') {
@@ -34,14 +34,9 @@ export const BehaviorList: NextPage = () => {
   }, [data1, data2, data3]);
   const [deleteBehavior] = useDeleteBehaviorMutation();
 
-  useEffect(() => {
-    refetch();
-  }, []);
-
   return (
     <TableList
       deleteAction={deleteBehavior}
-      refetch={refetch}
       path="BEHAVIOR_EDIT"
       loading={behaviorLoading}
       dataList={behaviorList}

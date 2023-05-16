@@ -77,14 +77,14 @@ const staffSlice = createSlice({
       state.staffList = action.payload;
     },
   },
-  // extraReducers: (builder) => {
-  //   builder.addMatcher(
-  //     staffApi.endpoints.getStaffList.matchFulfilled,
-  //     (state, action) => {
-  //       state.staffList = action.payload;
-  //     }
-  //   );
-  // },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      staffApi.endpoints.getStaffListByService.matchFulfilled,
+      (state, action) => {
+        state.staffList = action.payload;
+      }
+    );
+  },
   // extraReducers: (builder) => {
   //   builder.addCase(getStaffList.fulfilled, (state, action) => {
   //     state.staffList = action.payload.staffList;

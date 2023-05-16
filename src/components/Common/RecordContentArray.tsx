@@ -21,7 +21,6 @@ type Props = {
   form: UseFormReturnType<any>;
   handleChangeDate: any;
   handleChangeTime: any;
-  staffList: ReturnStaff[];
   handleChangeStaff: any;
   handleRefresh: any;
 };
@@ -30,13 +29,14 @@ export const RecordContentArray: NextPage<Props> = ({
   form,
   handleChangeDate,
   handleChangeTime,
-  staffList,
   handleChangeStaff,
   handleRefresh,
 }) => {
   const loginProviderInfo = useSelector(
     (state: RootState) => state.provider.loginProviderInfo
   );
+  const staffList = useSelector((state: RootState) => state.staff.staffList);
+
   const convertTimeRange = (
     content: ContentArr
   ): [Date | null, Date | null] => {

@@ -1,5 +1,5 @@
 import { Divider, LoadingOverlay, Paper, Space, Stack } from '@mantine/core';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { CustomStepper } from '../Common/CustomStepper';
 import {
   CreateMobilityParams,
@@ -14,8 +14,6 @@ import {
   useGetMobilityDataQuery,
   useUpdateMobilityMutation,
 } from '@/ducks/mobility/query';
-import { useSelector } from '@/ducks/store';
-import { RootState } from '@/ducks/root-reducer';
 import { CustomButton } from '../Common/CustomButton';
 import { NextPage } from 'next';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
@@ -23,13 +21,10 @@ import { UseGetFormType, useGetForm } from '@/hooks/form/useGetForm';
 import { RecordBasicInfo } from '../Common/RecordBasicInfo';
 import { RecordContentArray } from '../Common/RecordContentArray';
 import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
-import { recordSubmit } from '@/hooks/form/recordSubmit';
-import {
-  useCreateScheduleMutation,
-  useGetScheduleListQuery,
-  useUpdateScheduleMutation,
-} from '@/ducks/schedule/query';
-import { excludingSelected } from '@/utils';
+import { CustomConfirm } from '../Common/CustomConfirm';
+import { showNotification } from '@mantine/notifications';
+import { IconCheckbox } from '@tabler/icons';
+import { getPath } from '@/utils/const/getPath';
 
 type Props = {
   type: 'create' | 'edit';
@@ -37,30 +32,20 @@ type Props = {
 
 export const MobilityCreate: NextPage<Props> = ({ type }) => {
   const TITLE = type === 'create' ? '登録' : '更新';
+  const SERVICE_CONTENT = '移動支援';
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const mobilityId = router.query.id as string;
   const [isLoading, setIsLoading] = useState(false);
-  const loginProviderInfo = useSelector(
-    (state: RootState) => state.provider.loginProviderInfo
-  );
-  const mobilityList = useSelector(
-    (state: RootState) => state.mobility.mobilityList
-  );
   const {
     data: mobilityData,
     isLoading: mobilityLoading,
-    refetch,
+    refetch: mobilityRefetch,
   } = useGetMobilityDataQuery(mobilityId || skipToken);
   const { data: userList = [] } = useGetUserListByServiceQuery('is_ido');
-  const { data: staffList = [] } = useGetStaffListByServiceQuery('ido');
-  // TODO: 作成・更新の時のみ呼び出すようにしたい
-  const { data: scheduleList = [], refetch: scheduleRefetch } =
-    useGetScheduleListQuery();
+  const { data: staffList } = useGetStaffListByServiceQuery('ido');
   const [createMobility] = useCreateMobilityMutation();
   const [updateMobility] = useUpdateMobilityMutation();
-  const [createSchedule] = useCreateScheduleMutation();
-  const [updateSchedule] = useUpdateScheduleMutation();
   const {
     form,
     handleChangeDate,
@@ -68,37 +53,36 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
     handleChangeTime,
     handleRefresh,
     amountTime,
-  }: UseGetFormType<CreateMobilityParams> = useGetForm(
+    recordSubmit,
+  }: UseGetFormType<CreateMobilityParams> = useGetForm({
+    type,
+    SERVICE_CONTENT,
     createInitialState,
-    mobilityData,
-    refetch,
-    validate
-  );
-
-  const userListExcludingSelected = useMemo(() => {
-    return excludingSelected(userList, mobilityList, form);
-  }, [userList, mobilityList, form.values.year, form.values.month]);
-
-  const selectedUser = userList.find((user) => user.name === form.values.name);
+    recordData: mobilityData,
+    refetch: mobilityRefetch,
+    validate,
+  });
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    recordSubmit({
-      type,
-      SERVICE_CONTENT: '移動支援',
-      form: form,
-      selectedUser: selectedUser,
-      loginProviderInfo: loginProviderInfo,
-      creteRecord: createMobility,
+    const result = await recordSubmit({
+      createRecord: createMobility,
       updateRecord: updateMobility,
-      recordData: mobilityData,
-      createSchedule,
-      updateSchedule,
-      router,
-      staffList,
-      scheduleList,
     });
-    setIsLoading(false);
+    if (!result.isFinished) {
+      if (result.message) {
+        await CustomConfirm(result.message, 'Caution');
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+      }
+    } else {
+      showNotification({
+        icon: <IconCheckbox />,
+        message: `${TITLE}に成功しました！`,
+      });
+      router.push(getPath('MOBILITY'));
+    }
   };
 
   return (
@@ -109,13 +93,7 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
       </Paper>
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
         <Paper withBorder shadow="md" p={30} radius="md">
-          <RecordBasicInfo
-            type={type}
-            form={form}
-            userList={userListExcludingSelected}
-            selectedUser={selectedUser}
-            amountTime={amountTime}
-          />
+          <RecordBasicInfo type={type} form={form} amountTime={amountTime} />
           <Space h="lg" />
           <Divider variant="dotted" />
           <Space h="lg" />
@@ -123,7 +101,6 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
             form={form}
             handleChangeDate={handleChangeDate}
             handleChangeTime={handleChangeTime}
-            staffList={staffList}
             handleChangeStaff={handleChangeStaff}
             handleRefresh={handleRefresh}
           />

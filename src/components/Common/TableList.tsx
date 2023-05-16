@@ -11,19 +11,12 @@ import { useGetTablePage } from '@/hooks/table/useGetTablePage';
 
 type Props = {
   deleteAction: any;
-  refetch: any;
   path: keyof typeof PATH;
   loading: boolean;
   dataList: any;
 };
 
-export const TableList = ({
-  deleteAction,
-  refetch,
-  path,
-  loading,
-  dataList,
-}: Props) => {
+export const TableList = ({ deleteAction, path, loading, dataList }: Props) => {
   const [page, setPage] = useState(1);
   const { records, PAGE_SIZE } = useGetTablePage(page, dataList);
 

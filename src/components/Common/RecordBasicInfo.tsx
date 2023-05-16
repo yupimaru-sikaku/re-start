@@ -1,26 +1,33 @@
 import { Select, SimpleGrid, TextInput } from '@mantine/core';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { CustomTextInput } from './CustomTextInput';
-import { ReturnUser } from '@/ducks/user/slice';
 import { UseFormReturnType } from '@mantine/form';
 import { NextPage } from 'next';
+import { RootState } from '@/ducks/root-reducer';
+import { useSelector } from '@/ducks/store';
+import { excludingSelected } from '@/utils';
 
 type Props = {
   type: 'create' | 'edit';
   form: UseFormReturnType<any>;
-  userList: { value: string; disabled: boolean }[];
-  selectedUser: ReturnUser | undefined;
   amountTime: number;
 };
 
 export const RecordBasicInfo: NextPage<Props> = ({
   type,
   form,
-  userList,
-  selectedUser,
   amountTime,
 }) => {
   const isEdit = type === 'edit';
+  const accompanyList = useSelector(
+    (state: RootState) => state.accompany.accompanyList
+  );
+  const userList = useSelector((state: RootState) => state.user.userList);
+  const selectedUser = userList.find((user) => user.name === form.values.name);
+  const userListExcludingSelected = useMemo(() => {
+    return excludingSelected(userList, accompanyList, form);
+  }, [userList, accompanyList, form.values.year, form.values.month]);
+
   return (
     <SimpleGrid
       breakpoints={[
@@ -58,7 +65,7 @@ export const RecordBasicInfo: NextPage<Props> = ({
         label="利用者名"
         searchable
         nothingFound="No Data"
-        data={userList.map((user) => ({
+        data={userListExcludingSelected.map((user) => ({
           value: user.value,
           label: user.value,
           disabled: user.disabled,

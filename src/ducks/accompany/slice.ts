@@ -84,10 +84,32 @@ const accompanySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addMatcher(
+      accompanyApi.endpoints.getAccompanyList.matchFulfilled,
+      (state, action: PayloadAction<ReturnAccompany[]>) => {
+        state.accompanyList = action.payload;
+      }
+    );
+    builder.addMatcher(
+      accompanyApi.endpoints.getAccompanyListByCorporateId.matchFulfilled,
+      (state, action: PayloadAction<ReturnAccompany[]>) => {
+        state.accompanyList = action.payload;
+      }
+    );
+    builder.addMatcher(
+      accompanyApi.endpoints.getAccompanyListByLoginId.matchFulfilled,
+      (state, action: PayloadAction<ReturnAccompany[]>) => {
+        state.accompanyList = action.payload;
+      }
+    );
+    builder.addMatcher(
       accompanyApi.endpoints.getAccompanyData.matchFulfilled,
       (state, action: PayloadAction<ReturnAccompany>) => {
         state.accompanyData = action.payload;
       }
+    );
+    builder.addMatcher(
+      accompanyApi.endpoints.createAccompany.matchFulfilled,
+      (state, action: PayloadAction<ReturnAccompany>) => {}
     );
   },
 });

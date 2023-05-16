@@ -1,5 +1,5 @@
 import { Divider, LoadingOverlay, Paper, Space, Stack } from '@mantine/core';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { CustomStepper } from '../Common/CustomStepper';
 import {
   CreateBehaviorParams,
@@ -14,8 +14,6 @@ import {
   useGetBehaviorDataQuery,
   useUpdateBehaviorMutation,
 } from '@/ducks/behavior/query';
-import { useSelector } from '@/ducks/store';
-import { RootState } from '@/ducks/root-reducer';
 import { CustomButton } from '../Common/CustomButton';
 import { NextPage } from 'next';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
@@ -23,13 +21,10 @@ import { UseGetFormType, useGetForm } from '@/hooks/form/useGetForm';
 import { RecordBasicInfo } from '../Common/RecordBasicInfo';
 import { RecordContentArray } from '../Common/RecordContentArray';
 import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
-import { recordSubmit } from '@/hooks/form/recordSubmit';
-import {
-  useCreateScheduleMutation,
-  useGetScheduleListQuery,
-  useUpdateScheduleMutation,
-} from '@/ducks/schedule/query';
-import { excludingSelected } from '@/utils';
+import { CustomConfirm } from '../Common/CustomConfirm';
+import { showNotification } from '@mantine/notifications';
+import { IconCheckbox } from '@tabler/icons';
+import { getPath } from '@/utils/const/getPath';
 
 type Props = {
   type: 'create' | 'edit';
@@ -37,28 +32,18 @@ type Props = {
 
 export const BehaviorCreate: NextPage<Props> = ({ type }) => {
   const TITLE = type === 'create' ? '登録' : '更新';
+  const SERVICE_CONTENT = '行動援護';
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const behaviorId = router.query.id as string;
-  const [isLoading, setIsLoading] = useState(false);
-  const loginProviderInfo = useSelector(
-    (state: RootState) => state.provider.loginProviderInfo
-  );
-  const behaviorList = useSelector(
-    (state: RootState) => state.behavior.behaviorList
-  );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const {
     data: behaviorData,
-    isLoading: behaviorLoding,
+    isLoading: behaviorLoading,
     refetch: behaviorRefetch,
   } = useGetBehaviorDataQuery(behaviorId || skipToken);
-  const { data: userList = [] } = useGetUserListByServiceQuery('is_kodo');
-  const { data: staffList = [] } = useGetStaffListByServiceQuery('kodo');
-  // TODO: 作成・更新の時のみ呼び出すようにしたい
-  const { data: scheduleList = [], refetch: scheduleRefetch } =
-    useGetScheduleListQuery();
-  const [createSchedule] = useCreateScheduleMutation();
-  const [updateSchedule] = useUpdateScheduleMutation();
+  const { data: userList = [] } = useGetUserListByServiceQuery('is_doko');
+  const { data: staffList } = useGetStaffListByServiceQuery('doko');
   const [createBehavior] = useCreateBehaviorMutation();
   const [updateBehavior] = useUpdateBehaviorMutation();
   const {
@@ -68,54 +53,47 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
     handleChangeTime,
     handleRefresh,
     amountTime,
-  }: UseGetFormType<CreateBehaviorParams> = useGetForm(
+    recordSubmit,
+  }: UseGetFormType<CreateBehaviorParams> = useGetForm({
+    type,
+    SERVICE_CONTENT,
     createInitialState,
-    behaviorData,
-    behaviorRefetch,
-    validate
-  );
-
-  const userListExcludingSelected = useMemo(() => {
-    return excludingSelected(userList, behaviorList, form);
-  }, [userList, behaviorList, form.values.year, form.values.month]);
-
-  const selectedUser = userList.find((user) => user.name === form.values.name);
+    recordData: behaviorData,
+    refetch: behaviorRefetch,
+    validate,
+  });
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    recordSubmit({
-      type,
-      SERVICE_CONTENT: '行動援護',
-      form: form,
-      selectedUser: selectedUser,
-      loginProviderInfo: loginProviderInfo,
-      creteRecord: createBehavior,
+    const result = await recordSubmit({
+      createRecord: createBehavior,
       updateRecord: updateBehavior,
-      recordData: behaviorData,
-      createSchedule,
-      updateSchedule,
-      router,
-      staffList,
-      scheduleList,
     });
-    setIsLoading(false);
+    if (!result.isFinished) {
+      if (result.message) {
+        await CustomConfirm(result.message, 'Caution');
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+      }
+    } else {
+      showNotification({
+        icon: <IconCheckbox />,
+        message: `${TITLE}に成功しました！`,
+      });
+      router.push(getPath('BEHAVIOR'));
+    }
   };
 
   return (
     <Stack>
-      <LoadingOverlay className="relative" visible={behaviorLoding} />
+      <LoadingOverlay className="relative" visible={behaviorLoading} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomStepper />
       </Paper>
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
         <Paper withBorder shadow="md" p={30} radius="md">
-          <RecordBasicInfo
-            type={type}
-            form={form}
-            userList={userListExcludingSelected}
-            selectedUser={selectedUser}
-            amountTime={amountTime}
-          />
+          <RecordBasicInfo type={type} form={form} amountTime={amountTime} />
           <Space h="lg" />
           <Divider variant="dotted" />
           <Space h="lg" />
@@ -123,7 +101,6 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
             form={form}
             handleChangeDate={handleChangeDate}
             handleChangeTime={handleChangeTime}
-            staffList={staffList}
             handleChangeStaff={handleChangeStaff}
             handleRefresh={handleRefresh}
           />
