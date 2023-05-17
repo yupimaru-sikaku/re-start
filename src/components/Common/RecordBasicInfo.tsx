@@ -10,23 +10,22 @@ import { excludingSelected } from '@/utils';
 type Props = {
   type: 'create' | 'edit';
   form: UseFormReturnType<any>;
+  recordList: any;
   amountTime: number;
 };
 
 export const RecordBasicInfo: NextPage<Props> = ({
   type,
   form,
+  recordList,
   amountTime,
 }) => {
   const isEdit = type === 'edit';
-  const accompanyList = useSelector(
-    (state: RootState) => state.accompany.accompanyList
-  );
   const userList = useSelector((state: RootState) => state.user.userList);
   const selectedUser = userList.find((user) => user.name === form.values.name);
   const userListExcludingSelected = useMemo(() => {
-    return excludingSelected(userList, accompanyList, form);
-  }, [userList, accompanyList, form.values.year, form.values.month]);
+    return excludingSelected(userList, recordList, form);
+  }, [userList, recordList, form.values.year, form.values.month]);
 
   return (
     <SimpleGrid

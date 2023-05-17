@@ -1,19 +1,12 @@
 import { Divider, LoadingOverlay, Paper, Space, Stack } from '@mantine/core';
 import React, { useState } from 'react';
 import { CustomStepper } from '../Common/CustomStepper';
-import {
-  CreateBehaviorParams,
-  createInitialState,
-} from '@/ducks/behavior/slice';
+import { CreateBehaviorParams, createInitialState } from '@/ducks/behavior/slice';
 import { validate } from '@/utils/validate/behavior';
 import { useFocusTrap } from '@mantine/hooks';
 import { useGetUserListByServiceQuery } from '@/ducks/user/query';
 import { useRouter } from 'next/router';
-import {
-  useCreateBehaviorMutation,
-  useGetBehaviorDataQuery,
-  useUpdateBehaviorMutation,
-} from '@/ducks/behavior/query';
+import { useCreateBehaviorMutation, useGetBehaviorDataQuery, useUpdateBehaviorMutation } from '@/ducks/behavior/query';
 import { CustomButton } from '../Common/CustomButton';
 import { NextPage } from 'next';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
@@ -25,6 +18,7 @@ import { CustomConfirm } from '../Common/CustomConfirm';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
 import { getPath } from '@/utils/const/getPath';
+import { useSelector } from '@/ducks/store';
 
 type Props = {
   type: 'create' | 'edit';
@@ -37,6 +31,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
   const router = useRouter();
   const behaviorId = router.query.id as string;
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const behaviorList = useSelector((state) => state.behavior.behaviorList);
   const {
     data: behaviorData,
     isLoading: behaviorLoading,
@@ -93,7 +88,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
       </Paper>
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
         <Paper withBorder shadow="md" p={30} radius="md">
-          <RecordBasicInfo type={type} form={form} amountTime={amountTime} />
+          <RecordBasicInfo type={type} form={form} recordList={behaviorList} amountTime={amountTime} />
           <Space h="lg" />
           <Divider variant="dotted" />
           <Space h="lg" />

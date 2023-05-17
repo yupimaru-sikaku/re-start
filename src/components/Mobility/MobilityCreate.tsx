@@ -1,19 +1,12 @@
 import { Divider, LoadingOverlay, Paper, Space, Stack } from '@mantine/core';
 import React, { useState } from 'react';
 import { CustomStepper } from '../Common/CustomStepper';
-import {
-  CreateMobilityParams,
-  createInitialState,
-} from '@/ducks/mobility/slice';
+import { CreateMobilityParams, createInitialState } from '@/ducks/mobility/slice';
 import { validate } from '@/utils/validate/mobility';
 import { useFocusTrap } from '@mantine/hooks';
 import { useGetUserListByServiceQuery } from '@/ducks/user/query';
 import { useRouter } from 'next/router';
-import {
-  useCreateMobilityMutation,
-  useGetMobilityDataQuery,
-  useUpdateMobilityMutation,
-} from '@/ducks/mobility/query';
+import { useCreateMobilityMutation, useGetMobilityDataQuery, useUpdateMobilityMutation } from '@/ducks/mobility/query';
 import { CustomButton } from '../Common/CustomButton';
 import { NextPage } from 'next';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
@@ -25,6 +18,7 @@ import { CustomConfirm } from '../Common/CustomConfirm';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
 import { getPath } from '@/utils/const/getPath';
+import { useSelector } from '@/ducks/store';
 
 type Props = {
   type: 'create' | 'edit';
@@ -37,6 +31,7 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
   const router = useRouter();
   const mobilityId = router.query.id as string;
   const [isLoading, setIsLoading] = useState(false);
+  const mobilityList = useSelector((state) => state.mobility.mobilityList);
   const {
     data: mobilityData,
     isLoading: mobilityLoading,
@@ -93,7 +88,7 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
       </Paper>
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
         <Paper withBorder shadow="md" p={30} radius="md">
-          <RecordBasicInfo type={type} form={form} amountTime={amountTime} />
+          <RecordBasicInfo type={type} form={form} recordList={mobilityList} amountTime={amountTime} />
           <Space h="lg" />
           <Divider variant="dotted" />
           <Space h="lg" />

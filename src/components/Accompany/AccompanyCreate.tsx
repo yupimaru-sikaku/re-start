@@ -25,6 +25,7 @@ import { CustomConfirm } from '../Common/CustomConfirm';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
+import { useSelector } from '@/ducks/store';
 
 type Props = {
   type: 'create' | 'edit';
@@ -37,6 +38,7 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
   const router = useRouter();
   const accompanyId = router.query.id as string;
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const accompanyList = useSelector((state) => state.accompany.accompanyList);
   const {
     data: accompanyData,
     isLoading: accompanyLoading,
@@ -93,7 +95,12 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
       </Paper>
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
         <Paper withBorder shadow="md" p={30} radius="md">
-          <RecordBasicInfo type={type} form={form} amountTime={amountTime} />
+          <RecordBasicInfo
+            type={type}
+            form={form}
+            recordList={accompanyList}
+            amountTime={amountTime}
+          />
           <Space h="lg" />
           <Divider variant="dotted" />
           <Space h="lg" />
