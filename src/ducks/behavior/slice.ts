@@ -89,7 +89,7 @@ const behaviorSlice = createSlice({
       state.behaviorData = action.payload;
     });
     builder.addMatcher(behaviorApi.endpoints.createBehavior.matchFulfilled, (state, action: PayloadAction<ReturnBehavior>) => {
-      state.behaviorList = [...state.behaviorList, action.payload];
+      state.behaviorList = [action.payload, ...state.behaviorList];
     });
   },
 });

@@ -37,8 +37,8 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
     isLoading: behaviorLoading,
     refetch: behaviorRefetch,
   } = useGetBehaviorDataQuery(behaviorId || skipToken);
-  const { data: userList = [] } = useGetUserListByServiceQuery('is_doko');
-  const { data: staffList } = useGetStaffListByServiceQuery('doko');
+  const { data: userList = [] } = useGetUserListByServiceQuery('is_kodo');
+  const { data: staffList } = useGetStaffListByServiceQuery('kodo');
   const [createBehavior] = useCreateBehaviorMutation();
   const [updateBehavior] = useUpdateBehaviorMutation();
   const {

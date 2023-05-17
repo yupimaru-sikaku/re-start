@@ -1,20 +1,13 @@
 import { CustomConfirm } from '@/components/Common/CustomConfirm';
 import { ContentArr } from '@/ducks/accompany/slice';
 import { RootState } from '@/ducks/root-reducer';
-import {
-  useCreateScheduleMutation,
-  useGetScheduleListQuery,
-  useUpdateScheduleMutation,
-} from '@/ducks/schedule/query';
-import { useAppDispatch, useSelector } from '@/ducks/store';
+import { useCreateScheduleMutation, useGetScheduleListQuery, useUpdateScheduleMutation } from '@/ducks/schedule/query';
+import { useSelector } from '@/ducks/store';
 import { calcWorkTime } from '@/utils';
 import { UseFormReturnType, useForm } from '@mantine/form';
 import { ChangeEvent, useEffect } from 'react';
 import { checkOverlap } from './checkOverlap';
-import {
-  CreateScheduleResult,
-  UpdateScheduleResult,
-} from '@/ducks/schedule/slice';
+import { CreateScheduleResult, UpdateScheduleParams, UpdateScheduleResult } from '@/ducks/schedule/slice';
 
 export type UseGetFormType<T> = {
   form: UseFormReturnType<T>;
@@ -45,45 +38,25 @@ type RecordSubmitResult = {
   message: string;
 };
 
-export const useGetForm = ({
-  type,
-  SERVICE_CONTENT,
-  createInitialState,
-  recordData,
-  refetch,
-  validate,
-}: GetFormType) => {
-  const dispatch = useAppDispatch();
+export const useGetForm = ({ type, SERVICE_CONTENT, createInitialState, recordData, refetch, validate }: GetFormType) => {
   const TITLE = type === 'create' ? '登録' : '更新';
-  const PATH =
-    SERVICE_CONTENT === '同行援護'
-      ? 'ACCOMPANY'
-      : SERVICE_CONTENT === '移動支援'
-      ? 'MOBILITY'
-      : 'BEHAVIOR';
   const currentDate = new Date();
   const form = useForm({
     initialValues: {
       ...createInitialState,
       year: currentDate.getFullYear(),
       month: currentDate.getMonth() + 1,
-      content_arr: Array.from(
-        { length: 31 },
-        () => createInitialState.content_arr[0]
-      ),
+      content_arr: Array.from({ length: 31 }, () => createInitialState.content_arr[0]),
     },
     validate: validate,
   });
-  const loginProviderInfo = useSelector(
-    (state: RootState) => state.provider.loginProviderInfo
-  );
+  const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
   const userList = useSelector((state: RootState) => state.user.userList);
   const staffList = useSelector((state: RootState) => state.staff.staffList);
   const selectedUser = userList.find((user) => user.name === form.values.name);
   const [createSchedule] = useCreateScheduleMutation();
   const [updateSchedule] = useUpdateScheduleMutation();
-  const { data: scheduleList = [], refetch: scheduleRefetch } =
-    useGetScheduleListQuery();
+  const { data: scheduleList = [], refetch: scheduleRefetch } = useGetScheduleListQuery();
 
   // useFormは再レンダリングされないので更新時は再取得
   useEffect(() => {
@@ -91,10 +64,7 @@ export const useGetForm = ({
     refetch();
     const newContentArr = [
       ...recordData.content_arr,
-      ...Array.from(
-        { length: 31 - recordData.content_arr.length },
-        () => createInitialState.content_arr[0]
-      ),
+      ...Array.from({ length: 31 - recordData.content_arr.length }, () => createInitialState.content_arr[0]),
     ];
     form.setValues({
       ...recordData,
@@ -103,35 +73,28 @@ export const useGetForm = ({
   }, [recordData]);
 
   // 日付を入力した場合
-  const handleChangeDate = (
-    e: ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    const newContentArr = form.values.content_arr.map(
-      (content: ContentArr, contentIndex: number) => {
-        return contentIndex === index
-          ? {
-              ...content,
-              work_date: Number(e.target.value),
-            }
-          : content;
-      }
-    );
+  const handleChangeDate = (e: ChangeEvent<HTMLInputElement>, index: number) => {
+    const newContentArr = form.values.content_arr.map((content: ContentArr, contentIndex: number) => {
+      return contentIndex === index
+        ? {
+            ...content,
+            work_date: Number(e.target.value),
+          }
+        : content;
+    });
     form.setFieldValue('content_arr', newContentArr);
   };
 
   // スタッフを入力した時
   const handleChangeStaff = (staffName: string, index: number) => {
-    const newContentArr = form.values.content_arr.map(
-      (content: ContentArr, contentIndex: number) => {
-        return contentIndex === index
-          ? {
-              ...content,
-              staff_name: staffName,
-            }
-          : content;
-      }
-    );
+    const newContentArr = form.values.content_arr.map((content: ContentArr, contentIndex: number) => {
+      return contentIndex === index
+        ? {
+            ...content,
+            staff_name: staffName,
+          }
+        : content;
+    });
     form.setFieldValue('content_arr', newContentArr);
   };
 
@@ -156,59 +119,46 @@ export const useGetForm = ({
       endTime.getMinutes(),
       endTime.getSeconds()
     ).toString();
-    const newContentArr = form.values.content_arr.map(
-      (content: ContentArr, contentIndex: number) => {
-        return contentIndex === index
-          ? {
-              ...content,
-              start_time: formatStartTime,
-              end_time: formatEndTime,
-            }
-          : content;
-      }
-    );
+    const newContentArr = form.values.content_arr.map((content: ContentArr, contentIndex: number) => {
+      return contentIndex === index
+        ? {
+            ...content,
+            start_time: formatStartTime,
+            end_time: formatEndTime,
+          }
+        : content;
+    });
     form.setFieldValue('content_arr', newContentArr);
   };
 
   // リセットボタンを押した時
   const handleRefresh = (index: number) => {
-    const newContentArr = form.values.content_arr.map(
-      (content: ContentArr, contentIndex: number) => {
-        return contentIndex === index
-          ? {
-              work_date: 0,
-              service_content: '',
-              start_time: '',
-              end_time: '',
-              staff_name: '',
-              city: '',
-            }
-          : content;
-      }
-    );
+    const newContentArr = form.values.content_arr.map((content: ContentArr, contentIndex: number) => {
+      return contentIndex === index
+        ? {
+            work_date: 0,
+            service_content: '',
+            start_time: '',
+            end_time: '',
+            staff_name: '',
+            city: '',
+          }
+        : content;
+    });
     form.setFieldValue('content_arr', newContentArr);
   };
 
   // 合計勤務時間
-  const amountTime = form.values.content_arr.reduce(
-    (sum: number, content: ContentArr) => {
-      if (content.start_time === '' || content.end_time === '') {
-        return sum;
-      }
-      return sum + Number(calcWorkTime(content.start_time, content.end_time));
-    },
-    0
-  );
+  const amountTime = form.values.content_arr.reduce((sum: number, content: ContentArr) => {
+    if (content.start_time === '' || content.end_time === '') {
+      return sum;
+    }
+    return sum + Number(calcWorkTime(content.start_time, content.end_time));
+  }, 0);
 
   // 登録・更新メソッド
-  const recordSubmit = async ({
-    createRecord,
-    updateRecord,
-  }: RecordSumbitParams): Promise<RecordSubmitResult> => {
-    const isOK = await CustomConfirm(
-      `実績記録票を${TITLE}しますか？後から修正は可能です。`,
-      '確認画面'
-    );
+  const recordSubmit = async ({ createRecord, updateRecord }: RecordSumbitParams): Promise<RecordSubmitResult> => {
+    const isOK = await CustomConfirm(`実績記録票を${TITLE}しますか？後から修正は可能です。`, '確認画面');
     if (!isOK) return { isFinished: false, message: '' };
     // 空欄がある場合に除外して市区町村とサービス種別を加えて日付順にソート
     const formatArr: ContentArr[] = form.values.content_arr
@@ -228,12 +178,8 @@ export const useGetForm = ({
       formatArr.reduce<{
         [key: string]: ContentArr[];
       }>((result, currentValue) => {
-        if (
-          currentValue['staff_name'] !== null &&
-          currentValue['staff_name'] !== undefined
-        ) {
-          (result[currentValue['staff_name']] =
-            result[currentValue['staff_name']] || []).push(currentValue);
+        if (currentValue['staff_name'] !== null && currentValue['staff_name'] !== undefined) {
+          (result[currentValue['staff_name']] = result[currentValue['staff_name']] || []).push(currentValue);
         }
         return result;
       }, {})
@@ -257,9 +203,7 @@ export const useGetForm = ({
       if (errorMessageList.length) {
         return {
           isFinished: false,
-          message: `スケジュールの時間が重複しています。${errorMessageList.join(
-            ' '
-          )}`,
+          message: `スケジュールの時間が重複しています。${errorMessageList.join(' ')}`,
         };
       }
     }
@@ -281,32 +225,22 @@ export const useGetForm = ({
               id: recordData!.id,
             });
       if (createRecordError) {
-        throw new Error(
-          `記録票の${TITLE}に失敗しました。${createRecordError.message}`
-        );
+        throw new Error(`記録票の${TITLE}に失敗しました。${createRecordError.message}`);
       }
       // スタッフのスケジュールの作成・更新
-      const allStaffNameEmpty = format2DArr.every((subArray) =>
-        subArray.every((content) => content.staff_name === '')
-      );
+      const allStaffNameEmpty = format2DArr.every((subArray) => subArray.every((content) => content.staff_name === ''));
       if (loginProviderInfo.role === 'admin' && !allStaffNameEmpty) {
         format2DArr.map(async (contentList) => {
           const staffName = contentList[0].staff_name;
-          const selectedStaff = staffList.find(
-            (staff) => staff.name === staffName
-          );
+          const selectedStaff = staffList.find((staff) => staff.name === staffName);
           const selectedSchedule = scheduleList.find(
             (schedule) =>
-              schedule.year === form.values.year &&
-              schedule.month === form.values.month &&
-              schedule.staff_name === staffName
+              schedule.year === form.values.year && schedule.month === form.values.month && schedule.staff_name === staffName
           );
           let newContentArr = [];
           if (selectedSchedule) {
             const removeContentArr = selectedSchedule.content_arr.filter(
-              (content) =>
-                content.user_name !== selectedUser!.name ||
-                content.service_content !== SERVICE_CONTENT
+              (content) => content.user_name !== selectedUser!.name || content.service_content !== SERVICE_CONTENT
             );
             const contentNewList = contentList.map((content) => {
               let { staff_name, ...rest } = content;
@@ -331,13 +265,50 @@ export const useGetForm = ({
                 ...createScheduleParams,
                 id: selectedSchedule.id,
               })) as UpdateScheduleResult)
-            : ((await createSchedule(
-                createScheduleParams
-              )) as CreateScheduleResult);
+            : ((await createSchedule(createScheduleParams)) as CreateScheduleResult);
           if (error) {
-            throw new Error(
-              `スタッフのスケジュール${TITLE}に失敗しました。${error.message}`
+            throw new Error(`スタッフのスケジュール${TITLE}に失敗しました。${error.message}`);
+          }
+        });
+      }
+      // 更新前には名前があったが、更新時に名前が無くなったスタッフのスケジュールを削除
+      if (loginProviderInfo.role === 'admin') {
+        const oldStaffList: string[] =
+          recordData?.content_arr
+            .filter(
+              (content: ContentArr, index: number, self: ContentArr[]) =>
+                content.staff_name !== '' && self.findIndex((c: ContentArr) => c.staff_name === content.staff_name) === index
+            )
+            .map((content: ContentArr) => content.staff_name) || [];
+        const targetStaffList =
+          oldStaffList.filter(
+            (staffName) =>
+              !form.values.content_arr.some(
+                (content: ContentArr) => content.staff_name === staffName && content.staff_name !== ''
+              )
+          ) || [];
+        const promiseResultList = await Promise.allSettled(
+          targetStaffList.map(async (staffName) => {
+            const selectedStaff = staffList?.find((staff) => staff.name === staffName);
+            const selectedSchedule = scheduleList.find(
+              (schedule) =>
+                schedule.year === form.values.year && schedule.month === form.values.month && schedule.staff_name === staffName
             );
+            const newContentArr = selectedSchedule!.content_arr.filter((content) => content.user_name !== form.values.name);
+            const updateParams: UpdateScheduleParams = {
+              id: selectedSchedule!.id,
+              staff_name: staffName,
+              staff_id: selectedStaff!.id,
+              year: form.values.year,
+              month: form.values.month,
+              content_arr: newContentArr,
+            };
+            return await updateSchedule(updateParams);
+          })
+        );
+        promiseResultList.map((promiseResult) => {
+          if (promiseResult.status === 'rejected') {
+            return { isFinished: false, message: promiseResult.reason };
           }
         });
       }

@@ -104,7 +104,7 @@ const accompanySlice = createSlice({
     builder.addMatcher(
       accompanyApi.endpoints.createAccompany.matchFulfilled,
       (state, action: PayloadAction<ReturnAccompany>) => {
-        state.accompanyList = [...state.accompanyList, action.payload];
+        state.accompanyList = [action.payload, ...state.accompanyList];
       }
     );
   },

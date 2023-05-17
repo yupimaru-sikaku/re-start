@@ -5,17 +5,10 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { CustomButton } from '../Common/CustomButton';
 import { CustomStepper } from '../Common/CustomStepper';
-import {
-  CreateAccompanyParams,
-  createInitialState,
-} from '@/ducks/accompany/slice';
+import { CreateAccompanyParams, createInitialState } from '@/ducks/accompany/slice';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
 import { useGetUserListByServiceQuery } from '@/ducks/user/query';
-import {
-  useCreateAccompanyMutation,
-  useGetAccompanyDataQuery,
-  useUpdateAccompanyMutation,
-} from '@/ducks/accompany/query';
+import { useCreateAccompanyMutation, useGetAccompanyDataQuery, useUpdateAccompanyMutation } from '@/ducks/accompany/query';
 import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
 import { UseGetFormType, useGetForm } from '@/hooks/form/useGetForm';
 import { RecordBasicInfo } from '../Common/RecordBasicInfo';
@@ -45,7 +38,7 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
     refetch: accompanyRefetch,
   } = useGetAccompanyDataQuery(accompanyId || skipToken);
   const { data: userList = [] } = useGetUserListByServiceQuery('is_doko');
-  const { data: staffList } = useGetStaffListByServiceQuery('doko');
+  const { data: staffList = [] } = useGetStaffListByServiceQuery('doko');
   const [createAccompany] = useCreateAccompanyMutation();
   const [updateAccompany] = useUpdateAccompanyMutation();
   const {
@@ -95,12 +88,7 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
       </Paper>
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
         <Paper withBorder shadow="md" p={30} radius="md">
-          <RecordBasicInfo
-            type={type}
-            form={form}
-            recordList={accompanyList}
-            amountTime={amountTime}
-          />
+          <RecordBasicInfo type={type} form={form} recordList={accompanyList} amountTime={amountTime} />
           <Space h="lg" />
           <Divider variant="dotted" />
           <Space h="lg" />
