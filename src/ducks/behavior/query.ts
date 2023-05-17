@@ -1,11 +1,6 @@
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
-import {
-  DeleteBehaviorResult,
-  ReturnBehavior,
-  UpdateBehaviorParams,
-  UpdateBehaviorResult,
-} from './slice';
+import { DeleteBehaviorResult, ReturnBehavior, UpdateBehaviorParams, UpdateBehaviorResult } from './slice';
 import { CreateBehaviorParams } from './slice';
 import { CreateBehaviorResult } from './slice';
 
@@ -83,19 +78,21 @@ export const behaviorApi = createApi({
      * @return {CreateBehaviorResult}
      */
     createBehavior: builder.mutation({
-      queryFn: async (
-        params: CreateBehaviorParams
-      ): Promise<CreateBehaviorResult> => {
-        const { error } = await supabase.from(getDb('BEHAVIOR')).insert({
-          corporate_id: params.corporate_id,
-          login_id: params.login_id,
-          year: params.year,
-          month: params.month,
-          identification: params.identification,
-          name: params.name,
-          content_arr: params.content_arr,
-          status: params.status,
-        });
+      queryFn: async (params: CreateBehaviorParams): Promise<any> => {
+        const { data, error } = await supabase
+          .from(getDb('BEHAVIOR'))
+          .insert({
+            corporate_id: params.corporate_id,
+            login_id: params.login_id,
+            year: params.year,
+            month: params.month,
+            identification: params.identification,
+            name: params.name,
+            content_arr: params.content_arr,
+            status: params.status,
+          })
+          .select();
+        if (!error && data[0]) return { data: data[0] };
         return { error };
       },
       invalidatesTags: [
@@ -110,9 +107,7 @@ export const behaviorApi = createApi({
      * @return {UpdateBehaviorResult}
      */
     updateBehavior: builder.mutation({
-      queryFn: async (
-        params: UpdateBehaviorParams
-      ): Promise<UpdateBehaviorResult> => {
+      queryFn: async (params: UpdateBehaviorParams): Promise<UpdateBehaviorResult> => {
         const { error } = await supabase
           .from(getDb('BEHAVIOR'))
           .update({
@@ -141,10 +136,7 @@ export const behaviorApi = createApi({
      */
     deleteBehavior: builder.mutation<DeleteBehaviorResult, string>({
       queryFn: async (id: string): Promise<DeleteBehaviorResult> => {
-        const { error } = await supabase
-          .from(getDb('BEHAVIOR'))
-          .update({ is_display: false })
-          .eq('id', id);
+        const { error } = await supabase.from(getDb('BEHAVIOR')).update({ is_display: false }).eq('id', id);
         return { error };
       },
       invalidatesTags: [

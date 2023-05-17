@@ -90,10 +90,9 @@ const mobilitySlice = createSlice({
     builder.addMatcher(mobilityApi.endpoints.getMobilityData.matchFulfilled, (state, action: PayloadAction<ReturnMobility>) => {
       state.mobilityData = action.payload;
     });
-    builder.addMatcher(
-      mobilityApi.endpoints.createMobility.matchFulfilled,
-      (state, action: PayloadAction<ReturnMobility>) => {}
-    );
+    builder.addMatcher(mobilityApi.endpoints.createMobility.matchFulfilled, (state, action: PayloadAction<ReturnMobility>) => {
+      state.mobilityList = [...state.mobilityList, action.payload];
+    });
   },
 });
 

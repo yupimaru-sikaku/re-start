@@ -10,20 +10,18 @@ import { RootState } from '@/ducks/root-reducer';
 import { TableList } from '../Common/TableList';
 
 export const BehaviorList = () => {
-  const loginProviderInfo = useSelector(
-    (state: RootState) => state.provider.loginProviderInfo
-  );
+  const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
+  const behaviorList = useSelector((state: RootState) => state.behavior.behaviorList);
   const data1 = useGetBehaviorListQuery(undefined, {
     skip: loginProviderInfo.role !== 'admin',
   });
-  const data2 = useGetBehaviorListByCorporateIdQuery(
-    loginProviderInfo.corporate_id,
-    { skip: loginProviderInfo.role !== 'corporate' }
-  );
+  const data2 = useGetBehaviorListByCorporateIdQuery(loginProviderInfo.corporate_id, {
+    skip: loginProviderInfo.role !== 'corporate',
+  });
   const data3 = useGetBehaviorListByLoginIdQuery(loginProviderInfo.id, {
     skip: loginProviderInfo.role !== 'office',
   });
-  const { data: behaviorList, isLoading: behaviorLoading } = useMemo(() => {
+  const { isLoading: behaviorLoading } = useMemo(() => {
     if (loginProviderInfo.role === 'admin') {
       return data1;
     } else if (loginProviderInfo.role === 'corporate') {
@@ -34,12 +32,5 @@ export const BehaviorList = () => {
   }, [data1, data2, data3]);
   const [deleteBehavior] = useDeleteBehaviorMutation();
 
-  return (
-    <TableList
-      deleteAction={deleteBehavior}
-      path="BEHAVIOR_EDIT"
-      loading={behaviorLoading}
-      dataList={behaviorList}
-    />
-  );
+  return <TableList deleteAction={deleteBehavior} path="BEHAVIOR_EDIT" loading={behaviorLoading} dataList={behaviorList} />;
 };

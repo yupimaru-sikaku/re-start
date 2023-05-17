@@ -1,11 +1,6 @@
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
-import {
-  DeleteMobilityResult,
-  ReturnMobility,
-  UpdateMobilityParams,
-  UpdateMobilityResult,
-} from './slice';
+import { DeleteMobilityResult, ReturnMobility, UpdateMobilityParams, UpdateMobilityResult } from './slice';
 import { CreateMobilityParams } from './slice';
 import { CreateMobilityResult } from './slice';
 
@@ -83,19 +78,21 @@ export const mobilityApi = createApi({
      * @return {CreateMobilityResult}
      */
     createMobility: builder.mutation({
-      queryFn: async (
-        params: CreateMobilityParams
-      ): Promise<CreateMobilityResult> => {
-        const { error } = await supabase.from(getDb('MOBILITY')).insert({
-          corporate_id: params.corporate_id,
-          login_id: params.login_id,
-          year: params.year,
-          month: params.month,
-          identification: params.identification,
-          name: params.name,
-          content_arr: params.content_arr,
-          status: params.status,
-        });
+      queryFn: async (params: CreateMobilityParams): Promise<any> => {
+        const { data, error } = await supabase
+          .from(getDb('MOBILITY'))
+          .insert({
+            corporate_id: params.corporate_id,
+            login_id: params.login_id,
+            year: params.year,
+            month: params.month,
+            identification: params.identification,
+            name: params.name,
+            content_arr: params.content_arr,
+            status: params.status,
+          })
+          .select();
+        if (!error && data[0]) return { data: data[0] };
         return { error };
       },
     }),
@@ -105,9 +102,7 @@ export const mobilityApi = createApi({
      * @return {UpdateMobilityResult}
      */
     updateMobility: builder.mutation({
-      queryFn: async (
-        params: UpdateMobilityParams
-      ): Promise<UpdateMobilityResult> => {
+      queryFn: async (params: UpdateMobilityParams): Promise<UpdateMobilityResult> => {
         const { error } = await supabase
           .from(getDb('MOBILITY'))
           .update({
@@ -131,10 +126,7 @@ export const mobilityApi = createApi({
      */
     deleteMobility: builder.mutation<DeleteMobilityResult, string>({
       queryFn: async (id: string): Promise<DeleteMobilityResult> => {
-        const { error } = await supabase
-          .from(getDb('MOBILITY'))
-          .update({ is_display: false })
-          .eq('id', id);
+        const { error } = await supabase.from(getDb('MOBILITY')).update({ is_display: false }).eq('id', id);
         return { error };
       },
     }),

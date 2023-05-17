@@ -1,11 +1,6 @@
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
-import {
-  DeleteAccompanyResult,
-  ReturnAccompany,
-  UpdateAccompanyParams,
-  UpdateAccompanyResult,
-} from './slice';
+import { DeleteAccompanyResult, ReturnAccompany, UpdateAccompanyParams, UpdateAccompanyResult } from './slice';
 import { CreateAccompanyParams } from './slice';
 import { CreateAccompanyResult } from './slice';
 
@@ -83,19 +78,21 @@ export const accompanyApi = createApi({
      * @return {CreateAccompanyResult}
      */
     createAccompany: builder.mutation({
-      queryFn: async (
-        params: CreateAccompanyParams
-      ): Promise<CreateAccompanyResult> => {
-        const { error } = await supabase.from(getDb('ACCOMPANY')).insert({
-          corporate_id: params.corporate_id,
-          login_id: params.login_id,
-          year: params.year,
-          month: params.month,
-          identification: params.identification,
-          name: params.name,
-          content_arr: params.content_arr,
-          status: params.status,
-        });
+      queryFn: async (params: CreateAccompanyParams): Promise<any> => {
+        const { data, error } = await supabase
+          .from(getDb('ACCOMPANY'))
+          .insert({
+            corporate_id: params.corporate_id,
+            login_id: params.login_id,
+            year: params.year,
+            month: params.month,
+            identification: params.identification,
+            name: params.name,
+            content_arr: params.content_arr,
+            status: params.status,
+          })
+          .select();
+        if (!error && data[0]) return { data: data[0] };
         return { error };
       },
     }),
@@ -105,9 +102,7 @@ export const accompanyApi = createApi({
      * @return {UpdateAccompanyResult}
      */
     updateAccompany: builder.mutation({
-      queryFn: async (
-        params: UpdateAccompanyParams
-      ): Promise<UpdateAccompanyResult> => {
+      queryFn: async (params: UpdateAccompanyParams): Promise<UpdateAccompanyResult> => {
         const { error } = await supabase
           .from(getDb('ACCOMPANY'))
           .update({
@@ -131,10 +126,7 @@ export const accompanyApi = createApi({
      */
     deleteAccompany: builder.mutation<DeleteAccompanyResult, string>({
       queryFn: async (id: string): Promise<DeleteAccompanyResult> => {
-        const { error } = await supabase
-          .from(getDb('ACCOMPANY'))
-          .update({ is_display: false })
-          .eq('id', id);
+        const { error } = await supabase.from(getDb('ACCOMPANY')).update({ is_display: false }).eq('id', id);
         return { error };
       },
     }),

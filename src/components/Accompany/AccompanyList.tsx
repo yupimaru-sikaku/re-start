@@ -10,20 +10,18 @@ import { RootState } from '@/ducks/root-reducer';
 import { TableList } from '../Common/TableList';
 
 export const AccompanyList = () => {
-  const loginProviderInfo = useSelector(
-    (state: RootState) => state.provider.loginProviderInfo
-  );
+  const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
+  const accompanyList = useSelector((state: RootState) => state.accompany.accompanyList);
   const data1 = useGetAccompanyListQuery(undefined, {
     skip: loginProviderInfo.role !== 'admin',
   });
-  const data2 = useGetAccompanyListByCorporateIdQuery(
-    loginProviderInfo.corporate_id,
-    { skip: loginProviderInfo.role !== 'corporate' }
-  );
+  const data2 = useGetAccompanyListByCorporateIdQuery(loginProviderInfo.corporate_id, {
+    skip: loginProviderInfo.role !== 'corporate',
+  });
   const data3 = useGetAccompanyListByLoginIdQuery(loginProviderInfo.id, {
     skip: loginProviderInfo.role !== 'office',
   });
-  const { data: accompanyList, isLoading: accompanyLoading } = useMemo(() => {
+  const { isLoading: accompanyLoading } = useMemo(() => {
     if (loginProviderInfo.role === 'admin') {
       return data1;
     } else if (loginProviderInfo.role === 'corporate') {
@@ -34,12 +32,5 @@ export const AccompanyList = () => {
   }, [data1, data2, data3]);
   const [deleteAccompany] = useDeleteAccompanyMutation();
 
-  return (
-    <TableList
-      deleteAction={deleteAccompany}
-      path="ACCOMPANY_EDIT"
-      loading={accompanyLoading}
-      dataList={accompanyList}
-    />
-  );
+  return <TableList deleteAction={deleteAccompany} path="ACCOMPANY_EDIT" loading={accompanyLoading} dataList={accompanyList} />;
 };
