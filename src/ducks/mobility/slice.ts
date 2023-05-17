@@ -19,17 +19,11 @@ type Mobility = {
   updated_at: string; // 更新日時
 };
 
-export type CreateMobilityParams = Omit<
-  Mobility,
-  'id' | 'is_display' | 'created_at' | 'updated_at'
->;
+export type CreateMobilityParams = Omit<Mobility, 'id' | 'is_display' | 'created_at' | 'updated_at'>;
 export type CreateMobilityResult = {
   error: PostgrestError | null;
 };
-export type UpdateMobilityParams = Omit<
-  Mobility,
-  'is_display' | 'created_at' | 'updated_at'
->;
+export type UpdateMobilityParams = Omit<Mobility, 'is_display' | 'created_at' | 'updated_at'>;
 export type UpdateMobilityResult = {
   error: PostgrestError | null;
 };
@@ -70,23 +64,39 @@ const mobilitySlice = createSlice({
   name: 'mobility',
   initialState,
   reducers: {
-    setMoReturnMobilityList: (
-      state,
-      action: PayloadAction<ReturnMobility[]>
-    ) => {
+    setMobilityList: (state, action: PayloadAction<ReturnMobility[]>) => {
       state.mobilityList = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
-      mobilityApi.endpoints.getMobilityData.matchFulfilled,
-      (state, action: PayloadAction<ReturnMobility>) => {
-        state.mobilityData = action.payload;
+      mobilityApi.endpoints.getMobilityList.matchFulfilled,
+      (state, action: PayloadAction<ReturnMobility[]>) => {
+        state.mobilityList = action.payload;
       }
+    );
+    builder.addMatcher(
+      mobilityApi.endpoints.getMobilityListByCorporateId.matchFulfilled,
+      (state, action: PayloadAction<ReturnMobility[]>) => {
+        state.mobilityList = action.payload;
+      }
+    );
+    builder.addMatcher(
+      mobilityApi.endpoints.getMobilityListByLoginId.matchFulfilled,
+      (state, action: PayloadAction<ReturnMobility[]>) => {
+        state.mobilityList = action.payload;
+      }
+    );
+    builder.addMatcher(mobilityApi.endpoints.getMobilityData.matchFulfilled, (state, action: PayloadAction<ReturnMobility>) => {
+      state.mobilityData = action.payload;
+    });
+    builder.addMatcher(
+      mobilityApi.endpoints.createMobility.matchFulfilled,
+      (state, action: PayloadAction<ReturnMobility>) => {}
     );
   },
 });
 
 export default mobilitySlice;
 
-export const { setMoReturnMobilityList } = mobilitySlice.actions;
+export const { setMobilityList } = mobilitySlice.actions;

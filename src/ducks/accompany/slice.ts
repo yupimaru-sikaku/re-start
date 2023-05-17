@@ -26,18 +26,12 @@ type Accompany = {
   updated_at: string; // 更新日時
 };
 
-export type CreateAccompanyParams = Omit<
-  Accompany,
-  'id' | 'created_at' | 'updated_at'
->;
+export type CreateAccompanyParams = Omit<Accompany, 'id' | 'created_at' | 'updated_at'>;
 export type CreateAccompanyResult = {
   error: PostgrestError | null;
 };
 
-export type UpdateAccompanyParams = Omit<
-  Accompany,
-  'created_at' | 'updated_at'
->;
+export type UpdateAccompanyParams = Omit<Accompany, 'created_at' | 'updated_at'>;
 export type UpdateAccompanyResult = {
   error: PostgrestError | null;
 };

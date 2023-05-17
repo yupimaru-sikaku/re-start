@@ -18,17 +18,11 @@ type Behavior = {
   updated_at: string; // 更新日時
 };
 
-export type CreateBehaviorParams = Omit<
-  Behavior,
-  'id' | 'is_display' | 'created_at' | 'updated_at'
->;
+export type CreateBehaviorParams = Omit<Behavior, 'id' | 'is_display' | 'created_at' | 'updated_at'>;
 export type CreateBehaviorResult = {
   error: PostgrestError | null;
 };
-export type UpdateBehaviorParams = Omit<
-  Behavior,
-  'is_display' | 'created_at' | 'updated_at'
->;
+export type UpdateBehaviorParams = Omit<Behavior, 'is_display' | 'created_at' | 'updated_at'>;
 export type UpdateBehaviorResult = {
   error: PostgrestError | null;
 };
@@ -74,10 +68,29 @@ const behaviorSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addMatcher(
-      behaviorApi.endpoints.getBehaviorData.matchFulfilled,
-      (state, action: PayloadAction<ReturnBehavior>) => {
-        state.behaviorData = action.payload;
+      behaviorApi.endpoints.getBehaviorList.matchFulfilled,
+      (state, action: PayloadAction<ReturnBehavior[]>) => {
+        state.behaviorList = action.payload;
       }
+    );
+    builder.addMatcher(
+      behaviorApi.endpoints.getBehaviorListByCorporateId.matchFulfilled,
+      (state, action: PayloadAction<ReturnBehavior[]>) => {
+        state.behaviorList = action.payload;
+      }
+    );
+    builder.addMatcher(
+      behaviorApi.endpoints.getBehaviorListByLoginId.matchFulfilled,
+      (state, action: PayloadAction<ReturnBehavior[]>) => {
+        state.behaviorList = action.payload;
+      }
+    );
+    builder.addMatcher(behaviorApi.endpoints.getBehaviorData.matchFulfilled, (state, action: PayloadAction<ReturnBehavior>) => {
+      state.behaviorData = action.payload;
+    });
+    builder.addMatcher(
+      behaviorApi.endpoints.createBehavior.matchFulfilled,
+      (state, action: PayloadAction<ReturnBehavior>) => {}
     );
   },
 });
