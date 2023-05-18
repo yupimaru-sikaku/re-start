@@ -2,17 +2,10 @@
 import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { ReturnHomeCare } from '@/ducks/home-care/slice';
-import {
-  calcEachWorkTime,
-  convertTime,
-  formatServiceContent,
-} from '@/utils';
+import { calcEachWorkTime, convertTime, formatServiceContent } from '@/utils';
 import { ReturnBehavior } from '@/ducks/behavior/slice';
 
-export const CreatePdf = async (
-  pdfUrl: string,
-  behavior: ReturnBehavior
-) => {
+export const CreatePdf = async (pdfUrl: string, behavior: ReturnBehavior) => {
   // const existingPdfBytes = await fetch(pdfUrl).then((res) =>
   //   res.arrayBuffer()
   // );

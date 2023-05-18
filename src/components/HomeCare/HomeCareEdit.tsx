@@ -2,41 +2,18 @@ import { useFocusTrap } from '@mantine/hooks';
 import { useRouter } from 'next/router';
 import React, { useMemo, useRef, useState } from 'react';
 import { useForm } from '@mantine/form';
-import {
-  CreateHomeCare,
-  initialState,
-  ReturnHomeCare,
-} from '@/ducks/home-care/slice';
-import {
-  ActionIcon,
-  Divider,
-  Grid,
-  Paper,
-  Select,
-  SimpleGrid,
-  Space,
-  Stack,
-  Text,
-  TextInput,
-} from '@mantine/core';
+import { CreateHomeCare, initialState, ReturnHomeCare } from '@/ducks/home-care/slice';
+import { ActionIcon, Divider, Grid, Paper, Select, SimpleGrid, Space, Stack, Text, TextInput } from '@mantine/core';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { CustomButton } from '../Common/CustomButton';
 import { TimeRangeInput } from '@mantine/dates';
 import { IconCheckbox, IconClock, IconRefresh } from '@tabler/icons';
-import {
-  calcEachWorkTime,
-  calcWorkTime,
-  convertWeekItem,
-} from '@/utils';
+import { calcEachWorkTime, calcWorkTime, convertWeekItem } from '@/utils';
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { User } from '@/ducks/user/slice';
 import { NextPage } from 'next';
 import { CustomConfirm } from '../Common/CustomConfirm';
-import {
-  validateMonth,
-  validateName,
-  validateYear,
-} from '@/utils/validate/home-care';
+import { validateMonth, validateName, validateYear } from '@/utils/validate/home-care';
 import { CustomStepper } from '../Common/CustomStepper';
 import { showNotification } from '@mantine/notifications';
 import { getPath } from '@/utils/const/getPath';
@@ -52,16 +29,10 @@ type Props = {
   staffList: ReturnStaff[];
 };
 
-export const HomeCareEdit: NextPage<Props> = ({
-  userData,
-  userList,
-  staffList,
-}) => {
+export const HomeCareEdit: NextPage<Props> = ({ userData, userList, staffList }) => {
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
-  const loginProviderInfo = useSelector(
-    (state: RootState) => state.provider.loginProviderInfo
-  );
+  const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const staffArr = staffList.map((staff) => staff.name);
   // const userNameList = (userData || []).map((user) => user.name);
@@ -70,7 +41,7 @@ export const HomeCareEdit: NextPage<Props> = ({
     initialValues: {
       year: userData.year,
       month: userData.month,
-      name: userData.name,
+      name: userData.user_name,
       identification: userData.identification,
       amount_title_1: userData.amount_title_1,
       amount_value_1: userData.amount_value_1,
@@ -80,10 +51,7 @@ export const HomeCareEdit: NextPage<Props> = ({
       amount_value_3: userData.amount_value_3,
       content_arr: [
         ...userData.content_arr,
-        ...Array.from(
-          { length: 31 - userData.content_arr.length },
-          () => initialState.content_arr[0]
-        ),
+        ...Array.from({ length: 31 - userData.content_arr.length }, () => initialState.content_arr[0]),
       ],
       status: userData.status,
     },
@@ -102,11 +70,8 @@ export const HomeCareEdit: NextPage<Props> = ({
       },
     },
   });
-  const { kaziAmount, shintaiAmount, withTsuinAmount, tsuinAmount } =
-    calcEachWorkTime(form.values.content_arr);
-  const man = userList.filter(
-    (user) => user.name === form.values.name
-  )[0];
+  const { kaziAmount, shintaiAmount, withTsuinAmount, tsuinAmount } = calcEachWorkTime(form.values.content_arr);
+  const man = userList.filter((user) => user.name === form.values.name)[0];
 
   // 編集時の初期値をmemo化（不要かも）
   // const oldArr = useMemo(() => {
@@ -137,38 +102,25 @@ export const HomeCareEdit: NextPage<Props> = ({
   const handleSubmit = async () => {
     setIsLoading(true);
 
-    const isOK = await CustomConfirm(
-      '編集を完了しますか？',
-      '確認画面'
-    );
+    const isOK = await CustomConfirm('編集を完了しますか？', '確認画面');
     if (!isOK) {
       setIsLoading(false);
       return;
     }
 
     try {
-      const staff_schedule_content_arr = form.values.content_arr.map(
-        (content) => {
-          return { ...content, user_name: form.values.name };
-        }
-      );
+      const staff_schedule_content_arr = form.values.content_arr.map((content) => {
+        return { ...content, user_name: form.values.name };
+      });
       // content_arrを整形（nullを除外、work_dateでソート）
       const nonNullableAndSortArr = form.values.content_arr
         .filter((content) => {
-          return (
-            content.work_date &&
-            content.service_content !== '' &&
-            content.start_time &&
-            content.end_time
-          );
+          return content.work_date && content.service_content !== '' && content.start_time && content.end_time;
         })
         .sort((a, b) => a.work_date! - b.work_date!);
 
       if (nonNullableAndSortArr.length === 0) {
-        await CustomConfirm(
-          '記録は、少なくとも一行は作成ください。',
-          'Caution'
-        );
+        await CustomConfirm('記録は、少なくとも一行は作成ください。', 'Caution');
         setIsLoading(false);
         return;
       }
@@ -226,14 +178,8 @@ export const HomeCareEdit: NextPage<Props> = ({
           nonNullableAndSortArr.reduce<{
             [key: string]: CreateHomeCare['content_arr'];
           }>((result, currentValue) => {
-            if (
-              currentValue['staff_name'] !== null &&
-              currentValue['staff_name'] !== undefined
-            ) {
-              (result[currentValue['staff_name']] =
-                result[currentValue['staff_name']] || []).push(
-                currentValue
-              );
+            if (currentValue['staff_name'] !== null && currentValue['staff_name'] !== undefined) {
+              (result[currentValue['staff_name']] = result[currentValue['staff_name']] || []).push(currentValue);
             }
             return result;
           }, {})
@@ -248,29 +194,20 @@ export const HomeCareEdit: NextPage<Props> = ({
             .eq('staff_name', staffName);
           if (getError) {
             console.log('getError', getError);
-            await CustomConfirm(
-              'スタッフの勤務状況の取得に失敗しました',
-              'Caution'
-            );
+            await CustomConfirm('スタッフの勤務状況の取得に失敗しました', 'Caution');
             setIsLoading(false);
             return;
           }
           if (getData.length) {
-            const removeArr = getData[0].content_arr.filter(
-              (content: ContentArr) => {
-                const isDuplicateUserName =
-                  content.staff_name === form.values.name;
-                const isDuplicateServiceContent =
-                  content.service_content === '家事援助' ||
-                  content.service_content === '身体介護' ||
-                  content.service_content === '通院等介助（伴う）' ||
-                  content.service_content ===
-                    '通院等介助（伴わない）';
-                return !(
-                  isDuplicateUserName && isDuplicateServiceContent
-                );
-              }
-            );
+            const removeArr = getData[0].content_arr.filter((content: ContentArr) => {
+              const isDuplicateUserName = content.staff_name === form.values.name;
+              const isDuplicateServiceContent =
+                content.service_content === '家事援助' ||
+                content.service_content === '身体介護' ||
+                content.service_content === '通院等介助（伴う）' ||
+                content.service_content === '通院等介助（伴わない）';
+              return !(isDuplicateUserName && isDuplicateServiceContent);
+            });
             console.log(removeArr, contentList);
             const newArr = [...removeArr, ...contentList]
               .sort((a, b) => a.work_date! - b.work_date!)
@@ -286,10 +223,7 @@ export const HomeCareEdit: NextPage<Props> = ({
 
             if (updateError) {
               console.log('updateError', updateError);
-              await CustomConfirm(
-                'スタッフの勤務状況の更新に失敗しました',
-                'Caution'
-              );
+              await CustomConfirm('スタッフの勤務状況の更新に失敗しました', 'Caution');
               setIsLoading(false);
               return;
             }
@@ -297,20 +231,15 @@ export const HomeCareEdit: NextPage<Props> = ({
             const newArr = contentList.map((content) => {
               return { ...content, user_name: form.values.name };
             });
-            const { error: createError } = await supabase
-              .from(getDb('SCHEDULE'))
-              .insert({
-                year: form.values.year,
-                month: form.values.month,
-                staff_name: staffName,
-                content_arr: newArr,
-              });
+            const { error: createError } = await supabase.from(getDb('SCHEDULE')).insert({
+              year: form.values.year,
+              month: form.values.month,
+              staff_name: staffName,
+              content_arr: newArr,
+            });
             if (createError) {
               console.log('createError', createError);
-              await CustomConfirm(
-                'スタッフの勤務状況の新規作成に失敗しました',
-                'Caution'
-              );
+              await CustomConfirm('スタッフの勤務状況の新規作成に失敗しました', 'Caution');
               setIsLoading(false);
               return;
             }
@@ -342,85 +271,56 @@ export const HomeCareEdit: NextPage<Props> = ({
     setIsLoading(false);
   };
 
-  const handleChangeDate = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    const newContentArr = (form.values.content_arr || []).map(
-      (content, contentIndex) => {
-        return contentIndex === index
-          ? { ...content, work_date: Number(e.target.value) }
-          : content;
-      }
-    );
+  const handleChangeDate = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const newContentArr = (form.values.content_arr || []).map((content, contentIndex) => {
+      return contentIndex === index ? { ...content, work_date: Number(e.target.value) } : content;
+    });
     form.setFieldValue('content_arr', newContentArr);
   };
 
-  const handleChangeService = (
-    service: string | null,
-    index: number
-  ) => {
+  const handleChangeService = (service: string | null, index: number) => {
     if (!service) return;
-    const newContentArr = (form.values.content_arr || []).map(
-      (content, contentIndex) => {
-        return contentIndex === index
-          ? { ...content, service_content: service }
-          : content;
-      }
-    );
+    const newContentArr = (form.values.content_arr || []).map((content, contentIndex) => {
+      return contentIndex === index ? { ...content, service_content: service } : content;
+    });
     form.setFieldValue('content_arr', newContentArr);
   };
 
-  const handleChangeTime = (
-    start_time: Date,
-    end_time: Date,
-    index: number
-  ) => {
+  const handleChangeTime = (start_time: Date, end_time: Date, index: number) => {
     if (!start_time || !end_time) return;
-    const newContentArr = (form.values.content_arr || []).map(
-      (content, contentIndex) => {
-        const formatStartTime = start_time.toString();
-        const formatEndTime = end_time.toString();
-        return contentIndex === index
-          ? {
-              ...content,
-              start_time: formatStartTime,
-              end_time: formatEndTime,
-            }
-          : content;
-      }
-    );
+    const newContentArr = (form.values.content_arr || []).map((content, contentIndex) => {
+      const formatStartTime = start_time.toString();
+      const formatEndTime = end_time.toString();
+      return contentIndex === index
+        ? {
+            ...content,
+            start_time: formatStartTime,
+            end_time: formatEndTime,
+          }
+        : content;
+    });
     form.setFieldValue('content_arr', newContentArr);
   };
 
   const handleRefresh = (index: number) => {
-    const newContentArr = (form.values.content_arr || []).map(
-      (content, contentIndex) => {
-        return contentIndex === index
-          ? {
-              work_date: 0,
-              service_content: '',
-              start_time: '',
-              end_time: '',
-              staff_name: '',
-            }
-          : content;
-      }
-    );
+    const newContentArr = (form.values.content_arr || []).map((content, contentIndex) => {
+      return contentIndex === index
+        ? {
+            work_date: 0,
+            service_content: '',
+            start_time: '',
+            end_time: '',
+            staff_name: '',
+          }
+        : content;
+    });
     form.setFieldValue('content_arr', newContentArr);
   };
-  const handleChangeStaff = (
-    staff_name: string | null,
-    index: number
-  ) => {
+  const handleChangeStaff = (staff_name: string | null, index: number) => {
     if (!staff_name) return;
-    const newContentArr = (form.values.content_arr || []).map(
-      (content, contentIndex) => {
-        return contentIndex === index
-          ? { ...content, staff_name }
-          : content;
-      }
-    );
+    const newContentArr = (form.values.content_arr || []).map((content, contentIndex) => {
+      return contentIndex === index ? { ...content, staff_name } : content;
+    });
     form.setFieldValue('content_arr', newContentArr);
   };
 
@@ -454,7 +354,7 @@ export const HomeCareEdit: NextPage<Props> = ({
             />
             <TextInput
               label="利用者名"
-              value={userData.name}
+              value={userData.user_name}
               variant="filled"
               disabled
               sx={{ '& input:disabled': { color: 'black' } }}
@@ -511,8 +411,7 @@ export const HomeCareEdit: NextPage<Props> = ({
                     disabled
                     sx={{
                       '& input:disabled': {
-                        ...(Number(shintaiAmount) >
-                        man?.shintai_amount
+                        ...(Number(shintaiAmount) > man?.shintai_amount
                           ? {
                               color: 'red',
                               fontWeight: 'bold',
@@ -544,8 +443,7 @@ export const HomeCareEdit: NextPage<Props> = ({
                     disabled
                     sx={{
                       '& input:disabled': {
-                        ...(Number(withTsuinAmount) >
-                        man?.with_tsuin_amount
+                        ...(Number(withTsuinAmount) > man?.with_tsuin_amount
                           ? {
                               color: 'red',
                               fontWeight: 'bold',
@@ -626,9 +524,7 @@ export const HomeCareEdit: NextPage<Props> = ({
               <Grid key={index}>
                 <Grid.Col span={1}>
                   <TextInput
-                    value={
-                      form.values.content_arr[index].work_date || ''
-                    }
+                    value={form.values.content_arr[index].work_date || ''}
                     variant="filled"
                     maxLength={2}
                     onChange={(e) => handleChangeDate(e, index)}
@@ -655,9 +551,7 @@ export const HomeCareEdit: NextPage<Props> = ({
                     searchable
                     nothingFound="No Data"
                     data={serviceArr || []}
-                    value={
-                      form.values.content_arr[index].service_content
-                    }
+                    value={form.values.content_arr[index].service_content}
                     onChange={(e) => handleChangeService(e, index)}
                   />
                 </Grid.Col>
@@ -666,32 +560,20 @@ export const HomeCareEdit: NextPage<Props> = ({
                     icon={<IconClock size={16} />}
                     variant="filled"
                     value={
-                      form.values.content_arr[index].start_time &&
-                      form.values.content_arr[index].end_time
+                      form.values.content_arr[index].start_time && form.values.content_arr[index].end_time
                         ? [
-                            new Date(
-                              form.values.content_arr[
-                                index
-                              ].start_time!
-                            ),
-                            new Date(
-                              form.values.content_arr[index].end_time!
-                            ),
+                            new Date(form.values.content_arr[index].start_time!),
+                            new Date(form.values.content_arr[index].end_time!),
                           ]
                         : [null, null]
                     }
-                    onChange={(e) =>
-                      handleChangeTime(e[0], e[1], index)
-                    }
+                    onChange={(e) => handleChangeTime(e[0], e[1], index)}
                   />
                 </Grid.Col>
                 <Grid.Col span={1}>
                   <TextInput
                     sx={{ '& input:disabled': { color: 'black' } }}
-                    value={calcWorkTime(
-                      content.start_time,
-                      content.end_time
-                    )}
+                    value={calcWorkTime(content.start_time, content.end_time)}
                     variant="filled"
                     disabled
                   />
@@ -704,9 +586,7 @@ export const HomeCareEdit: NextPage<Props> = ({
                       searchable
                       nothingFound="No Data"
                       data={staffArr || []}
-                      value={
-                        form.values.content_arr[index].staff_name
-                      }
+                      value={form.values.content_arr[index].staff_name}
                       onChange={(e) => handleChangeStaff(e, index)}
                     />
                   </Grid.Col>

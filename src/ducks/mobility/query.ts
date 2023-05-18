@@ -87,7 +87,7 @@ export const mobilityApi = createApi({
             year: params.year,
             month: params.month,
             identification: params.identification,
-            name: params.name,
+            user_name: params.user_name,
             content_arr: params.content_arr,
             status: params.status,
           })
@@ -111,7 +111,7 @@ export const mobilityApi = createApi({
             year: params.year,
             month: params.month,
             identification: params.identification,
-            name: params.name,
+            user_name: params.user_name,
             content_arr: params.content_arr,
             status: params.status,
           })

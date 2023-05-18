@@ -11,7 +11,7 @@ type Mobility = {
   month: number; // 作成する月
   identification: string; // 受給者証番号
   city: string; // 市区町村
-  name: string; // 利用者名
+  user_name: string; // 利用者名
   content_arr: ContentArr[];
   status: number; // 記録票の進捗状況
   is_display: boolean; // 表示するか
@@ -41,7 +41,7 @@ export const createInitialState: CreateMobilityParams = {
   month: 0,
   identification: '',
   city: '',
-  name: '',
+  user_name: '',
   content_arr: [
     {
       work_date: 0,

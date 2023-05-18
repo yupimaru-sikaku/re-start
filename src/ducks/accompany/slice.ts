@@ -17,7 +17,7 @@ type Accompany = {
   corporate_id: string; // 作成した法人のID
   year: number; // 作成する西暦
   month: number; // 作成する月
-  name: string; // 利用者名
+  user_name: string; // 利用者名
   identification: string; // 受給者証番号
   content_arr: ContentArr[];
   status: number; // 記録票の進捗状況
@@ -48,7 +48,7 @@ export const createInitialState: CreateAccompanyParams = {
   year: 0,
   month: 0,
   identification: '',
-  name: '',
+  user_name: '',
   content_arr: [
     {
       work_date: 0,

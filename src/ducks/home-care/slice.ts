@@ -6,7 +6,7 @@ type HomeCare = {
   year: number; // 作成する西暦
   month: number; // 作成する月
   identification: string; // 受給者証番号
-  name: string; // 利用者名
+  user_name: string; // 利用者名
   amount_title_1: string; // 契約支給量
   amount_value_1: number; // 契約支給量
   amount_title_2: string; // 契約支給量
@@ -106,7 +106,7 @@ export type DeleteHomeCareResult = {
 export const initialState = {
   year: 0,
   month: 0,
-  name: '',
+  user_name: '',
   identification: '',
   amount_title_1: '',
   amount_value_1: 0,

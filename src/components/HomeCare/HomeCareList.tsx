@@ -16,16 +16,10 @@ import { RootState } from '@/ducks/root-reducer';
 
 export const HomeCareList = () => {
   const [page, setPage] = useState(1);
-  const loginProviderInfo = useSelector(
-    (state: RootState) => state.provider.loginProviderInfo
-  );
+  const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
   const data1 = useGetHomeCareListQuery();
-  const data2 = useGetHomeCareListByCoroprateIdQuery(
-    loginProviderInfo.id
-  );
-  const data3 = useGetHomeCareListByLoginIdQuery(
-    loginProviderInfo.id || ''
-  );
+  const data2 = useGetHomeCareListByCoroprateIdQuery(loginProviderInfo.id);
+  const data3 = useGetHomeCareListByLoginIdQuery(loginProviderInfo.id || '');
   const {
     data: HomeCareList,
     isLoading: HomeCareListLoading,
@@ -43,24 +37,18 @@ export const HomeCareList = () => {
   const { records, PAGE_SIZE } = useGetTablePage(page, HomeCareList);
 
   const handleDelete = async (id: string) => {
-    const isOK = await CustomConfirm(
-      '削除します。よろしいですか？',
-      '確認画面'
-    );
+    const isOK = await CustomConfirm('削除します。よろしいですか？', '確認画面');
     isOK && (await deleteHomeCare(id));
     refetch();
   };
 
   const handlePDFDownload = async (homeCare: ReturnHomeCare) => {
-    const pdfBytes = await CreatePdf(
-      '/home_care_records.pdf',
-      homeCare
-    );
+    const pdfBytes = await CreatePdf('/home_care_records.pdf', homeCare);
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
 
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `${homeCare.name}.pdf`;
+    link.download = `${homeCare.user_name}.pdf`;
     link.click();
   };
 

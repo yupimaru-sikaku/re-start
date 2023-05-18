@@ -2,22 +2,11 @@
 import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { ReturnHomeCare } from '@/ducks/home-care/slice';
-import {
-  calcEachWorkTime,
-  convertTime,
-  formatServiceContent,
-} from '@/utils';
+import { calcEachWorkTime, convertTime, formatServiceContent } from '@/utils';
 
-export const CreatePdf = async (
-  pdfUrl: string,
-  homeCare: ReturnHomeCare
-) => {
-  const existingPdfBytes = await fetch(pdfUrl).then((res) =>
-    res.arrayBuffer()
-  );
-  const notoSansBytes = await fetch('/NotoSansJP-Regular.otf').then(
-    (res) => res.arrayBuffer()
-  );
+export const CreatePdf = async (pdfUrl: string, homeCare: ReturnHomeCare) => {
+  const existingPdfBytes = await fetch(pdfUrl).then((res) => res.arrayBuffer());
+  const notoSansBytes = await fetch('/NotoSansJP-Regular.otf').then((res) => res.arrayBuffer());
 
   const pdfDoc = await PDFDocument.load(existingPdfBytes);
   pdfDoc.registerFontkit(fontkit); // Register fontkit instance
@@ -33,7 +22,7 @@ export const CreatePdf = async (
   // 年、月、名前
   const convertYear = homeCare.year! - 2018;
   const infoArr = [
-    { value: homeCare.name, x: 285, y: 810 },
+    { value: homeCare.user_name, x: 285, y: 810 },
     { value: convertYear.toString(), x: 71, y: 827 },
     { value: homeCare.month!.toString(), x: 107, y: 827 },
   ];
@@ -50,25 +39,19 @@ export const CreatePdf = async (
   const serviceArr = [
     { value: homeCare.amount_title_1 || '', x: 82, y: 783 },
     {
-      value: homeCare.amount_value_1
-        ? homeCare.amount_value_1.toString()
-        : '',
+      value: homeCare.amount_value_1 ? homeCare.amount_value_1.toString() : '',
       x: 268,
       y: 783,
     },
     { value: homeCare.amount_title_2 || '', x: 82, y: 771 },
     {
-      value: homeCare.amount_value_2
-        ? homeCare.amount_value_2.toString()
-        : '',
+      value: homeCare.amount_value_2 ? homeCare.amount_value_2.toString() : '',
       x: 268,
       y: 771,
     },
     { value: homeCare.amount_title_3 || '', x: 82, y: 759 },
     {
-      value: homeCare.amount_value_3
-        ? homeCare.amount_value_3.toString()
-        : '',
+      value: homeCare.amount_value_3 ? homeCare.amount_value_3.toString() : '',
       x: 268,
       y: 759,
     },
@@ -98,9 +81,7 @@ export const CreatePdf = async (
   // 日付毎の記録
   const contentArr = homeCare.content_arr.map((content) => {
     return {
-      work_date: `${
-        content.work_date! < 10 ? ' ' : ''
-      }${content.work_date!}`,
+      work_date: `${content.work_date! < 10 ? ' ' : ''}${content.work_date!}`,
       service_content: formatServiceContent(content.service_content),
       start_time: convertTime(content.start_time!),
       end_time: convertTime(content.end_time!),
@@ -117,14 +98,9 @@ export const CreatePdf = async (
     });
     // サービス内容
     firstPage.drawText(content.service_content, {
-      x:
-        content.service_content === '家事援助' ||
-        content.service_content === '身体介護'
-          ? 77
-          : 75,
+      x: content.service_content === '家事援助' || content.service_content === '身体介護' ? 77 : 75,
       y:
-        content.service_content === '家事援助' ||
-        content.service_content === '身体介護'
+        content.service_content === '家事援助' || content.service_content === '身体介護'
           ? 699 - index * 18.1
           : 702 - index * 18.1,
       size: 5,
@@ -166,115 +142,58 @@ export const CreatePdf = async (
     });
   });
   // 各サービスの合計時間
-  const { kaziAmount, shintaiAmount, withTsuinAmount, tsuinAmount } =
-    calcEachWorkTime(homeCare.content_arr);
+  const { kaziAmount, shintaiAmount, withTsuinAmount, tsuinAmount } = calcEachWorkTime(homeCare.content_arr);
   firstPage.drawText(kaziAmount.toString(), {
-    x:
-      kaziAmount.length === 4
-        ? 157
-        : kaziAmount.length === 3
-        ? 158
-        : kaziAmount.length === 2
-        ? 161
-        : 163,
+    x: kaziAmount.length === 4 ? 157 : kaziAmount.length === 3 ? 158 : kaziAmount.length === 2 ? 161 : 163,
     y: 73,
     size: 8,
     font: notoSansFont,
     color: rgb(0, 0, 0),
   });
   firstPage.drawText(shintaiAmount.toString(), {
-    x:
-      shintaiAmount.length === 4
-        ? 157
-        : shintaiAmount.length === 3
-        ? 158
-        : shintaiAmount.length === 2
-        ? 161
-        : 163,
+    x: shintaiAmount.length === 4 ? 157 : shintaiAmount.length === 3 ? 158 : shintaiAmount.length === 2 ? 161 : 163,
     y: 110,
     size: 8,
     font: notoSansFont,
     color: rgb(0, 0, 0),
   });
   firstPage.drawText(withTsuinAmount.toString(), {
-    x:
-      withTsuinAmount.length === 4
-        ? 157
-        : withTsuinAmount.length === 3
-        ? 158
-        : withTsuinAmount.length === 2
-        ? 161
-        : 163,
+    x: withTsuinAmount.length === 4 ? 157 : withTsuinAmount.length === 3 ? 158 : withTsuinAmount.length === 2 ? 161 : 163,
     y: 92,
     size: 8,
     font: notoSansFont,
     color: rgb(0, 0, 0),
   });
   firstPage.drawText(tsuinAmount.toString(), {
-    x:
-      tsuinAmount.length === 4
-        ? 157
-        : tsuinAmount.length === 3
-        ? 158
-        : tsuinAmount.length === 2
-        ? 161
-        : 163,
+    x: tsuinAmount.length === 4 ? 157 : tsuinAmount.length === 3 ? 158 : tsuinAmount.length === 2 ? 161 : 163,
     y: 55,
     size: 8,
     font: notoSansFont,
     color: rgb(0, 0, 0),
   });
   firstPage.drawText(kaziAmount.toString(), {
-    x:
-      kaziAmount.length === 4
-        ? 275
-        : kaziAmount.length === 3
-        ? 276
-        : kaziAmount.length === 2
-        ? 277
-        : 281,
+    x: kaziAmount.length === 4 ? 275 : kaziAmount.length === 3 ? 276 : kaziAmount.length === 2 ? 277 : 281,
     y: 73,
     size: 8,
     font: notoSansFont,
     color: rgb(0, 0, 0),
   });
   firstPage.drawText(shintaiAmount.toString(), {
-    x:
-      shintaiAmount.length === 4
-        ? 275
-        : shintaiAmount.length === 3
-        ? 276
-        : shintaiAmount.length === 2
-        ? 277
-        : 281,
+    x: shintaiAmount.length === 4 ? 275 : shintaiAmount.length === 3 ? 276 : shintaiAmount.length === 2 ? 277 : 281,
     y: 110,
     size: 8,
     font: notoSansFont,
     color: rgb(0, 0, 0),
   });
   firstPage.drawText(withTsuinAmount.toString(), {
-    x:
-      withTsuinAmount.length === 4
-        ? 275
-        : withTsuinAmount.length === 3
-        ? 276
-        : withTsuinAmount.length === 2
-        ? 277
-        : 281,
+    x: withTsuinAmount.length === 4 ? 275 : withTsuinAmount.length === 3 ? 276 : withTsuinAmount.length === 2 ? 277 : 281,
     y: 92,
     size: 8,
     font: notoSansFont,
     color: rgb(0, 0, 0),
   });
   firstPage.drawText(tsuinAmount.toString(), {
-    x:
-      tsuinAmount.length === 4
-        ? 275
-        : tsuinAmount.length === 3
-        ? 276
-        : tsuinAmount.length === 2
-        ? 277
-        : 281,
+    x: tsuinAmount.length === 4 ? 275 : tsuinAmount.length === 3 ? 276 : tsuinAmount.length === 2 ? 277 : 281,
     y: 55,
     size: 8,
     font: notoSansFont,
