@@ -1,4 +1,5 @@
 import React from 'react';
+import { NextPage } from 'next';
 import Link from 'next/link';
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
@@ -7,7 +8,6 @@ import { AccompanyList } from '@/components/Accompany/AccompanyList';
 import { getPath } from '@/utils/const/getPath';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { Space } from '@mantine/core';
-import { NextPage } from 'next';
 
 const AccompanyPage: NextPage = () => {
   useAuth();

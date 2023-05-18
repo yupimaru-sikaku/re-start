@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CustomButton } from './CustomButton';
-import { ActionIcon, Group, SimpleGrid, Space, Text, TextInput } from '@mantine/core';
+import { ActionIcon, Group, SimpleGrid, Space, TextInput } from '@mantine/core';
 import Link from 'next/link';
 import { PATH, getPath } from '@/utils/const/getPath';
 import { IconEdit } from '@tabler/icons';

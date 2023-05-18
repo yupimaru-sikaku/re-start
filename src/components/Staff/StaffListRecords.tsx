@@ -25,9 +25,7 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
       accessor: 'syoninsya',
       width: 50,
       title: '初任者',
-      render: (staff: ReturnStaff) => (
-        <Checkbox readOnly checked={staff.is_syoninsya} />
-      ),
+      render: (staff: ReturnStaff) => <Checkbox readOnly checked={staff.is_syoninsya} />,
     },
     {
       accessor: 'kodo',
@@ -39,9 +37,7 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
           援護
         </>
       ),
-      render: (staff: ReturnStaff) => (
-        <Checkbox readOnly checked={staff.is_kodo} />
-      ),
+      render: (staff: ReturnStaff) => <Checkbox readOnly checked={staff.is_kodo} />,
     },
     {
       accessor: 'doko_normal',
@@ -53,9 +49,7 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
           一般
         </>
       ),
-      render: (staff: ReturnStaff) => (
-        <Checkbox readOnly checked={staff.is_doko_normal} />
-      ),
+      render: (staff: ReturnStaff) => <Checkbox readOnly checked={staff.is_doko_normal} />,
     },
     {
       accessor: 'doko_apply',
@@ -67,17 +61,13 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
           応用
         </>
       ),
-      render: (staff: ReturnStaff) => (
-        <Checkbox readOnly checked={staff.is_doko_apply} />
-      ),
+      render: (staff: ReturnStaff) => <Checkbox readOnly checked={staff.is_doko_apply} />,
     },
     {
       accessor: 'iitsumusya',
       width: 50,
       title: '実務者',
-      render: (staff: ReturnStaff) => (
-        <Checkbox readOnly checked={staff.is_zitsumusya} />
-      ),
+      render: (staff: ReturnStaff) => <Checkbox readOnly checked={staff.is_zitsumusya} />,
     },
     {
       accessor: 'kaigo',
@@ -89,9 +79,7 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
           福祉士
         </>
       ),
-      render: (staff: ReturnStaff) => (
-        <Checkbox readOnly checked={staff.is_kaigo} />
-      ),
+      render: (staff: ReturnStaff) => <Checkbox readOnly checked={staff.is_kaigo} />,
     },
     {
       accessor: 'move',
@@ -120,10 +108,7 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
               </ActionIcon>
             </a>
           </Link>
-          <ActionIcon
-            color="red"
-            onClick={() => handleDelete(staff.id)}
-          >
+          <ActionIcon color="red" onClick={() => handleDelete(staff.id)}>
             <IconTrash size={20} />
           </ActionIcon>
         </Group>
@@ -133,8 +118,7 @@ export const StaffListRecords = ({ handleDelete }: Props) => {
       accessor: 'updatedAt',
       title: '更新日時',
       width: 150,
-      render: (staff: ReturnStaff) =>
-        convertSupabaseTime(staff.updated_at),
+      render: (staff: ReturnStaff) => convertSupabaseTime(staff.updated_at),
     },
   ];
 };

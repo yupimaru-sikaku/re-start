@@ -53,20 +53,9 @@ export const createInitialState: CreateStaffParams = {
   is_display: true,
 };
 
-export const initialState = {
-  id: '',
+const initialState = {
   staffList: [] as ReturnStaff[],
-  name: '',
-  furigana: '',
-  gender: '男性' as Staff['gender'],
-  work_time_per_week: 0,
-  is_syoninsya: false,
-  is_kodo: false,
-  is_doko_normal: false,
-  is_doko_apply: false,
-  is_zitsumusya: false,
-  is_kaigo: false,
-  login_id: '',
+  staffData: {} as ReturnStaff,
 };
 
 const staffSlice = createSlice({
@@ -80,16 +69,17 @@ const staffSlice = createSlice({
   extraReducers: (builder) => {
     builder.addMatcher(
       staffApi.endpoints.getStaffListByService.matchFulfilled,
-      (state, action) => {
+      (state, action: PayloadAction<ReturnStaff[]>) => {
         state.staffList = action.payload;
       }
     );
+    builder.addMatcher(staffApi.endpoints.getStaffList.matchFulfilled, (state, action: PayloadAction<ReturnStaff[]>) => {
+      state.staffList = action.payload;
+    });
+    builder.addMatcher(staffApi.endpoints.getStaffById.matchFulfilled, (state, action: PayloadAction<ReturnStaff>) => {
+      state.staffData = action.payload;
+    });
   },
-  // extraReducers: (builder) => {
-  //   builder.addCase(getStaffList.fulfilled, (state, action) => {
-  //     state.staffList = action.payload.staffList;
-  //   })
-  // },
 });
 
 export default staffSlice;

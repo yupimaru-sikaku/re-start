@@ -1,17 +1,15 @@
 import React, { useMemo } from 'react';
+import { useSelector } from '@/ducks/store';
 import {
-  useDeleteAccompanyMutation,
   useGetAccompanyListByCorporateIdQuery,
   useGetAccompanyListByLoginIdQuery,
   useGetAccompanyListQuery,
 } from '@/ducks/accompany/query';
-import { useSelector } from '@/ducks/store';
-import { RootState } from '@/ducks/root-reducer';
 import { TableList } from '../Common/TableList';
 
 export const AccompanyList = () => {
-  const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
-  const accompanyList = useSelector((state: RootState) => state.accompany.accompanyList);
+  const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
+  const accompanyList = useSelector((state) => state.accompany.accompanyList);
   const data1 = useGetAccompanyListQuery(undefined, {
     skip: loginProviderInfo.role !== 'admin',
   });
@@ -30,7 +28,6 @@ export const AccompanyList = () => {
       return data3;
     }
   }, [data1, data2, data3]);
-  const [deleteAccompany] = useDeleteAccompanyMutation();
 
   return <TableList path="ACCOMPANY_EDIT" loading={accompanyLoading} dataList={accompanyList} />;
 };

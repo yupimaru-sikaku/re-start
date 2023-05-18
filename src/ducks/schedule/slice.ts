@@ -1,5 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { PostgrestError } from '@supabase/supabase-js';
+import { scheduleApi } from './query';
 
 export type ScheduleContentArr = {
   work_date: number; // サービス提供日
@@ -21,23 +22,14 @@ type Schedule = {
   updated_at: string; // 更新日時
 };
 
-export type GetScheduleParams = Pick<
-  Schedule,
-  'staff_id' | 'year' | 'month'
->;
+export type GetScheduleParams = Pick<Schedule, 'staff_id' | 'year' | 'month'>;
 
-export type CreateScheduleParams = Omit<
-  Schedule,
-  'id' | 'created_at' | 'updated_at'
->;
+export type CreateScheduleParams = Omit<Schedule, 'id' | 'created_at' | 'updated_at'>;
 export type CreateScheduleResult = {
   error: PostgrestError | null;
 };
 
-export type UpdateScheduleParams = Omit<
-  Schedule,
-  'created_at' | 'updated_at'
->;
+export type UpdateScheduleParams = Omit<Schedule, 'created_at' | 'updated_at'>;
 export type UpdateScheduleResult = {
   error: PostgrestError | null;
 };
@@ -61,13 +53,26 @@ export const createInitialState: CreateScheduleParams = {
   ],
 };
 
-const initialState = {};
+const initialState = {
+  scheduleList: [] as ReturnSchedule[],
+  scheduleData: {} as ReturnSchedule,
+};
 
 const scheduleSlice = createSlice({
   name: 'schedule',
   initialState,
   reducers: {},
-  extraReducers: (builder) => {},
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      scheduleApi.endpoints.getScheduleList.matchFulfilled,
+      (state, action: PayloadAction<ReturnSchedule[]>) => {
+        state.scheduleList = action.payload;
+      }
+    );
+    builder.addMatcher(scheduleApi.endpoints.getSchedule.matchFulfilled, (state, action: PayloadAction<ReturnSchedule>) => {
+      state.scheduleData = action.payload;
+    });
+  },
 });
 
 export default scheduleSlice;

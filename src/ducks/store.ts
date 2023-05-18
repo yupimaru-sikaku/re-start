@@ -1,24 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { useDispatch as rawUseDispatch } from 'react-redux';
-import {
-  useSelector as rawUseSelector,
-  TypedUseSelectorHook,
-} from 'react-redux';
+import { useSelector as rawUseSelector, TypedUseSelectorHook } from 'react-redux';
 import { providerApi } from 'src/ducks/provider/query';
 import { staffApi } from 'src/ducks/staff/query';
 import rootReducer, { RootState } from './root-reducer';
 import { userApi } from './user/query';
-import {
-  persistReducer,
-  persistStore,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from 'redux-persist';
+import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { behaviorApi } from './behavior/query';
 import { mobilityApi } from './mobility/query';
@@ -29,16 +17,7 @@ import { homeCareApi } from './home-care/query';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: [
-    'provider',
-    'staff',
-    'user',
-    'homeCare',
-    'behavior',
-    'mobility',
-    'accompany',
-    'schedule',
-  ],
+  whitelist: ['provider', 'staff', 'user', 'homeCare', 'behavior', 'mobility', 'accompany', 'schedule'],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
