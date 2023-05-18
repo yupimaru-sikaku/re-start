@@ -11,7 +11,6 @@ import 'moment/locale/ja';
 import { CustomToolbar } from '@/components/StaffSchedule/CustomToolbar';
 import { ScheduleContentArr } from '@/ducks/schedule/slice';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
-import { useGetStaffByIdQuery } from '@/ducks/staff/query';
 import { useGetScheduleQuery } from '@/ducks/schedule/query';
 import { dokoColor, idoColor, kodoColor, kyotakuColor } from '@/utils';
 import { useSelector } from '@/ducks/store';
@@ -25,7 +24,8 @@ const SchedulePage: NextPage = () => {
   const currentDate = new Date();
   const [year, setYeart] = useState(currentDate.getFullYear());
   const [month, setMonth] = useState(currentDate.getMonth());
-  const { isLoading: staffLoading } = useGetStaffByIdQuery(staffId || skipToken);
+  const staffList = useSelector((state) => state.staff.staffList);
+  const selectedStaffName = staffList.find((staff) => staff.id === staffId)?.name || '';
   const staffData = useSelector((state) => state.staff.staffData);
   const scheduleData = useSelector((state) => state.schedule.scheduleData);
   const params = useMemo(() => {
@@ -81,9 +81,9 @@ const SchedulePage: NextPage = () => {
   };
 
   return (
-    <DashboardLayout title="勤怠状況">
+    <DashboardLayout title={`勤怠状況（${selectedStaffName}）`}>
       <LoadingOverlay className="relative" visible={scheduleLoading} />
-      <PageContainer title="勤怠状況" fluid>
+      <PageContainer title={`勤怠状況（${selectedStaffName}）`} fluid>
         {scheduleData ? (
           <>
             <Calendar
