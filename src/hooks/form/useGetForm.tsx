@@ -53,7 +53,7 @@ export const useGetForm = ({ type, SERVICE_CONTENT, createInitialState, recordDa
   const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
   const userList = useSelector((state: RootState) => state.user.userList);
   const staffList = useSelector((state: RootState) => state.staff.staffList);
-  const selectedUser = userList.find((user) => user.name === form.values.name);
+  const selectedUser = userList.find((user) => user.name === form.values.user_name);
   const [createSchedule] = useCreateScheduleMutation();
   const [updateSchedule] = useUpdateScheduleMutation();
   const { data: scheduleList = [], refetch: scheduleRefetch } = useGetScheduleListQuery();
@@ -294,7 +294,9 @@ export const useGetForm = ({ type, SERVICE_CONTENT, createInitialState, recordDa
               (schedule) =>
                 schedule.year === form.values.year && schedule.month === form.values.month && schedule.staff_name === staffName
             );
-            const newContentArr = selectedSchedule!.content_arr.filter((content) => content.user_name !== form.values.name);
+            const newContentArr = selectedSchedule!.content_arr.filter(
+              (content) => content.user_name !== form.values.user_name
+            );
             const updateParams: UpdateScheduleParams = {
               id: selectedSchedule!.id,
               staff_name: staffName,

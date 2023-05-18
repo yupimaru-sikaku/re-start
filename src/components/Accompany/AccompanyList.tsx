@@ -32,5 +32,5 @@ export const AccompanyList = () => {
   }, [data1, data2, data3]);
   const [deleteAccompany] = useDeleteAccompanyMutation();
 
-  return <TableList deleteAction={deleteAccompany} path="ACCOMPANY_EDIT" loading={accompanyLoading} dataList={accompanyList} />;
+  return <TableList path="ACCOMPANY_EDIT" loading={accompanyLoading} dataList={accompanyList} />;
 };

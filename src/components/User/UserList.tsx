@@ -38,7 +38,7 @@ export const UserList: NextPage = () => {
   }, []);
 
   const [deleteUser] = useDeleteUserMutation();
-  const { records, PAGE_SIZE } = useGetTablePage(page, userList);
+  const { originalRecordList, PAGE_SIZE } = useGetTablePage(page, userList);
   const handleDelete = async (id: string) => {
     const isOK = await CustomConfirm(
       '削除します。よろしいですか？',
@@ -53,7 +53,7 @@ export const UserList: NextPage = () => {
       striped
       highlightOnHover
       withBorder
-      records={records || []}
+      records={originalRecordList || []}
       recordsPerPage={PAGE_SIZE}
       totalRecords={userList?.length || 0}
       page={page}

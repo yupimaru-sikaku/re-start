@@ -32,5 +32,5 @@ export const BehaviorList = () => {
   }, [data1, data2, data3]);
   const [deleteBehavior] = useDeleteBehaviorMutation();
 
-  return <TableList deleteAction={deleteBehavior} path="BEHAVIOR_EDIT" loading={behaviorLoading} dataList={behaviorList} />;
+  return <TableList path="BEHAVIOR_EDIT" loading={behaviorLoading} dataList={behaviorList} />;
 };

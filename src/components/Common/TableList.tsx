@@ -1,24 +1,58 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CustomButton } from './CustomButton';
-import { ActionIcon, Group } from '@mantine/core';
+import { ActionIcon, Group, SimpleGrid, Space, Text, TextInput } from '@mantine/core';
 import Link from 'next/link';
 import { PATH, getPath } from '@/utils/const/getPath';
-import { IconEdit, IconTrash } from '@tabler/icons';
+import { IconEdit } from '@tabler/icons';
 import { convertSupabaseTime } from '@/utils';
-import { CustomConfirm } from './CustomConfirm';
 import { DataTable } from 'mantine-datatable';
-import { useGetTablePage } from '@/hooks/table/useGetTablePage';
+import { ReturnAccompany } from '@/ducks/accompany/slice';
 
 type Props = {
-  deleteAction: any;
   path: keyof typeof PATH;
   loading: boolean;
-  dataList: any;
+  dataList?: ReturnAccompany[];
 };
 
-export const TableList = ({ deleteAction, path, loading, dataList }: Props) => {
+export const TableList = ({ path, loading, dataList }: Props) => {
+  const PAGE_SIZE = 10;
+  const currentDate = new Date();
+
   const [page, setPage] = useState(1);
-  const { records, PAGE_SIZE } = useGetTablePage(page, dataList);
+  const from = useMemo(() => {
+    return dataList ? (page - 1) * PAGE_SIZE : 0;
+  }, [page, dataList]);
+  const to = useMemo(() => {
+    return dataList?.length ? from + PAGE_SIZE : 0;
+  }, [from]);
+  const originalRecordList = useMemo(() => {
+    return dataList?.slice(from, to) || [];
+  }, [from]);
+
+  const [records, setRecords] = useState(originalRecordList);
+  const [searchParamObj, setSearchParamObj] = useState({
+    year: currentDate.getFullYear(),
+    month: currentDate.getMonth() + 1,
+    userName: '',
+  });
+
+  const handleChangeSearchObj = useCallback((e: React.ChangeEvent<HTMLInputElement>, field: keyof typeof searchParamObj) => {
+    setSearchParamObj((prevState) => ({
+      ...prevState,
+      [field]: e.target.value,
+    }));
+  }, []);
+
+  useEffect(() => {
+    let filteredRecords = originalRecordList;
+    filteredRecords = filteredRecords.filter(
+      (record) =>
+        record.year.toString().includes(searchParamObj.year.toString()) &&
+        record.month.toString().includes(searchParamObj.month.toString()) &&
+        record.user_name.includes(searchParamObj.userName)
+    );
+    setRecords(filteredRecords);
+  }, [searchParamObj, originalRecordList]);
 
   const handlePDFDownload = async () => {
     // const pdfBytes = await CreatePdf(
@@ -32,78 +66,83 @@ export const TableList = ({ deleteAction, path, loading, dataList }: Props) => {
     // link.click();
   };
 
-  // const handleDelete = async (id: string) => {
-  //   const isOK = await CustomConfirm('本当に削除しますか？', '確認画面');
-  //   if (!isOK) return;
-  //   try {
-  //     const { error } = await deleteAction(id);
-  //     if (error) {
-  //       throw new Error(`記録票の削除に失敗しました。${error.message}`);
-  //     }
-  //     refetch();
-  //   } catch (error: any) {
-  //     await CustomConfirm(error.message, 'Caution');
-  //     return;
-  //   }
-  // };
-
   return (
-    <DataTable
-      sx={{ maxWidth: '650px' }}
-      fetching={loading}
-      striped
-      highlightOnHover
-      withBorder
-      records={records}
-      recordsPerPage={PAGE_SIZE}
-      totalRecords={dataList?.length || 0}
-      page={page}
-      onPageChange={(p) => setPage(p)}
-      columns={[
-        { accessor: 'year', title: '西暦', width: 60 },
-        { accessor: 'month', title: '月', width: 50 },
-        { accessor: 'name', title: '利用者名', width: 150 },
-        {
-          accessor: 'download',
-          title: 'ダウンロード',
-          width: 130,
-          render: (service: any) => (
-            <CustomButton
-              color="cyan"
-              variant="light"
-              onClick={() => handlePDFDownload()}
-            >
-              ダウンロード
-            </CustomButton>
-          ),
-        },
-        {
-          accessor: 'actions',
-          title: 'アクション',
-          width: 90,
-          render: (service: any) => (
-            <Group spacing={4} position="center" noWrap>
-              <Link href={getPath(path, service.id)}>
-                <a>
-                  <ActionIcon color="blue">
-                    <IconEdit size={20} />
-                  </ActionIcon>
-                </a>
-              </Link>
-              {/* <ActionIcon color="red" onClick={() => handleDelete(service.id)}>
-                <IconTrash size={20} />
-              </ActionIcon> */}
-            </Group>
-          ),
-        },
-        {
-          accessor: 'updatedAt',
-          title: '更新日時',
-          width: 150,
-          render: (service: any) =>
-            service.updated_at ? convertSupabaseTime(service.updated_at) : '',
-        },
-      ]}
-    />
+    <>
+      <SimpleGrid
+        breakpoints={[
+          { minWidth: 'sm', cols: 2 },
+          { minWidth: 'md', cols: 6 },
+          { minWidth: 'xl', cols: 8 },
+        ]}
+      >
+        <TextInput
+          label="西暦"
+          value={searchParamObj.year}
+          maxLength={4}
+          pattern="\d*"
+          onChange={(e) => handleChangeSearchObj(e, 'year')}
+        />
+        <TextInput
+          label="年"
+          value={searchParamObj.month}
+          maxLength={2}
+          pattern="\d*"
+          onChange={(e) => handleChangeSearchObj(e, 'month')}
+        />
+        <TextInput label="利用者名" value={searchParamObj.userName} onChange={(e) => handleChangeSearchObj(e, 'userName')} />
+      </SimpleGrid>
+      <Space h="lg" />
+      <DataTable
+        minHeight={200}
+        noRecordsText="対象のデータがありません"
+        sx={{ maxWidth: '650px' }}
+        fetching={loading}
+        striped
+        highlightOnHover
+        withBorder
+        records={records}
+        recordsPerPage={PAGE_SIZE}
+        totalRecords={dataList?.length || 0}
+        page={page}
+        onPageChange={(p) => setPage(p)}
+        columns={[
+          { accessor: 'year', title: '西暦', width: 60 },
+          { accessor: 'month', title: '月', width: 50 },
+          { accessor: 'user_name', title: '利用者名', width: 150 },
+          {
+            accessor: 'download',
+            title: 'ダウンロード',
+            width: 130,
+            render: (service: any) => (
+              <CustomButton color="cyan" variant="light" onClick={() => handlePDFDownload()}>
+                ダウンロード
+              </CustomButton>
+            ),
+          },
+          {
+            accessor: 'actions',
+            title: 'アクション',
+            width: 90,
+            render: (service: any) => (
+              <Group spacing={4} position="center" noWrap>
+                <Link href={getPath(path, service.id)}>
+                  <a>
+                    <ActionIcon color="blue">
+                      <IconEdit size={20} />
+                    </ActionIcon>
+                  </a>
+                </Link>
+              </Group>
+            ),
+          },
+          {
+            accessor: 'updatedAt',
+            title: '更新日時',
+            width: 150,
+            render: (service: any) => (service.updated_at ? convertSupabaseTime(service.updated_at) : ''),
+          },
+        ]}
+      />
+    </>
   );
 };

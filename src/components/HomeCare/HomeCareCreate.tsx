@@ -189,7 +189,7 @@ export const HomeCareCreate: NextPage = () => {
               nothingFound="No Data"
               data={userNameList}
               variant="filled"
-              {...form.getInputProps('name')}
+              {...form.getInputProps('user_name')}
             />
             <TextInput
               label="受給者証番号"

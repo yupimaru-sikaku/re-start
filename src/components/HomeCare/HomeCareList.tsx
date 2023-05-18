@@ -34,7 +34,6 @@ export const HomeCareList = () => {
     }
   }, [data1, data2, data3]);
   const [deleteHomeCare] = useDeleteHomeCareMutation();
-  const { records, PAGE_SIZE } = useGetTablePage(page, HomeCareList);
 
   const handleDelete = async (id: string) => {
     const isOK = await CustomConfirm('削除します。よろしいですか？', '確認画面');
@@ -53,20 +52,21 @@ export const HomeCareList = () => {
   };
 
   return (
-    <DataTable
-      fetching={HomeCareListLoading}
-      striped
-      highlightOnHover
-      withBorder
-      records={records || []}
-      recordsPerPage={PAGE_SIZE}
-      totalRecords={HomeCareList?.length || 0}
-      page={page}
-      onPageChange={(p) => setPage(p)}
-      columns={HomeCareListRecords({
-        handleDelete,
-        handlePDFDownload,
-      })}
-    />
+    <></>
+    // <DataTable
+    //   fetching={HomeCareListLoading}
+    //   striped
+    //   highlightOnHover
+    //   withBorder
+    //   records={records || []}
+    //   recordsPerPage={PAGE_SIZE}
+    //   totalRecords={HomeCareList?.length || 0}
+    //   page={page}
+    //   onPageChange={(p) => setPage(p)}
+    //   columns={HomeCareListRecords({
+    //     handleDelete,
+    //     handlePDFDownload,
+    //   })}
+    // />
   );
 };

@@ -32,5 +32,5 @@ export const MobilityList = () => {
   }, [data1, data2, data3]);
   const [deleteMobility] = useDeleteMobilityMutation();
 
-  return <TableList deleteAction={deleteMobility} path="MOBILITY_EDIT" loading={mobilityLoading} dataList={mobilityList} />;
+  return <TableList path="MOBILITY_EDIT" loading={mobilityLoading} dataList={mobilityList} />;
 };
