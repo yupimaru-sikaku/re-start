@@ -89,6 +89,9 @@ const userSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addMatcher(userApi.endpoints.getUserList.matchFulfilled, (state, action: PayloadAction<ReturnUser[]>) => {
+      state.userList = action.payload;
+    });
     builder.addMatcher(userApi.endpoints.getUserById.matchFulfilled, (state, action: PayloadAction<ReturnUser>) => {
       state.userData = action.payload;
     });
