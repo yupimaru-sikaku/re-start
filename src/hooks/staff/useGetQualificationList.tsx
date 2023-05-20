@@ -1,4 +1,7 @@
-export const useGetQualificationList = (form: any) => {
+import { CreateStaffParams } from '@/ducks/staff/slice';
+import { UseFormReturnType } from '@mantine/form';
+
+export const useGetQualificationList = (form: UseFormReturnType<CreateStaffParams>) => {
   return [
     {
       title: '初任者研修',

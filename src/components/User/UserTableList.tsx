@@ -5,15 +5,14 @@ import { getPath } from '@/utils/const/getPath';
 import { IconEdit } from '@tabler/icons';
 import { convertSupabaseTime } from '@/utils';
 import { DataTable } from 'mantine-datatable';
-import { ReturnStaff } from '@/ducks/staff/slice';
-import { CustomButton } from '../Common/CustomButton';
+import { ReturnUser } from '@/ducks/user/slice';
 
 type Props = {
   loading: boolean;
-  dataList?: ReturnStaff[];
+  dataList?: ReturnUser[];
 };
 
-export const StaffTableList = ({ loading, dataList }: Props) => {
+export const UserTableList = ({ loading, dataList }: Props) => {
   const PAGE_SIZE = 10;
   const [page, setPage] = useState(1);
   const from = useMemo(() => {
@@ -51,13 +50,13 @@ export const StaffTableList = ({ loading, dataList }: Props) => {
           { minWidth: 'xl', cols: 8 },
         ]}
       >
-        <TextInput label="スタッフ名" value={searchParamObj.name} onChange={(e) => handleChangeSearchObj(e, 'name')} />
+        <TextInput label="利用者名" value={searchParamObj.name} onChange={(e) => handleChangeSearchObj(e, 'name')} />
       </SimpleGrid>
       <Space h="lg" />
       <DataTable
         minHeight={200}
         noRecordsText="対象のデータがありません"
-        sx={{ maxWidth: '1080px' }}
+        sx={{ maxWidth: '1170px' }}
         fetching={loading}
         striped
         highlightOnHover
@@ -71,17 +70,17 @@ export const StaffTableList = ({ loading, dataList }: Props) => {
           { accessor: 'name', title: '名前', width: 110 },
           { accessor: 'gender', title: '性別', width: 50 },
           {
-            accessor: 'work_time_per_week',
-            title: '勤務時間/週',
-            width: 100,
+            accessor: 'gender_specification',
+            title: '性別指定',
+            width: 80,
           },
           {
-            accessor: 'syoninsya',
-            width: 70,
-            title: '初任者',
-            render: (staff: ReturnStaff) => (
+            accessor: 'ido',
+            width: 80,
+            title: '移動支援',
+            render: (user: ReturnUser) => (
               <Group position="center">
-                <Checkbox readOnly checked={staff.is_syoninsya} />
+                <Checkbox readOnly checked={user.is_ido} />
               </Group>
             ),
           },
@@ -89,73 +88,79 @@ export const StaffTableList = ({ loading, dataList }: Props) => {
             accessor: 'kodo',
             width: 80,
             title: '行動援護',
-            render: (staff: ReturnStaff) => (
+            render: (user: ReturnUser) => (
               <Group position="center">
-                <Checkbox readOnly checked={staff.is_kodo} />
+                <Checkbox readOnly checked={user.is_kodo} />
               </Group>
             ),
           },
           {
-            accessor: 'doko_normal',
+            accessor: 'doko',
             width: 80,
-            title: '同行一般',
-            render: (staff: ReturnStaff) => (
+            title: '同行援護',
+            render: (user: ReturnUser) => (
               <Group position="center">
-                <Checkbox readOnly checked={staff.is_doko_normal} />
+                <Checkbox readOnly checked={user.is_doko} />
               </Group>
             ),
           },
           {
-            accessor: 'doko_apply',
+            accessor: 'kazi',
             width: 80,
-            title: '同行応用',
-            render: (staff: ReturnStaff) => (
+            title: '家事援助',
+            render: (user: ReturnUser) => (
               <Group position="center">
-                <Checkbox readOnly checked={staff.is_doko_apply} />
+                <Checkbox readOnly checked={user.is_kazi} />
               </Group>
             ),
           },
           {
-            accessor: 'iitsumusya',
-            width: 70,
-            title: '実務者',
-            render: (staff: ReturnStaff) => (
+            accessor: 'shintai',
+            width: 80,
+            title: '身体家事',
+            render: (user: ReturnUser) => (
               <Group position="center">
-                <Checkbox readOnly checked={staff.is_zitsumusya} />
+                <Checkbox readOnly checked={user.is_shintai} />
               </Group>
             ),
           },
           {
-            accessor: 'kaigo',
-            width: 90,
-            title: '介護福祉士',
-            render: (staff: ReturnStaff) => (
+            accessor: 'with_tsuin',
+            width: 150,
+            title: '通院等介助（伴う）',
+            render: (user: ReturnUser) => (
               <Group position="center">
-                <Checkbox readOnly checked={staff.is_kaigo} />
+                <Checkbox readOnly checked={user.is_with_tsuin} />
               </Group>
             ),
           },
           {
-            accessor: 'move',
-            title: '勤怠状況',
-            width: 100,
-            render: (staff: ReturnStaff) => (
-              <Link href={getPath('STAFF_SCHEDULE', staff.id)}>
-                <a>
-                  <CustomButton color="cyan" variant="light">
-                    勤怠状況
-                  </CustomButton>
-                </a>
-              </Link>
+            accessor: 'tsuin',
+            width: 180,
+            title: '通院等介助（伴わない）',
+            render: (user: ReturnUser) => (
+              <Group position="center">
+                <Checkbox readOnly checked={user.is_tsuin} />
+              </Group>
             ),
+          },
+          {
+            accessor: 'city',
+            width: 80,
+            title: '市区町村',
+          },
+          {
+            accessor: 'disability_type',
+            width: 80,
+            title: '障害種別',
           },
           {
             accessor: 'actions',
             title: 'アクション',
             width: 90,
-            render: (staff: ReturnStaff) => (
+            render: (staff: ReturnUser) => (
               <Group spacing={4} position="center" noWrap>
-                <Link href={getPath('STAFF_EDIT', staff.id)}>
+                <Link href={getPath('USER_EDIT', staff.id)}>
                   <a>
                     <ActionIcon color="blue">
                       <IconEdit size={20} />
@@ -169,7 +174,7 @@ export const StaffTableList = ({ loading, dataList }: Props) => {
             accessor: 'updatedAt',
             title: '更新日時',
             width: 150,
-            render: (staff: ReturnStaff) => convertSupabaseTime(staff.updated_at),
+            render: (user: ReturnUser) => (user.updated_at ? convertSupabaseTime(user.updated_at) : ''),
           },
         ]}
       />

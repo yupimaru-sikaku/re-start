@@ -79,6 +79,13 @@ const staffSlice = createSlice({
     builder.addMatcher(staffApi.endpoints.getStaffById.matchFulfilled, (state, action: PayloadAction<ReturnStaff>) => {
       state.staffData = action.payload;
     });
+    builder.addMatcher(staffApi.endpoints.createStaff.matchFulfilled, (state, action: PayloadAction<ReturnStaff>) => {
+      state.staffList = [action.payload, ...state.staffList];
+    });
+    builder.addMatcher(staffApi.endpoints.updateStaff.matchFulfilled, (state, action: PayloadAction<ReturnStaff>) => {
+      state.staffList = state.staffList.map((staff) => (staff.id === action.payload.id ? action.payload : staff));
+      state.staffData = action.payload;
+    });
   },
 });
 

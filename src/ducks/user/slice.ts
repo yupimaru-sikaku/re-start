@@ -89,18 +89,19 @@ const userSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addMatcher(
-      userApi.endpoints.getUserById.matchFulfilled,
-      (state, action: PayloadAction<ReturnUser>) => {
-        state.userData = action.payload;
-      }
-    );
-    builder.addMatcher(
-      userApi.endpoints.getUserListByService.matchFulfilled,
-      (state, action: PayloadAction<ReturnUser[]>) => {
-        state.userList = action.payload;
-      }
-    );
+    builder.addMatcher(userApi.endpoints.getUserById.matchFulfilled, (state, action: PayloadAction<ReturnUser>) => {
+      state.userData = action.payload;
+    });
+    builder.addMatcher(userApi.endpoints.getUserListByService.matchFulfilled, (state, action: PayloadAction<ReturnUser[]>) => {
+      state.userList = action.payload;
+    });
+    builder.addMatcher(userApi.endpoints.createUser.matchFulfilled, (state, action: PayloadAction<ReturnUser>) => {
+      state.userList = [action.payload, ...state.userList];
+    });
+    builder.addMatcher(userApi.endpoints.updateUser.matchFulfilled, (state, action: PayloadAction<ReturnUser>) => {
+      state.userList = state.userList.map((user) => (user.id === action.payload.id ? action.payload : user));
+      state.userData = action.payload;
+    });
   },
 });
 

@@ -1,9 +1,19 @@
-type ReturnType = {
-  error: boolean;
-  text: string;
+export const validate = {
+  name: (value: string) => {
+    const { error, text } = validateName(value);
+    return error ? text : null;
+  },
+  furigana: (value: string) => {
+    const { error, text } = validateFurigana(value);
+    return error ? text : null;
+  },
+  work_time_per_week: (value: number) => {
+    const { error, text } = validateWorkTimePerWeek(value);
+    return error ? text : null;
+  },
 };
 
-export const validateName = (value: string): ReturnType => {
+const validateName = (value: string) => {
   if (value === '') {
     return {
       error: true,
@@ -16,7 +26,7 @@ export const validateName = (value: string): ReturnType => {
   };
 };
 
-export const validateFurigana = (value: string): ReturnType => {
+const validateFurigana = (value: string) => {
   if (value === '') {
     return {
       error: true,
@@ -29,7 +39,7 @@ export const validateFurigana = (value: string): ReturnType => {
   };
 };
 
-export const validateWorkTimePerWeek = (value: number): ReturnType => {
+const validateWorkTimePerWeek = (value: number) => {
   if (value <= 0) {
     return {
       error: true,

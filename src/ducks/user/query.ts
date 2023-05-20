@@ -1,14 +1,7 @@
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 import { PostgrestError } from '@supabase/supabase-js';
-import {
-  CreateUserParams,
-  CreateUserResult,
-  DeleteUserResult,
-  ReturnUser,
-  UpdateUserParams,
-  UpdateUserResult,
-} from './slice';
+import { CreateUserParams, CreateUserResult, DeleteUserResult, ReturnUser, UpdateUserParams, UpdateUserResult } from './slice';
 
 export const userApi = createApi({
   reducerPath: 'userApi',
@@ -27,9 +20,7 @@ export const userApi = createApi({
           .select('*')
           .eq('is_display', true)
           .order('updated_at', { ascending: false });
-        return data
-          ? { data: data as ReturnUser[] }
-          : { error: error as PostgrestError };
+        return data ? { data: data as ReturnUser[] } : { error: error as PostgrestError };
       },
     }),
     /**
@@ -46,9 +37,7 @@ export const userApi = createApi({
           .eq('is_display', true)
           .eq('corporate_id', corporateId)
           .order('updated_at', { ascending: false });
-        return data
-          ? { data: data as ReturnUser[] }
-          : { error: error as PostgrestError };
+        return data ? { data: data as ReturnUser[] } : { error: error as PostgrestError };
       },
     }),
     /**
@@ -63,9 +52,7 @@ export const userApi = createApi({
           .select('*')
           .eq(serviceName, true)
           .order('updated_at', { ascending: false });
-        return data
-          ? { data: data as ReturnUser[] }
-          : { error: error as PostgrestError };
+        return data ? { data: data as ReturnUser[] } : { error: error as PostgrestError };
       },
     }),
     /**
@@ -82,9 +69,7 @@ export const userApi = createApi({
           .eq('is_display', true)
           .eq('login_id', loginId)
           .order('updated_at', { ascending: false });
-        return data
-          ? { data: data as ReturnUser[] }
-          : { error: error as PostgrestError };
+        return data ? { data: data as ReturnUser[] } : { error: error as PostgrestError };
       },
     }),
     /**
@@ -94,10 +79,7 @@ export const userApi = createApi({
      */
     getUserById: builder.query<ReturnUser, string>({
       queryFn: async (id: string) => {
-        const { data, error } = await supabase
-          .from(getDb('USER'))
-          .select('*')
-          .eq('id', id);
+        const { data, error } = await supabase.from(getDb('USER')).select('*').eq('id', id);
         return data ? { data: data[0] as ReturnUser } : { error };
       },
     }),
@@ -106,33 +88,37 @@ export const userApi = createApi({
      * @param {CreateUserParams} params
      * @return {CreateUserParams}
      */
-    createUser: builder.mutation<CreateUserResult, CreateUserParams>({
-      queryFn: async (params: CreateUserParams) => {
-        const { error } = await supabase.from(getDb('USER')).insert({
-          login_id: params.login_id,
-          corporate_id: params.corporate_id,
-          name: params.name,
-          identification: params.identification,
-          gender: params.gender,
-          is_gender_specification: params.is_gender_specification,
-          gender_specification: params.gender_specification,
-          ido_amount: params.ido_amount,
-          is_ido: params.is_ido,
-          kodo_amount: params.kodo_amount,
-          is_kodo: params.is_kodo,
-          doko_amount: params.doko_amount,
-          is_doko: params.is_doko,
-          is_kazi: params.is_kazi,
-          kazi_amount: params.kazi_amount,
-          is_shintai: params.is_shintai,
-          shintai_amount: params.shintai_amount,
-          is_with_tsuin: params.is_with_tsuin,
-          with_tsuin_amount: params.with_tsuin_amount,
-          is_tsuin: params.is_tsuin,
-          tsuin_amount: params.tsuin_amount,
-          city: params.city,
-          disability_type: params.disability_type,
-        });
+    createUser: builder.mutation({
+      queryFn: async (params: CreateUserParams): Promise<any> => {
+        const { data, error } = await supabase
+          .from(getDb('USER'))
+          .insert({
+            login_id: params.login_id,
+            corporate_id: params.corporate_id,
+            name: params.name,
+            identification: params.identification,
+            gender: params.gender,
+            is_gender_specification: params.is_gender_specification,
+            gender_specification: params.gender_specification,
+            ido_amount: params.ido_amount,
+            is_ido: params.is_ido,
+            kodo_amount: params.kodo_amount,
+            is_kodo: params.is_kodo,
+            doko_amount: params.doko_amount,
+            is_doko: params.is_doko,
+            is_kazi: params.is_kazi,
+            kazi_amount: params.kazi_amount,
+            is_shintai: params.is_shintai,
+            shintai_amount: params.shintai_amount,
+            is_with_tsuin: params.is_with_tsuin,
+            with_tsuin_amount: params.with_tsuin_amount,
+            is_tsuin: params.is_tsuin,
+            tsuin_amount: params.tsuin_amount,
+            city: params.city,
+            disability_type: params.disability_type,
+          })
+          .select();
+        if (!error && data[0]) return { data: data[0] };
         return { error };
       },
     }),
@@ -141,9 +127,9 @@ export const userApi = createApi({
      * @param {UpdateUserParams} params
      * @return {ReturnUser[]}
      */
-    updateUser: builder.mutation<UpdateUserResult, UpdateUserParams>({
-      queryFn: async (params: UpdateUserParams) => {
-        const { error } = await supabase
+    updateUser: builder.mutation({
+      queryFn: async (params: UpdateUserParams): Promise<any> => {
+        const { data, error } = await supabase
           .from(getDb('USER'))
           .update({
             login_id: params.login_id,
@@ -170,7 +156,9 @@ export const userApi = createApi({
             city: params.city,
             disability_type: params.disability_type,
           })
-          .eq('id', params.id);
+          .eq('id', params.id)
+          .select();
+        if (!error && data[0]) return { data: data[0] };
         return { error };
       },
     }),
@@ -181,10 +169,7 @@ export const userApi = createApi({
      */
     deleteUser: builder.mutation<DeleteUserResult, string>({
       queryFn: async (id: string) => {
-        const { error } = await supabase
-          .from(getDb('USER'))
-          .update({ is_display: false })
-          .eq('id', id);
+        const { error } = await supabase.from(getDb('USER')).update({ is_display: false }).eq('id', id);
         return { error };
       },
     }),

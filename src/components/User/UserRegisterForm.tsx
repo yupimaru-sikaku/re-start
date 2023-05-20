@@ -1,42 +1,15 @@
-import {
-  CreateUserParams,
-  CreateUserResult,
-  UpdateUserParams,
-  UpdateUserResult,
-  createInitialState,
-} from '@/ducks/user/slice';
-import {
-  Box,
-  Grid,
-  LoadingOverlay,
-  Paper,
-  SegmentedControl,
-  Select,
-  SimpleGrid,
-  Space,
-  Switch,
-  Text,
-} from '@mantine/core';
+import { createInitialState } from '@/ducks/user/slice';
+import { Box, Grid, LoadingOverlay, Paper, SegmentedControl, Select, SimpleGrid, Space, Switch, Text } from '@mantine/core';
 import { useFocusTrap } from '@mantine/hooks';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CustomTextInput } from '../Common/CustomTextInput';
-import { useForm } from '@mantine/form';
 import { CustomButton } from '../Common/CustomButton';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
-import {
-  validateIdentification,
-  validateName,
-  validateCity,
-  validateDisabilityType,
-} from '@/utils/validate/user';
-import {
-  useCreateUserMutation,
-  useGetUserByIdQuery,
-  useUpdateUserMutation,
-} from '@/ducks/user/query';
+import { validate } from '@/utils/validate/user';
+import { useCreateUserMutation, useGetUserByIdQuery, useUpdateUserMutation } from '@/ducks/user/query';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { useGetServiceList } from '@/hooks/user/useGetServiceList';
 import { RootState } from '@/ducks/root-reducer';
@@ -44,6 +17,7 @@ import { useSelector } from '@/ducks/store';
 import { cityList, disabilityTypeList } from '@/utils/user';
 import { NextPage } from 'next';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
+import { useGetUserForm } from '@/hooks/form/useGetUserForm';
 
 type Props = {
   type: 'create' | 'edit';
@@ -53,102 +27,37 @@ export const UserRegisterForm: NextPage<Props> = ({ type }) => {
   const TITLE = type === 'create' ? '登録' : '更新';
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
-  const userId = router.query.id as string;
-  const loginProviderInfo = useSelector(
-    (state: RootState) => state.provider.loginProviderInfo
-  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const {
-    data: userData,
-    isLoading: userDataLoading,
-    refetch: userDataRefetch,
-  } = useGetUserByIdQuery(userId || skipToken);
-  const [createUser] = useCreateUserMutation();
-  const [updateUser] = useUpdateUserMutation();
-  const form = useForm({
-    initialValues: createInitialState,
-    validate: {
-      name: (value) => {
-        const { error, text } = validateName(value);
-        return error ? text : null;
-      },
-      identification: (value) => {
-        const { error, text } = validateIdentification(value);
-        return error ? text : null;
-      },
-      city: (value) => {
-        const { error, text } = validateCity(value);
-        return error ? text : null;
-      },
-      disability_type: (value) => {
-        const { error, text } = validateDisabilityType(value);
-        return error ? text : null;
-      },
-    },
+  const { form, userData, recordSubmit } = useGetUserForm({
+    type,
+    createInitialState,
+    validate: validate,
   });
-  useEffect(() => {
-    if (!userData) return;
-    userDataRefetch();
-    form.setValues(userData);
-  }, [userData]);
+
   const serviceList = useGetServiceList(form);
+
   const handleSubmit = async () => {
     setIsLoading(true);
-    try {
-      const genderSpecification = form.values.is_gender_specification
-        ? form.values.gender_specification
-        : '無し';
-      if (type === 'create') {
-        const params: CreateUserParams = {
-          ...form.values,
-          login_id: loginProviderInfo.id,
-          corporate_id: loginProviderInfo.corporate_id,
-          gender_specification: genderSpecification,
-        };
-        const { error } = (await createUser(
-          params
-        )) as CreateUserResult;
-        if (error) {
-          throw new Error(error.message);
-        }
+    const result = await recordSubmit();
+    if (!result.isFinished) {
+      if (result.message) {
+        await CustomConfirm(result.message, 'Caution');
+        setIsLoading(false);
       } else {
-        const params: UpdateUserParams = {
-          ...form.values,
-          id: userId,
-          login_id: loginProviderInfo.id,
-          corporate_id: loginProviderInfo.corporate_id,
-          gender_specification: genderSpecification,
-        };
-        const { error } = (await updateUser(
-          params
-        )) as UpdateUserResult;
-        if (error) {
-          throw new Error(error.message);
-        }
+        setIsLoading(false);
       }
-    } catch (error) {
-      await CustomConfirm(
-        `利用者の${TITLE}に失敗しました。${error}`,
-        'Caution'
-      );
-      setIsLoading(false);
-      return;
+    } else {
+      showNotification({
+        icon: <IconCheckbox />,
+        message: `${TITLE}に成功しました！`,
+      });
+      router.push(getPath('USER'));
     }
-    showNotification({
-      icon: <IconCheckbox />,
-      message: `${TITLE}に成功しました！`,
-    });
-    router.push(getPath('USER'));
-    setIsLoading(false);
   };
 
   return (
-    <form
-      onSubmit={form.onSubmit(handleSubmit)}
-      ref={focusTrapRef}
-      className="relative"
-    >
-      <LoadingOverlay visible={userDataLoading} />
+    <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef} className="relative">
+      <LoadingOverlay visible={!userData} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomTextInput
           idText="name"
@@ -222,9 +131,7 @@ export const UserRegisterForm: NextPage<Props> = ({ type }) => {
             label="サービスの種別"
             searchable
             nothingFound="No Data"
-            data={disabilityTypeList.map(
-              (disabilityType) => disabilityType
-            )}
+            data={disabilityTypeList.map((disabilityType) => disabilityType)}
             variant="filled"
             {...form.getInputProps('disability_type')}
           />

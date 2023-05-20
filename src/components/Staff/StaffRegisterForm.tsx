@@ -1,45 +1,18 @@
-import {
-  Box,
-  LoadingOverlay,
-  Paper,
-  SegmentedControl,
-  SimpleGrid,
-  Space,
-  Switch,
-  Text,
-} from '@mantine/core';
-import { useFocusTrap } from '@mantine/hooks';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
-import { CustomTextInput } from '../Common/CustomTextInput';
-import { useForm } from '@mantine/form';
-import { CustomButton } from '../Common/CustomButton';
+import { Box, LoadingOverlay, Paper, SegmentedControl, SimpleGrid, Space, Switch, Text } from '@mantine/core';
+import { useFocusTrap } from '@mantine/hooks';
+import { CustomTextInput } from 'src/components/Common/CustomTextInput';
+import { CustomButton } from 'src/components/Common/CustomButton';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
-import {
-  CreateStaffParams,
-  CreateStaffResult,
-  UpdateStaffParams,
-  createInitialState,
-} from '@/ducks/staff/slice';
-import {
-  validateFurigana,
-  validateName,
-  validateWorkTimePerWeek,
-} from '@/utils/validate/staff';
-import {
-  useCreateStaffMutation,
-  useGetStaffByIdQuery,
-  useUpdateStaffMutation,
-} from '@/ducks/staff/query';
+import { createInitialState } from '@/ducks/staff/slice';
+import { validate } from '@/utils/validate/staff';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { useGetQualificationList } from '@/hooks/staff/useGetQualificationList';
-import { useSelector } from '@/ducks/store';
-import { RootState } from '@/ducks/root-reducer';
 import { NextPage } from 'next';
-import { skipToken } from '@reduxjs/toolkit/dist/query';
-import { UpdateStaffResult } from '@/ducks/staff/slice';
+import { useGetStaffForm } from '@/hooks/form/useGetStaffForm';
 
 type Props = {
   type: 'create' | 'edit';
@@ -49,92 +22,36 @@ export const StaffRegisterForm: NextPage<Props> = ({ type }) => {
   const TITLE = type === 'create' ? '登録' : '更新';
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
-  const staffId = router.query.id as string;
-  const loginProviderInfo = useSelector(
-    (state: RootState) => state.provider.loginProviderInfo
-  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const {
-    data: staffData,
-    isLoading: staffDataLoading,
-    refetch: staffDataRefetch,
-  } = useGetStaffByIdQuery(staffId || skipToken);
-  const [createStaff] = useCreateStaffMutation();
-  const [updateStaff] = useUpdateStaffMutation();
-  const form = useForm({
-    initialValues: createInitialState,
-    validate: {
-      name: (value) => {
-        const { error, text } = validateName(value);
-        return error ? text : null;
-      },
-      furigana: (value) => {
-        const { error, text } = validateFurigana(value);
-        return error ? text : null;
-      },
-      work_time_per_week: (value) => {
-        const { error, text } = validateWorkTimePerWeek(value);
-        return error ? text : null;
-      },
-    },
+  const { form, staffData, recordSubmit } = useGetStaffForm({
+    type,
+    createInitialState,
+    validate: validate,
   });
-  useEffect(() => {
-    if (!staffData) return;
-    staffDataRefetch();
-    form.setValues(staffData);
-  }, [staffData]);
   const qualificationList = useGetQualificationList(form);
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    try {
-      if (type === 'create') {
-        const params: CreateStaffParams = {
-          ...form.values,
-          login_id: loginProviderInfo.id,
-        };
-        const { error } = (await createStaff(
-          params
-        )) as CreateStaffResult;
-        if (error) {
-          throw new Error(error.message);
-        }
+    const result = await recordSubmit();
+    if (!result.isFinished) {
+      if (result.message) {
+        await CustomConfirm(result.message, 'Caution');
+        setIsLoading(false);
       } else {
-        const params: UpdateStaffParams = {
-          ...form.values,
-          id: staffId,
-          login_id: loginProviderInfo.id,
-        };
-        const { error } = (await updateStaff(
-          params
-        )) as UpdateStaffResult;
-        if (error) {
-          throw new Error(error.message);
-        }
+        setIsLoading(false);
       }
-    } catch (error) {
-      await CustomConfirm(
-        `スタッフの${TITLE}に失敗しました。${error}`,
-        'Caution'
-      );
-      setIsLoading(false);
-      return;
+    } else {
+      showNotification({
+        icon: <IconCheckbox />,
+        message: `${TITLE}に成功しました！`,
+      });
+      router.push(getPath('STAFF'));
     }
-    showNotification({
-      icon: <IconCheckbox />,
-      message: `${TITLE}に成功しました！`,
-    });
-    router.push(getPath('STAFF'));
-    setIsLoading(false);
   };
 
   return (
-    <form
-      onSubmit={form.onSubmit(handleSubmit)}
-      ref={focusTrapRef}
-      className="relative"
-    >
-      <LoadingOverlay visible={staffDataLoading} />
+    <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef} className="relative">
+      <LoadingOverlay visible={!staffData} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomTextInput
           idText="name"
@@ -211,7 +128,7 @@ export const StaffRegisterForm: NextPage<Props> = ({ type }) => {
         </SimpleGrid>
         <Space h="xl" />
         <CustomButton type="submit" fullWidth loading={isLoading}>
-          登録
+          {TITLE}
         </CustomButton>
       </Paper>
     </form>

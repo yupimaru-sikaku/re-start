@@ -27,9 +27,7 @@ export const staffApi = createApi({
           .select('*')
           .eq('is_display', true)
           .order('updated_at', { ascending: false });
-        return data
-          ? { data: data as ReturnStaff[] }
-          : { error: error as PostgrestError };
+        return data ? { data: data as ReturnStaff[] } : { error: error as PostgrestError };
       },
     }),
     /**
@@ -50,9 +48,7 @@ export const staffApi = createApi({
             break;
           case 'ido':
           case 'kyotaku':
-            query = query.or(
-              'is_syoninsya.eq.true,is_zitsumusya.eq.true,is_kaigo.eq.true'
-            );
+            query = query.or('is_syoninsya.eq.true,is_zitsumusya.eq.true,is_kaigo.eq.true');
             break;
           default:
             throw new Error('Invalid service name');
@@ -60,9 +56,7 @@ export const staffApi = createApi({
         const { data, error } = await query.order('updated_at', {
           ascending: false,
         });
-        return data
-          ? { data: data as ReturnStaff[] }
-          : { error: error as PostgrestError };
+        return data ? { data: data as ReturnStaff[] } : { error: error as PostgrestError };
       },
     }),
     /**
@@ -73,10 +67,7 @@ export const staffApi = createApi({
      */
     getStaffById: builder.query<ReturnStaff, string>({
       queryFn: async (id: string) => {
-        const { data, error } = await supabase
-          .from(getDb('STAFF'))
-          .select('*')
-          .eq('id', id);
+        const { data, error } = await supabase.from(getDb('STAFF')).select('*').eq('id', id);
         return data ? { data: data[0] as ReturnStaff } : { error };
       },
     }),
@@ -85,21 +76,25 @@ export const staffApi = createApi({
      * @param {CreateStaffParams} params
      * @return {CreateStaffResult}
      */
-    createStaff: builder.mutation<CreateStaffResult, CreateStaffParams>({
-      queryFn: async (params: CreateStaffParams) => {
-        const { error } = await supabase.from(getDb('STAFF')).insert({
-          login_id: params.login_id,
-          name: params.name,
-          furigana: params.furigana,
-          gender: params.gender,
-          work_time_per_week: params.work_time_per_week,
-          is_syoninsya: params.is_syoninsya,
-          is_kodo: params.is_kodo,
-          is_doko_normal: params.is_doko_normal,
-          is_doko_apply: params.is_doko_apply,
-          is_zitsumusya: params.is_zitsumusya,
-          is_kaigo: params.is_kaigo,
-        });
+    createStaff: builder.mutation({
+      queryFn: async (params: CreateStaffParams): Promise<any> => {
+        const { data, error } = await supabase
+          .from(getDb('STAFF'))
+          .insert({
+            login_id: params.login_id,
+            name: params.name,
+            furigana: params.furigana,
+            gender: params.gender,
+            work_time_per_week: params.work_time_per_week,
+            is_syoninsya: params.is_syoninsya,
+            is_kodo: params.is_kodo,
+            is_doko_normal: params.is_doko_normal,
+            is_doko_apply: params.is_doko_apply,
+            is_zitsumusya: params.is_zitsumusya,
+            is_kaigo: params.is_kaigo,
+          })
+          .select();
+        if (!error && data[0]) return { data: data[0] };
         return { error };
       },
     }),
@@ -108,9 +103,9 @@ export const staffApi = createApi({
      * @param {ReturnStaff[]} params
      * @return {ReturnStaff[]}
      */
-    updateStaff: builder.mutation<UpdateStaffResult, UpdateStaffParams>({
-      queryFn: async (params: UpdateStaffParams) => {
-        const { error } = await supabase
+    updateStaff: builder.mutation({
+      queryFn: async (params: UpdateStaffParams): Promise<any> => {
+        const { data, error } = await supabase
           .from(getDb('STAFF'))
           .update({
             name: params.name,
@@ -125,7 +120,9 @@ export const staffApi = createApi({
             is_kaigo: params.is_kaigo,
             login_id: params.login_id,
           })
-          .eq('id', params.id);
+          .eq('id', params.id)
+          .select();
+        if (!error && data[0]) return { data: data[0] };
         return { error };
       },
     }),
@@ -136,10 +133,7 @@ export const staffApi = createApi({
      */
     deleteStaff: builder.mutation<DeleteStaffResult, string>({
       queryFn: async (id: string) => {
-        const { error } = await supabase
-          .from(getDb('STAFF'))
-          .update({ is_display: false })
-          .eq('id', id);
+        const { error } = await supabase.from(getDb('STAFF')).update({ is_display: false }).eq('id', id);
         return { error };
       },
     }),

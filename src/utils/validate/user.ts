@@ -1,9 +1,23 @@
-type ReturnType = {
-  error: boolean;
-  text: string;
+export const validate = {
+  name: (value: string) => {
+    const { error, text } = validateName(value);
+    return error ? text : null;
+  },
+  identification: (value: string) => {
+    const { error, text } = validateIdentification(value);
+    return error ? text : null;
+  },
+  city: (value: string) => {
+    const { error, text } = validateCity(value);
+    return error ? text : null;
+  },
+  disability_type: (value: string) => {
+    const { error, text } = validateDisabilityType(value);
+    return error ? text : null;
+  },
 };
 
-export const validateName = (value: string): ReturnType => {
+const validateName = (value: string) => {
   if (value === '') {
     return {
       error: true,
@@ -16,7 +30,7 @@ export const validateName = (value: string): ReturnType => {
   };
 };
 
-export const validateIdentification = (value: string): ReturnType => {
+const validateIdentification = (value: string) => {
   if (value === '') {
     return {
       error: true,
@@ -39,22 +53,7 @@ export const validateIdentification = (value: string): ReturnType => {
   };
 };
 
-export const validateGenderSpecification = (
-  value: string
-): ReturnType => {
-  if (value === '') {
-    return {
-      error: true,
-      text: '性別を指定してください',
-    };
-  }
-  return {
-    error: false,
-    text: '',
-  };
-};
-
-export const validateCity = (value: string): ReturnType => {
+const validateCity = (value: string) => {
   if (value === '') {
     return {
       error: true,
@@ -67,7 +66,7 @@ export const validateCity = (value: string): ReturnType => {
   };
 };
 
-export const validateDisabilityType = (value: string): ReturnType => {
+const validateDisabilityType = (value: string) => {
   if (value === '') {
     return {
       error: true,

@@ -38,9 +38,7 @@ export const UserListRecords = ({ handleDelete }: Props) => {
           支援
         </>
       ),
-      render: (user: ReturnUser) => (
-        <Checkbox readOnly checked={user.is_ido} />
-      ),
+      render: (user: ReturnUser) => <Checkbox readOnly checked={user.is_ido} />,
     },
     {
       accessor: 'kodo',
@@ -52,9 +50,7 @@ export const UserListRecords = ({ handleDelete }: Props) => {
           援護
         </>
       ),
-      render: (user: ReturnUser) => (
-        <Checkbox readOnly checked={user.is_kodo} />
-      ),
+      render: (user: ReturnUser) => <Checkbox readOnly checked={user.is_kodo} />,
     },
     {
       accessor: 'doko',
@@ -66,9 +62,7 @@ export const UserListRecords = ({ handleDelete }: Props) => {
           援護
         </>
       ),
-      render: (user: ReturnUser) => (
-        <Checkbox readOnly checked={user.is_doko} />
-      ),
+      render: (user: ReturnUser) => <Checkbox readOnly checked={user.is_doko} />,
     },
     {
       accessor: 'kazi',
@@ -80,9 +74,7 @@ export const UserListRecords = ({ handleDelete }: Props) => {
           援助
         </>
       ),
-      render: (user: ReturnUser) => (
-        <Checkbox readOnly checked={user.is_kazi} />
-      ),
+      render: (user: ReturnUser) => <Checkbox readOnly checked={user.is_kazi} />,
     },
     {
       accessor: 'shintai',
@@ -94,9 +86,7 @@ export const UserListRecords = ({ handleDelete }: Props) => {
           介護
         </>
       ),
-      render: (user: ReturnUser) => (
-        <Checkbox readOnly checked={user.is_shintai} />
-      ),
+      render: (user: ReturnUser) => <Checkbox readOnly checked={user.is_shintai} />,
     },
     {
       accessor: 'with_tsuin',
@@ -108,9 +98,7 @@ export const UserListRecords = ({ handleDelete }: Props) => {
         </>
       ),
       width: 60,
-      render: (user: ReturnUser) => (
-        <Checkbox readOnly checked={user.is_with_tsuin} />
-      ),
+      render: (user: ReturnUser) => <Checkbox readOnly checked={user.is_with_tsuin} />,
     },
     {
       accessor: 'tsuin',
@@ -122,9 +110,7 @@ export const UserListRecords = ({ handleDelete }: Props) => {
         </>
       ),
       width: 60,
-      render: (user: ReturnUser) => (
-        <Checkbox readOnly checked={user.is_tsuin} />
-      ),
+      render: (user: ReturnUser) => <Checkbox readOnly checked={user.is_tsuin} />,
     },
     {
       accessor: 'city',
@@ -161,10 +147,7 @@ export const UserListRecords = ({ handleDelete }: Props) => {
               </ActionIcon>
             </a>
           </Link>
-          <ActionIcon
-            color="red"
-            onClick={() => handleDelete(user.id)}
-          >
+          <ActionIcon color="red" onClick={() => handleDelete(user.id)}>
             <IconTrash size={20} />
           </ActionIcon>
         </Group>
@@ -174,8 +157,7 @@ export const UserListRecords = ({ handleDelete }: Props) => {
       accessor: 'updatedAt',
       title: '更新日時',
       width: 150,
-      render: (user: ReturnUser) =>
-        user.updated_at ? convertSupabaseTime(user.updated_at) : '',
+      render: (user: ReturnUser) => (user.updated_at ? convertSupabaseTime(user.updated_at) : ''),
     },
   ];
 };
