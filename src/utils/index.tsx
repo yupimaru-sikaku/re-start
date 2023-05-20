@@ -146,7 +146,8 @@ export const excludingSelected = (
 };
 
 // 任意の年月、任意のスタッフのスケジュールから各週の勤務時間の配列を取得する
-export const splitByWeeks = (content_arr: ScheduleContentArr[], year: number, month: number): number[] => {
+export const splitByWeeks = (schedule: ReturnSchedule | undefined, year: number, month: number): number[] => {
+  if (!schedule) return [];
   const weeksInMonth = [];
   const firstDate = new Date(year, month - 1, 1);
   const lastDate = new Date(year, month, 0);
@@ -163,7 +164,7 @@ export const splitByWeeks = (content_arr: ScheduleContentArr[], year: number, mo
     const weekEndDateEndOfDay = new Date(weekEndDate);
     weekEndDateEndOfDay.setHours(23, 59, 59, 999);
 
-    const weekEvents = content_arr.filter((event) => {
+    const weekEvents = schedule?.content_arr.filter((event) => {
       const startDate = new Date(event.start_time);
       const endDate = new Date(event.end_time);
 

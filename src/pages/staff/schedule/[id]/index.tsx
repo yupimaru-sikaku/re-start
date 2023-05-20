@@ -88,7 +88,7 @@ const SchedulePage: NextPage = () => {
       return sum + Number(calcWorkTime(content.start_time, content.end_time));
     }, 0) || 0;
 
-  const timePerWeekList = splitByWeeks(scheduleData.content_arr, year, month);
+  const timePerWeekList = splitByWeeks(scheduleData, year, month);
 
   return (
     <DashboardLayout title={`勤怠状況（${selectedStaffName}）`}>
