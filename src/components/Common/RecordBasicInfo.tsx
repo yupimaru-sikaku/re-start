@@ -21,7 +21,6 @@ export const RecordBasicInfo: NextPage<Props> = ({ type, form, recordList, amoun
   const userListExcludingSelected = useMemo(() => {
     return excludingSelected(userList, recordList, form);
   }, [userList, recordList, form.values.year, form.values.month]);
-
   return (
     <SimpleGrid
       breakpoints={[

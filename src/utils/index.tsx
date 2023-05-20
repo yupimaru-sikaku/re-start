@@ -1,5 +1,9 @@
+import { ReturnAccompany } from '@/ducks/accompany/slice';
+import { ReturnBehavior } from '@/ducks/behavior/slice';
 import { CreateHomeCare, ReturnHomeCare } from '@/ducks/home-care/slice';
+import { ReturnMobility } from '@/ducks/mobility/slice';
 import { ReturnUser } from '@/ducks/user/slice';
+import { UseFormReturnType } from '@mantine/form';
 
 export const PAGE_SIZE = 10;
 
@@ -10,8 +14,7 @@ export const kyotakuColor = '#0023ff';
 
 // 法人IDを自動生成
 export const generateRandomCorporateId = (): string => {
-  const characters =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const corporateIdLength = 7;
 
   let corporateId = '';
@@ -44,11 +47,7 @@ export const convertSupabaseTime = (supabaseTime: string): string => {
 // date.getDay()で取得した数字を曜日に変換
 // Date型の日付をString型の曜日に変換
 const weekItems = ['日', '月', '火', '水', '木', '金', '土'];
-export const convertWeekItem = (
-  year: number,
-  month: number,
-  day: number
-): string => {
+export const convertWeekItem = (year: number, month: number, day: number): string => {
   if (day) {
     const targetDate = new Date(year, month - 1, day);
     return weekItems[targetDate.getDay()];
@@ -70,17 +69,12 @@ export const convertTime = (date: string): string => {
   const convertDate = new Date(date);
   const hours = convertDate.getHours();
   const minutes = convertDate.getMinutes();
-  const timeString = `${hours < 10 ? ' ' : ''}${hours}:${
-    minutes < 10 ? '0' : ''
-  }${minutes}`;
+  const timeString = `${hours < 10 ? ' ' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
   return timeString;
 };
 
 // String型の開始時間と終了時間をそれぞれDate型で返す
-export const convertStartEndTimeFromString2Date = (
-  startTime: string,
-  endTime: string
-): [Date | null, Date | null] => {
+export const convertStartEndTimeFromString2Date = (startTime: string, endTime: string): [Date | null, Date | null] => {
   if (!startTime || !endTime) return [null, null];
   const startDate = new Date(startTime);
   const endDate = new Date(endTime);
@@ -98,18 +92,14 @@ export const formatServiceContent = (serviceContent: string): string => {
 };
 
 // （居宅介護専用）記録票のオブジェクトから各サービスの合計算定時間を算出
-export const calcEachWorkTime = (
-  contentArr: CreateHomeCare['content_arr'] | ReturnHomeCare['content_arr']
-) => {
+export const calcEachWorkTime = (contentArr: CreateHomeCare['content_arr'] | ReturnHomeCare['content_arr']) => {
   let kaziAmount = 0;
   let shintaiAmount = 0;
   let withTsuinAmount = 0;
   let tsuinAmount = 0;
 
   (contentArr || []).map((content) => {
-    const workTime = Number(
-      calcWorkTime(content.start_time!, content.end_time!)
-    );
+    const workTime = Number(calcWorkTime(content.start_time!, content.end_time!));
 
     switch (content.service_content) {
       case '家事援助':
@@ -137,16 +127,14 @@ export const calcEachWorkTime = (
 // 任意の年月で、記録票に既に存在してる場合はリストから除外
 export const excludingSelected = (
   userList: ReturnUser[],
-  recordList: any,
-  form: any
+  recordList: ReturnAccompany[] | ReturnBehavior[] | ReturnMobility[],
+  form: UseFormReturnType<any>
 ): { value: string; disabled: boolean }[] => {
   return userList.map((user) => {
-    const isDisabled = recordList.some((record: any) => {
+    const isDisabled = recordList.some((record) => {
       return (
         // 等価演算子になっていることに注意
-        record.year == form.values.year &&
-        record.month == form.values.month &&
-        record.name === user.name
+        record.year == form.values.year && record.month == form.values.month && record.user_name === user.name
       );
     });
     return {
