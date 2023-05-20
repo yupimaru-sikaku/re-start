@@ -1,6 +1,8 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { PostgrestError } from '@supabase/supabase-js';
 import { scheduleApi } from './query';
+import { accompanyApi } from '../accompany/query';
+import { ReturnAccompany } from '../accompany/slice';
 
 export type ScheduleContentArr = {
   work_date: number; // サービス提供日
@@ -67,6 +69,13 @@ const scheduleSlice = createSlice({
       scheduleApi.endpoints.getScheduleList.matchFulfilled,
       (state, action: PayloadAction<ReturnSchedule[]>) => {
         state.scheduleList = action.payload;
+      }
+    );
+    builder.addMatcher(
+      accompanyApi.endpoints.createAccompany.matchFulfilled,
+      (state, action: PayloadAction<ReturnAccompany>) => {
+        // 同行援護を作成したらスケジュールリストにも追加されるようにする
+        // 移動支援、行動援護も一緒
       }
     );
     builder.addMatcher(scheduleApi.endpoints.getSchedule.matchFulfilled, (state, action: PayloadAction<ReturnSchedule>) => {

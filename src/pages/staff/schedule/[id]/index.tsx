@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { NextPage } from 'next';
-import { useRouter } from 'next/router';
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
 import { Badge, LoadingOverlay, Paper, SimpleGrid, Space, Text } from '@mantine/core';
@@ -12,8 +11,9 @@ import { CustomToolbar } from '@/components/StaffSchedule/CustomToolbar';
 import { ScheduleContentArr } from '@/ducks/schedule/slice';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
 import { useGetScheduleQuery } from '@/ducks/schedule/query';
-import { dokoColor, idoColor, kodoColor, kyotakuColor } from '@/utils';
+import { calcWorkTime, dokoColor, idoColor, kodoColor, kyotakuColor, splitByWeeks } from '@/utils';
 import { useSelector } from '@/ducks/store';
+import { useRouter } from 'next/router';
 
 moment.locale('ja');
 const localizer = momentLocalizer(moment);
@@ -23,21 +23,21 @@ const SchedulePage: NextPage = () => {
   const staffId = router.query.id as string;
   const currentDate = new Date();
   const [year, setYeart] = useState(currentDate.getFullYear());
-  const [month, setMonth] = useState(currentDate.getMonth());
+  const [month, setMonth] = useState(currentDate.getMonth() + 1);
   const staffList = useSelector((state) => state.staff.staffList);
-  const selectedStaffName = staffList.find((staff) => staff.id === staffId)?.name || '';
-  const staffData = useSelector((state) => state.staff.staffData);
+  const selectedStaff = staffList.find((staff) => staff.id === staffId);
+  const selectedStaffName = selectedStaff?.name || '';
   const scheduleData = useSelector((state) => state.schedule.scheduleData);
   const params = useMemo(() => {
-    if (staffData) {
+    if (selectedStaff) {
       return {
-        staff_id: staffData.id,
-        year: currentDate.getFullYear(),
-        month: currentDate.getMonth() + 1,
+        staff_id: selectedStaff.id,
+        year,
+        month,
       };
     }
     return null;
-  }, [year, month, staffData]);
+  }, [year, month, selectedStaff]);
   const { isLoading: scheduleLoading } = useGetScheduleQuery(params || skipToken);
 
   const eventStyleGetter = (event: { color: string }) => ({
@@ -71,7 +71,7 @@ const SchedulePage: NextPage = () => {
         bgColor = kyotakuColor;
       }
       return {
-        title: `${content.user_name}[${content.service_content}]`,
+        title: `${content.user_name}`,
         start: new Date(content.start_time),
         end: new Date(content.end_time),
         textColor: 'black',
@@ -80,12 +80,29 @@ const SchedulePage: NextPage = () => {
     });
   };
 
+  const amountTime =
+    scheduleData?.content_arr.reduce((sum: number, content: ScheduleContentArr) => {
+      if (content.start_time === '' || content.end_time === '') {
+        return sum;
+      }
+      return sum + Number(calcWorkTime(content.start_time, content.end_time));
+    }, 0) || 0;
+
+  const timePerWeekList = splitByWeeks(scheduleData.content_arr, year, month);
+
   return (
     <DashboardLayout title={`勤怠状況（${selectedStaffName}）`}>
       <LoadingOverlay className="relative" visible={scheduleLoading} />
       <PageContainer title={`勤怠状況（${selectedStaffName}）`} fluid>
         {scheduleData ? (
           <>
+            <Text>
+              {month}月の合計時間：{amountTime}時間
+            </Text>
+            {timePerWeekList.map((time, index) => (
+              <Text key={index}>{`${index + 1}週目：${time.toString()}時間`}</Text>
+            ))}
+            <Space h="sm" />
             <Calendar
               localizer={localizer}
               events={formatScheduleArr(scheduleData.content_arr)}

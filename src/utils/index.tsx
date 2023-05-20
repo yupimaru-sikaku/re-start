@@ -2,6 +2,7 @@ import { ReturnAccompany } from '@/ducks/accompany/slice';
 import { ReturnBehavior } from '@/ducks/behavior/slice';
 import { CreateHomeCare, ReturnHomeCare } from '@/ducks/home-care/slice';
 import { ReturnMobility } from '@/ducks/mobility/slice';
+import { ReturnSchedule, ScheduleContentArr } from '@/ducks/schedule/slice';
 import { ReturnUser } from '@/ducks/user/slice';
 import { UseFormReturnType } from '@mantine/form';
 
@@ -142,4 +143,47 @@ export const excludingSelected = (
       disabled: isDisabled,
     };
   });
+};
+
+// 任意の年月、任意のスタッフのスケジュールから各週の勤務時間の配列を取得する
+export const splitByWeeks = (content_arr: ScheduleContentArr[], year: number, month: number): number[] => {
+  const weeksInMonth = [];
+  const firstDate = new Date(year, month - 1, 1);
+  const lastDate = new Date(year, month, 0);
+
+  let weekStartDate = new Date(firstDate);
+  weekStartDate.setDate(firstDate.getDate() - firstDate.getDay());
+
+  while (weekStartDate <= lastDate) {
+    const weekEndDate = new Date(weekStartDate);
+    weekEndDate.setDate(weekStartDate.getDate() + 6);
+    if (weekEndDate > lastDate) {
+      weekEndDate.setDate(lastDate.getDate());
+    }
+    const weekEndDateEndOfDay = new Date(weekEndDate);
+    weekEndDateEndOfDay.setHours(23, 59, 59, 999);
+
+    const weekEvents = content_arr.filter((event) => {
+      const startDate = new Date(event.start_time);
+      const endDate = new Date(event.end_time);
+
+      return (
+        (startDate >= weekStartDate && startDate < weekEndDateEndOfDay) ||
+        (endDate > weekStartDate && endDate <= weekEndDateEndOfDay) ||
+        (startDate < weekStartDate && endDate > weekEndDateEndOfDay)
+      );
+    });
+
+    weeksInMonth.push(weekEvents);
+
+    weekStartDate = new Date(weekEndDate);
+    weekStartDate.setDate(weekEndDate.getDate() + 1);
+    weekStartDate.setHours(0, 0, 0, 0);
+  }
+
+  const timePerWeekList = weeksInMonth.map((content) => {
+    return content.reduce((total, x) => total + Number(calcWorkTime(x.start_time, x.end_time)), 0);
+  });
+
+  return timePerWeekList;
 };
