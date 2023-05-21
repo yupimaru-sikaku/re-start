@@ -54,7 +54,6 @@ export const UserTableList = ({ loading, dataList }: Props) => {
       </SimpleGrid>
       <Space h="lg" />
       <DataTable
-        minHeight={200}
         noRecordsText="対象のデータがありません"
         sx={{ maxWidth: '1170px' }}
         fetching={loading}

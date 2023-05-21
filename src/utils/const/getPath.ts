@@ -1,5 +1,7 @@
 export const PATH = {
+  // トップ
   INDEX: '/',
+  // 認証系
   SIGN_UP: '/auth/sign-up',
   SIGN_IN: '/auth/sign-in',
   CONFIRM_EMAIL: '/auth/confirm-email',
@@ -12,7 +14,9 @@ export const PATH = {
   STAFF: '/staff',
   STAFF_REGISTER: '/staff/register',
   STAFF_EDIT: '/staff/[id]/edit',
-  STAFF_SCHEDULE: '/staff/schedule/[id]',
+  // シフト管理
+  SCHEDULE: '/schedule',
+  SCHEDULE_DETAIL: '/schedule/[id]',
   // 同行援護
   ACCOMPANY: '/accompany',
   ACCOMPANY_CREATE: '/accompany/create',
@@ -31,10 +35,7 @@ export const PATH = {
   MOBILITY_EDIT: '/mobility/[id]/edit',
 } as const;
 
-export const getPath = (
-  pathKey: keyof typeof PATH,
-  ...args: string[]
-) => {
+export const getPath = (pathKey: keyof typeof PATH, ...args: string[]) => {
   const val = PATH[pathKey];
 
   if (!args) {

@@ -6,7 +6,6 @@ import { IconEdit } from '@tabler/icons';
 import { convertSupabaseTime } from '@/utils';
 import { DataTable } from 'mantine-datatable';
 import { ReturnStaff } from '@/ducks/staff/slice';
-import { CustomButton } from '../Common/CustomButton';
 
 type Props = {
   loading: boolean;
@@ -55,9 +54,8 @@ export const StaffTableList = ({ loading, dataList }: Props) => {
       </SimpleGrid>
       <Space h="lg" />
       <DataTable
-        minHeight={200}
         noRecordsText="対象のデータがありません"
-        sx={{ maxWidth: '1080px' }}
+        sx={{ maxWidth: '980px' }}
         fetching={loading}
         striped
         highlightOnHover
@@ -116,7 +114,7 @@ export const StaffTableList = ({ loading, dataList }: Props) => {
             ),
           },
           {
-            accessor: 'iitsumusya',
+            accessor: 'zitsumusya',
             width: 70,
             title: '実務者',
             render: (staff: ReturnStaff) => (
@@ -133,20 +131,6 @@ export const StaffTableList = ({ loading, dataList }: Props) => {
               <Group position="center">
                 <Checkbox readOnly checked={staff.is_kaigo} />
               </Group>
-            ),
-          },
-          {
-            accessor: 'move',
-            title: '勤怠状況',
-            width: 100,
-            render: (staff: ReturnStaff) => (
-              <Link href={getPath('STAFF_SCHEDULE', staff.id)}>
-                <a>
-                  <CustomButton color="cyan" variant="light">
-                    勤怠状況
-                  </CustomButton>
-                </a>
-              </Link>
             ),
           },
           {

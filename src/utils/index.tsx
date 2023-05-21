@@ -7,6 +7,8 @@ import { ReturnUser } from '@/ducks/user/slice';
 import { UseFormReturnType } from '@mantine/form';
 
 export const PAGE_SIZE = 10;
+export const monthList = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+export const yearList = ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027'];
 
 export const dokoColor = '#008000';
 export const kodoColor = '#fd7e00';

@@ -1,23 +1,20 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { CustomButton } from './CustomButton';
-import { ActionIcon, Group, Radio, Select, SimpleGrid, Space, TextInput } from '@mantine/core';
 import Link from 'next/link';
-import { PATH, getPath } from '@/utils/const/getPath';
-import { IconEdit } from '@tabler/icons';
-import { convertSupabaseTime, monthList, yearList } from '@/utils';
+import { ActionIcon, Group, Radio, Select, SimpleGrid, Space, TextInput } from '@mantine/core';
 import { DataTable } from 'mantine-datatable';
-import { ReturnAccompany } from '@/ducks/accompany/slice';
+import { IconEye } from '@tabler/icons';
+import { ReturnSchedule } from '@/ducks/schedule/slice';
+import { convertSupabaseTime, monthList, yearList } from '@/utils';
+import { getPath } from '@/utils/const/getPath';
 
 type Props = {
-  path: keyof typeof PATH;
   loading: boolean;
-  dataList?: ReturnAccompany[];
+  dataList?: ReturnSchedule[];
 };
 
-export const TableList = ({ path, loading, dataList }: Props) => {
+const ScheduleTableList = ({ loading, dataList }: Props) => {
   const PAGE_SIZE = 10;
   const currentDate = new Date();
-
   const [page, setPage] = useState(1);
   const from = useMemo(() => {
     return dataList ? (page - 1) * PAGE_SIZE : 0;
@@ -33,7 +30,7 @@ export const TableList = ({ path, loading, dataList }: Props) => {
   const [searchParamObj, setSearchParamObj] = useState({
     year: currentDate.getFullYear(),
     month: currentDate.getMonth() + 1,
-    userName: '',
+    staffName: '',
   });
 
   const handleChangeSearchObj = useCallback((value: string, field: keyof typeof searchParamObj) => {
@@ -49,22 +46,10 @@ export const TableList = ({ path, loading, dataList }: Props) => {
       (record) =>
         record.year.toString().includes(searchParamObj.year.toString()) &&
         record.month.toString().includes(searchParamObj.month.toString()) &&
-        record.user_name.includes(searchParamObj.userName)
+        record.staff_name.includes(searchParamObj.staffName)
     );
     setRecords(filteredRecords);
   }, [searchParamObj, originalRecordList]);
-
-  const handlePDFDownload = async () => {
-    // const pdfBytes = await CreatePdf(
-    //   '/home_care_records.pdf',
-    //   Mobility
-    // );
-    // const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    // const link = document.createElement('a');
-    // link.href = URL.createObjectURL(blob);
-    // link.download = `${Mobility.name}.pdf`;
-    // link.click();
-  };
 
   return (
     <>
@@ -76,9 +61,9 @@ export const TableList = ({ path, loading, dataList }: Props) => {
         ]}
       >
         <TextInput
-          label="利用者名"
-          value={searchParamObj.userName}
-          onChange={(e) => handleChangeSearchObj(e.target.value, 'userName')}
+          label="スタッフ名"
+          value={searchParamObj.staffName}
+          onChange={(e) => handleChangeSearchObj(e.target.value, 'staffName')}
         />
         <Select
           label="西暦"
@@ -100,7 +85,7 @@ export const TableList = ({ path, loading, dataList }: Props) => {
       <Space h="lg" />
       <DataTable
         noRecordsText="対象のデータがありません"
-        sx={{ maxWidth: '650px' }}
+        sx={{ maxWidth: '470px' }}
         fetching={loading}
         striped
         highlightOnHover
@@ -113,27 +98,17 @@ export const TableList = ({ path, loading, dataList }: Props) => {
         columns={[
           { accessor: 'year', title: '西暦', width: 60 },
           { accessor: 'month', title: '月', width: 50 },
-          { accessor: 'user_name', title: '利用者名', width: 150 },
-          {
-            accessor: 'download',
-            title: 'ダウンロード',
-            width: 130,
-            render: (service: any) => (
-              <CustomButton color="cyan" variant="light" onClick={() => handlePDFDownload()}>
-                ダウンロード
-              </CustomButton>
-            ),
-          },
+          { accessor: 'staff_name', title: 'スタッフ名', width: 110 },
           {
             accessor: 'actions',
             title: 'アクション',
             width: 90,
-            render: (service: any) => (
+            render: (schedule: ReturnSchedule) => (
               <Group spacing={4} position="center" noWrap>
-                <Link href={getPath(path, service.id)}>
+                <Link href={getPath('SCHEDULE_DETAIL', schedule.id)}>
                   <a>
-                    <ActionIcon color="blue">
-                      <IconEdit size={20} />
+                    <ActionIcon color="green">
+                      <IconEye size={20} />
                     </ActionIcon>
                   </a>
                 </Link>
@@ -144,10 +119,12 @@ export const TableList = ({ path, loading, dataList }: Props) => {
             accessor: 'updatedAt',
             title: '更新日時',
             width: 150,
-            render: (service: any) => (service.updated_at ? convertSupabaseTime(service.updated_at) : ''),
+            render: (schedule: ReturnSchedule) => convertSupabaseTime(schedule.updated_at),
           },
         ]}
       />
     </>
   );
 };
+
+export default ScheduleTableList;

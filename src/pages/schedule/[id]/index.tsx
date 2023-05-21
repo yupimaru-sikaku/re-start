@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { NextPage } from 'next';
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
@@ -9,8 +9,6 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'moment/locale/ja';
 import { CustomToolbar } from '@/components/StaffSchedule/CustomToolbar';
 import { ScheduleContentArr } from '@/ducks/schedule/slice';
-import { skipToken } from '@reduxjs/toolkit/dist/query';
-import { useGetScheduleQuery } from '@/ducks/schedule/query';
 import { calcWorkTime, dokoColor, idoColor, kodoColor, kyotakuColor, splitByWeeks } from '@/utils';
 import { useSelector } from '@/ducks/store';
 import { useRouter } from 'next/router';
@@ -18,27 +16,15 @@ import { useRouter } from 'next/router';
 moment.locale('ja');
 const localizer = momentLocalizer(moment);
 
-const SchedulePage: NextPage = () => {
+const ScheduleDetailPage: NextPage = () => {
   const router = useRouter();
-  const staffId = router.query.id as string;
+  const scheduleId = router.query.id as string;
   const currentDate = new Date();
   const [year, setYeart] = useState(currentDate.getFullYear());
   const [month, setMonth] = useState(currentDate.getMonth() + 1);
-  const staffList = useSelector((state) => state.staff.staffList);
-  const selectedStaff = staffList.find((staff) => staff.id === staffId);
-  const selectedStaffName = selectedStaff?.name || '';
-  const scheduleData = useSelector((state) => state.schedule.scheduleData);
-  const params = useMemo(() => {
-    if (selectedStaff) {
-      return {
-        staff_id: selectedStaff.id,
-        year,
-        month,
-      };
-    }
-    return null;
-  }, [year, month, selectedStaff]);
-  const { isLoading: scheduleLoading } = useGetScheduleQuery(params || skipToken);
+  const scheduleList = useSelector((state) => state.schedule.scheduleList);
+  const selectedSchedule = scheduleList.find((schedule) => schedule.id === scheduleId);
+  const staffName = selectedSchedule?.staff_name || '';
 
   const eventStyleGetter = (event: { color: string }) => ({
     style: {
@@ -81,31 +67,39 @@ const SchedulePage: NextPage = () => {
   };
 
   const amountTime =
-    scheduleData?.content_arr.reduce((sum: number, content: ScheduleContentArr) => {
+    selectedSchedule?.content_arr.reduce((sum: number, content: ScheduleContentArr) => {
       if (content.start_time === '' || content.end_time === '') {
         return sum;
       }
       return sum + Number(calcWorkTime(content.start_time, content.end_time));
     }, 0) || 0;
 
-  const timePerWeekList = splitByWeeks(scheduleData, year, month);
+  const timePerWeekList = splitByWeeks(selectedSchedule, year, month);
 
   return (
-    <DashboardLayout title={`勤怠状況（${selectedStaffName}）`}>
-      <LoadingOverlay className="relative" visible={scheduleLoading} />
-      <PageContainer title={`勤怠状況（${selectedStaffName}）`} fluid>
-        {scheduleData ? (
+    <DashboardLayout title={`勤怠状況（${staffName}）`}>
+      <LoadingOverlay className="relative" visible={!selectedSchedule} />
+      <PageContainer title={`勤怠状況（${staffName}）`} fluid>
+        {selectedSchedule && (
           <>
             <Text>
               {month}月の合計時間：{amountTime}時間
             </Text>
-            {timePerWeekList.map((time, index) => (
-              <Text key={index}>{`${index + 1}週目：${time.toString()}時間`}</Text>
-            ))}
+            <SimpleGrid
+              breakpoints={[
+                { minWidth: 'sm', cols: 2 },
+                { minWidth: 'md', cols: 6 },
+                { minWidth: 'xl', cols: 8 },
+              ]}
+            >
+              {timePerWeekList.map((time, index) => (
+                <Text key={index}>{`${index + 1}週目：${time.toString()}時間`}</Text>
+              ))}
+            </SimpleGrid>
             <Space h="sm" />
             <Calendar
               localizer={localizer}
-              events={formatScheduleArr(scheduleData.content_arr)}
+              events={formatScheduleArr(selectedSchedule.content_arr)}
               defaultView="week"
               views={['week']}
               formats={formats}
@@ -131,14 +125,10 @@ const SchedulePage: NextPage = () => {
               </Badge>
             </SimpleGrid>
           </>
-        ) : (
-          <Paper shadow="xs" p="md">
-            <Text>データが存在しません</Text>
-          </Paper>
         )}
       </PageContainer>
     </DashboardLayout>
   );
 };
 
-export default SchedulePage;
+export default ScheduleDetailPage;
