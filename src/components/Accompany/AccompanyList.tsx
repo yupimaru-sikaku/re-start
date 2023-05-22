@@ -4,6 +4,7 @@ import {
   useGetAccompanyListByCorporateIdQuery,
   useGetAccompanyListByLoginIdQuery,
   useGetAccompanyListQuery,
+  useUpdateAccompanyMutation,
 } from '@/ducks/accompany/query';
 import { TableRecordList } from '../Common/TableRecordList';
 
@@ -28,6 +29,9 @@ export const AccompanyList = () => {
       return data3;
     }
   }, [data1, data2, data3]);
+  const [updateAccompany] = useUpdateAccompanyMutation();
 
-  return <TableRecordList path="ACCOMPANY_EDIT" loading={accompanyLoading} dataList={accompanyList} />;
+  return (
+    <TableRecordList path="ACCOMPANY_EDIT" loading={accompanyLoading} dataList={accompanyList} updateRecord={updateAccompany} />
+  );
 };

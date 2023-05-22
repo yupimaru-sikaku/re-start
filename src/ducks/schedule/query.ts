@@ -22,9 +22,7 @@ export const scheduleApi = createApi({
      */
     getScheduleList: builder.query<ReturnSchedule[], void>({
       queryFn: async (): Promise<any> => {
-        const { data, error } = await supabase
-          .from(getDb('SCHEDULE'))
-          .select('*');
+        const { data, error } = await supabase.from(getDb('SCHEDULE')).select('*');
         return { data, error };
       },
     }),
@@ -50,13 +48,8 @@ export const scheduleApi = createApi({
      * @param {CreateScheduleParams} params
      * @return {CreateScheduleResult}
      */
-    createSchedule: builder.mutation<
-      CreateScheduleResult,
-      CreateScheduleParams
-    >({
-      queryFn: async (
-        params: CreateScheduleParams
-      ): Promise<CreateScheduleResult> => {
+    createSchedule: builder.mutation<CreateScheduleResult, CreateScheduleParams>({
+      queryFn: async (params: CreateScheduleParams): Promise<CreateScheduleResult> => {
         const { error } = await supabase.from(getDb('SCHEDULE')).insert({
           staff_id: params.staff_id,
           staff_name: params.staff_name,
@@ -66,10 +59,6 @@ export const scheduleApi = createApi({
         });
         return { error };
       },
-      invalidatesTags: [
-        { type: 'Schedule', id: 'getSchedule' },
-        { type: 'Schedule', id: 'getScheduleList' },
-      ],
     }),
     /**
      * PUP/スケジュールを更新
@@ -77,9 +66,7 @@ export const scheduleApi = createApi({
      * @return {UpdateScheduleResult}
      */
     updateSchedule: builder.mutation({
-      queryFn: async (
-        params: UpdateScheduleParams
-      ): Promise<UpdateScheduleResult> => {
+      queryFn: async (params: UpdateScheduleParams): Promise<UpdateScheduleResult> => {
         const { error } = await supabase
           .from(getDb('SCHEDULE'))
           .update({
@@ -92,17 +79,9 @@ export const scheduleApi = createApi({
           .eq('id', params.id);
         return { error };
       },
-      invalidatesTags: [
-        { type: 'Schedule', id: 'getSchedule' },
-        { type: 'Schedule', id: 'getScheduleList' },
-      ],
     }),
   }),
 });
 
-export const {
-  useGetScheduleListQuery,
-  useGetScheduleQuery,
-  useCreateScheduleMutation,
-  useUpdateScheduleMutation,
-} = scheduleApi;
+export const { useGetScheduleListQuery, useGetScheduleQuery, useCreateScheduleMutation, useUpdateScheduleMutation } =
+  scheduleApi;

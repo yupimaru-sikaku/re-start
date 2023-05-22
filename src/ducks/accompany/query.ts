@@ -102,8 +102,8 @@ export const accompanyApi = createApi({
      * @return {UpdateAccompanyResult}
      */
     updateAccompany: builder.mutation({
-      queryFn: async (params: UpdateAccompanyParams): Promise<UpdateAccompanyResult> => {
-        const { error } = await supabase
+      queryFn: async (params: UpdateAccompanyParams): Promise<any> => {
+        const { data, error } = await supabase
           .from(getDb('ACCOMPANY'))
           .update({
             corporate_id: params.corporate_id,
@@ -115,7 +115,9 @@ export const accompanyApi = createApi({
             content_arr: params.content_arr,
             status: params.status,
           })
-          .eq('id', params.id);
+          .eq('id', params.id)
+          .select();
+        if (!error && data[0]) return { data: data[0] };
         return { error };
       },
     }),

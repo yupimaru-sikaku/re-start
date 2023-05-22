@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import {
-  useDeleteBehaviorMutation,
   useGetBehaviorListByCorporateIdQuery,
   useGetBehaviorListByLoginIdQuery,
   useGetBehaviorListQuery,
+  useUpdateBehaviorMutation,
 } from '@/ducks/behavior/query';
 import { useSelector } from '@/ducks/store';
 import { RootState } from '@/ducks/root-reducer';
@@ -30,7 +30,9 @@ export const BehaviorList = () => {
       return data3;
     }
   }, [data1, data2, data3]);
-  const [deleteBehavior] = useDeleteBehaviorMutation();
+  const [updateBehavior] = useUpdateBehaviorMutation();
 
-  return <TableRecordList path="BEHAVIOR_EDIT" loading={behaviorLoading} dataList={behaviorList} />;
+  return (
+    <TableRecordList path="BEHAVIOR_EDIT" loading={behaviorLoading} dataList={behaviorList} updateRecord={updateBehavior} />
+  );
 };

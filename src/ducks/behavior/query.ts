@@ -95,11 +95,6 @@ export const behaviorApi = createApi({
         if (!error && data[0]) return { data: data[0] };
         return { error };
       },
-      invalidatesTags: [
-        { type: 'BehaviorApi', id: 'getBehaviorList' },
-        { type: 'BehaviorApi', id: 'getBehaviorListByCorporateId' },
-        { type: 'BehaviorApi', id: 'getBehaviorListByLoginId' },
-      ],
     }),
     /**
      * PUT/IDの該当する実績記録票を更新
@@ -107,8 +102,8 @@ export const behaviorApi = createApi({
      * @return {UpdateBehaviorResult}
      */
     updateBehavior: builder.mutation({
-      queryFn: async (params: UpdateBehaviorParams): Promise<UpdateBehaviorResult> => {
-        const { error } = await supabase
+      queryFn: async (params: UpdateBehaviorParams): Promise<any> => {
+        const { data, error } = await supabase
           .from(getDb('BEHAVIOR'))
           .update({
             corporate_id: params.corporate_id,
@@ -120,14 +115,11 @@ export const behaviorApi = createApi({
             content_arr: params.content_arr,
             status: params.status,
           })
-          .eq('id', params.id);
+          .eq('id', params.id)
+          .select();
+        if (!error && data[0]) return { data: data[0] };
         return { error };
       },
-      invalidatesTags: [
-        { type: 'BehaviorApi', id: 'getBehaviorList' },
-        { type: 'BehaviorApi', id: 'getBehaviorListByCorporateId' },
-        { type: 'BehaviorApi', id: 'getBehaviorListByLoginId' },
-      ],
     }),
     /**
      * PUT/IDに実績記録票を理論削除
@@ -139,11 +131,6 @@ export const behaviorApi = createApi({
         const { error } = await supabase.from(getDb('BEHAVIOR')).update({ is_display: false }).eq('id', id);
         return { error };
       },
-      invalidatesTags: [
-        { type: 'BehaviorApi', id: 'getBehaviorList' },
-        { type: 'BehaviorApi', id: 'getBehaviorListByCorporateId' },
-        { type: 'BehaviorApi', id: 'getBehaviorListByLoginId' },
-      ],
     }),
   }),
 });

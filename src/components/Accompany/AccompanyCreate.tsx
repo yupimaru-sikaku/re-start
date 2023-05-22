@@ -84,7 +84,7 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
     <Stack>
       <LoadingOverlay className="relative" visible={accompanyLoading} />
       <Paper withBorder shadow="md" p={30} radius="md">
-        <CustomStepper />
+        <CustomStepper statusId={accompanyData?.status} />
       </Paper>
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
         <Paper withBorder shadow="md" p={30} radius="md">

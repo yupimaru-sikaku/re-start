@@ -107,6 +107,15 @@ const accompanySlice = createSlice({
         state.accompanyList = [action.payload, ...state.accompanyList];
       }
     );
+    builder.addMatcher(
+      accompanyApi.endpoints.updateAccompany.matchFulfilled,
+      (state, action: PayloadAction<ReturnAccompany>) => {
+        state.accompanyList = state.accompanyList.map((accompany) =>
+          accompany.id === action.payload.id ? action.payload : accompany
+        );
+        state.accompanyData = action.payload;
+      }
+    );
   },
 });
 

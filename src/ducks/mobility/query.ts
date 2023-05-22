@@ -102,8 +102,8 @@ export const mobilityApi = createApi({
      * @return {UpdateMobilityResult}
      */
     updateMobility: builder.mutation({
-      queryFn: async (params: UpdateMobilityParams): Promise<UpdateMobilityResult> => {
-        const { error } = await supabase
+      queryFn: async (params: UpdateMobilityParams): Promise<any> => {
+        const { data, error } = await supabase
           .from(getDb('MOBILITY'))
           .update({
             corporate_id: params.corporate_id,
@@ -115,7 +115,9 @@ export const mobilityApi = createApi({
             content_arr: params.content_arr,
             status: params.status,
           })
-          .eq('id', params.id);
+          .eq('id', params.id)
+          .select();
+        if (!error && data[0]) return { data: data[0] };
         return { error };
       },
     }),

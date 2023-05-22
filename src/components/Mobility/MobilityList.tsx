@@ -1,17 +1,16 @@
 import React, { useMemo } from 'react';
+import { useSelector } from '@/ducks/store';
 import {
-  useDeleteMobilityMutation,
   useGetMobilityListByCorporateIdQuery,
   useGetMobilityListByLoginIdQuery,
   useGetMobilityListQuery,
+  useUpdateMobilityMutation,
 } from '@/ducks/mobility/query';
-import { useSelector } from '@/ducks/store';
-import { RootState } from '@/ducks/root-reducer';
 import { TableRecordList } from '../Common/TableRecordList';
 
 export const MobilityList = () => {
-  const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
-  const mobilityList = useSelector((state: RootState) => state.mobility.mobilityList);
+  const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
+  const mobilityList = useSelector((state) => state.mobility.mobilityList);
   const data1 = useGetMobilityListQuery(undefined, {
     skip: loginProviderInfo.role !== 'admin',
   });
@@ -30,7 +29,9 @@ export const MobilityList = () => {
       return data3;
     }
   }, [data1, data2, data3]);
-  const [deleteMobility] = useDeleteMobilityMutation();
+  const [updateMobility] = useUpdateMobilityMutation();
 
-  return <TableRecordList path="MOBILITY_EDIT" loading={mobilityLoading} dataList={mobilityList} />;
+  return (
+    <TableRecordList path="MOBILITY_EDIT" loading={mobilityLoading} dataList={mobilityList} updateRecord={updateMobility} />
+  );
 };

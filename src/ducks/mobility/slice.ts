@@ -93,6 +93,12 @@ const mobilitySlice = createSlice({
     builder.addMatcher(mobilityApi.endpoints.createMobility.matchFulfilled, (state, action: PayloadAction<ReturnMobility>) => {
       state.mobilityList = [action.payload, ...state.mobilityList];
     });
+    builder.addMatcher(mobilityApi.endpoints.updateMobility.matchFulfilled, (state, action: PayloadAction<ReturnMobility>) => {
+      state.mobilityList = state.mobilityList.map((mobility) =>
+        mobility.id === action.payload.id ? action.payload : mobility
+      );
+      state.mobilityData = action.payload;
+    });
   },
 });
 
