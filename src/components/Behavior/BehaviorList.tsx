@@ -7,7 +7,7 @@ import {
 } from '@/ducks/behavior/query';
 import { useSelector } from '@/ducks/store';
 import { RootState } from '@/ducks/root-reducer';
-import { TableList } from '../Common/TableList';
+import { TableRecordList } from '../Common/TableRecordList';
 
 export const BehaviorList = () => {
   const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
@@ -32,5 +32,5 @@ export const BehaviorList = () => {
   }, [data1, data2, data3]);
   const [deleteBehavior] = useDeleteBehaviorMutation();
 
-  return <TableList path="BEHAVIOR_EDIT" loading={behaviorLoading} dataList={behaviorList} />;
+  return <TableRecordList path="BEHAVIOR_EDIT" loading={behaviorLoading} dataList={behaviorList} />;
 };

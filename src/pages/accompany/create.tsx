@@ -5,7 +5,7 @@ import { PageContainer } from '@/components/PageContainer';
 import { AccompanyCreate } from '@/components/Accompany/AccompanyCreate';
 import { useAuth } from '@/hooks/auth/useAuth';
 
-const AccompanyPage: NextPage = () => {
+const AccompanyCreatePage: NextPage = () => {
   useAuth();
   return (
     <DashboardLayout title="実績記録票作成（同行援護）">
@@ -16,4 +16,4 @@ const AccompanyPage: NextPage = () => {
   );
 };
 
-export default AccompanyPage;
+export default AccompanyCreatePage;

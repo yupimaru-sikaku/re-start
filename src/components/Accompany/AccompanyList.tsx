@@ -5,7 +5,7 @@ import {
   useGetAccompanyListByLoginIdQuery,
   useGetAccompanyListQuery,
 } from '@/ducks/accompany/query';
-import { TableList } from '../Common/TableList';
+import { TableRecordList } from '../Common/TableRecordList';
 
 export const AccompanyList = () => {
   const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
@@ -29,5 +29,5 @@ export const AccompanyList = () => {
     }
   }, [data1, data2, data3]);
 
-  return <TableList path="ACCOMPANY_EDIT" loading={accompanyLoading} dataList={accompanyList} />;
+  return <TableRecordList path="ACCOMPANY_EDIT" loading={accompanyLoading} dataList={accompanyList} />;
 };

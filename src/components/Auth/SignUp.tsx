@@ -15,28 +15,20 @@ import { useFocusTrap } from '@mantine/hooks';
 import { CustomTextInput } from 'src/components/Common/CustomTextInput';
 import { CustomPasswordInput } from '../Common/CustomPasswordInput';
 import { CustomButton } from 'src/components/Common/CustomButton';
-import {
-  validateCorporateName,
-  validateOfficeName,
-  validatePassword,
-} from '@/utils/validate/provider';
+import { validateCorporateName, validateOfficeName, validatePassword } from '@/utils/validate/provider';
 import { validateEmail } from 'src/utils/validate/common';
 import { useRouter } from 'next/router';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
 import { generateRandomCorporateId } from '@/utils';
-import {
-  useCreateProviderWithSignUpMutation,
-  useUpdateProviderMutation,
-} from '@/ducks/provider/query';
+import { useCreateProviderWithSignUpMutation, useUpdateProviderMutation } from '@/ducks/provider/query';
 import { CustomConfirm } from '../Common/CustomConfirm';
 
 export const SignUp = () => {
   const router = useRouter();
   const focusTrapRef = useFocusTrap();
   const [isLoading, setIsLoading] = useState(false);
-  const [createProviderWithSignUp] =
-    useCreateProviderWithSignUpMutation();
+  const [createProviderWithSignUp] = useCreateProviderWithSignUpMutation();
   const [updatePvider] = useUpdateProviderMutation();
   const form = useForm({
     initialValues: createInitialState,
@@ -57,10 +49,8 @@ export const SignUp = () => {
         const { error, text } = validatePassword(value);
         return error ? text : null;
       },
-      password_confirmation: (
-        value: string,
-        values: CreateProviderWithSignUpParams
-      ) => value !== values.password && 'パスワードが一致しません',
+      password_confirmation: (value: string, values: CreateProviderWithSignUpParams) =>
+        value !== values.password && 'パスワードが一致しません',
     },
   });
 
@@ -73,14 +63,11 @@ export const SignUp = () => {
         password: form.values.password,
         password_confirmation: form.values.password_confirmation,
       };
-      const { data: createAdminData, error: createAdminError } =
-        (await createProviderWithSignUp(
-          adminParams
-        )) as CreateProviderWithSignUpResult;
+      const { data: createAdminData, error: createAdminError } = (await createProviderWithSignUp(
+        adminParams
+      )) as CreateProviderWithSignUpResult;
       if (createAdminError) {
-        throw new Error(
-          `ユーザ情報の登録に失敗しました。${createAdminError.message}`
-        );
+        throw new Error(`ユーザ情報の登録に失敗しました。${createAdminError.message}`);
       }
       // 法人更新
       const corporate_id = generateRandomCorporateId();
@@ -93,13 +80,9 @@ export const SignUp = () => {
         email: form.values.email,
         role: form.values.role,
       };
-      const { error: createProviderError } = (await updatePvider(
-        providerParams
-      )) as UpdateProviderResult;
+      const { error: createProviderError } = (await updatePvider(providerParams)) as UpdateProviderResult;
       if (createProviderError) {
-        throw new Error(
-          `法人情報の登録に失敗しました。${createProviderError.message}`
-        );
+        throw new Error(`法人情報の登録に失敗しました。${createProviderError.message}`);
       }
       showNotification({
         icon: <IconCheckbox />,

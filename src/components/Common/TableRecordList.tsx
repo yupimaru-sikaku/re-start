@@ -14,7 +14,7 @@ type Props = {
   dataList?: ReturnAccompany[];
 };
 
-export const TableList = ({ path, loading, dataList }: Props) => {
+export const TableRecordList = ({ path, loading, dataList }: Props) => {
   const PAGE_SIZE = 10;
   const currentDate = new Date();
 

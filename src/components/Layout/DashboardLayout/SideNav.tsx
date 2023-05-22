@@ -24,7 +24,7 @@ import { supabase } from '@/libs/supabase/supabase';
 import Image from 'next/image';
 import { RootState } from '@/ducks/root-reducer';
 import { useAppDispatch, useSelector } from '@/ducks/store';
-import { IconCalendarEvent, IconLogout } from '@tabler/icons';
+import { IconBuilding, IconCalendarEvent, IconLogout } from '@tabler/icons';
 import { clearLoginProviderInfo } from '@/ducks/provider/slice';
 import { useRouter } from 'next/router';
 
@@ -110,6 +110,7 @@ const useStyles = createStyles<string, { collapsed?: boolean }>((theme, params, 
 
 export const ITEMS = [
   { href: getPath('INDEX'), label: 'ホーム', Icon: Home },
+  { href: getPath('PROVIDER'), label: '事業所情報', Icon: IconBuilding },
   { href: getPath('USER'), label: '利用者情報', Icon: Friends },
   { href: getPath('STAFF'), label: 'スタッフ情報', Icon: User },
   { href: getPath('SCHEDULE'), label: 'シフト管理', Icon: IconCalendarEvent },

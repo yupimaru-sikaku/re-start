@@ -1,6 +1,30 @@
+import { CreateProviderWithSignUpParams } from '@/ducks/provider/slice';
+import { validateEmail } from './common';
+
 type ReturnType = {
   error: boolean;
   text: string;
+};
+
+export const validate = {
+  corporate_name: (value: string) => {
+    const { error, text } = validateCorporateName(value);
+    return error ? text : null;
+  },
+  office_name: (value: string) => {
+    const { error, text } = validateOfficeName(value);
+    return error ? text : null;
+  },
+  email: (value: string) => {
+    const { error, text } = validateEmail(value);
+    return error ? text : null;
+  },
+  password: (value: string) => {
+    const { error, text } = validatePassword(value);
+    return error ? text : null;
+  },
+  password_confirmation: (value: string, values: CreateProviderWithSignUpParams) =>
+    value !== values.password && 'パスワードが一致しません',
 };
 
 export const validateCorporateName = (value: string): ReturnType => {

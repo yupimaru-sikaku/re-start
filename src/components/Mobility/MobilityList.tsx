@@ -7,7 +7,7 @@ import {
 } from '@/ducks/mobility/query';
 import { useSelector } from '@/ducks/store';
 import { RootState } from '@/ducks/root-reducer';
-import { TableList } from '../Common/TableList';
+import { TableRecordList } from '../Common/TableRecordList';
 
 export const MobilityList = () => {
   const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
@@ -32,5 +32,5 @@ export const MobilityList = () => {
   }, [data1, data2, data3]);
   const [deleteMobility] = useDeleteMobilityMutation();
 
-  return <TableList path="MOBILITY_EDIT" loading={mobilityLoading} dataList={mobilityList} />;
+  return <TableRecordList path="MOBILITY_EDIT" loading={mobilityLoading} dataList={mobilityList} />;
 };

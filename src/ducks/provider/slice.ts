@@ -17,36 +17,25 @@ export type Provider = {
   updated_at: string;
 };
 
-export type LoginProviderInfoType = Pick<
-  Provider,
-  'id' | 'corporate_id' | 'corporate_name' | 'office_name' | 'email' | 'role'
->;
+export type LoginProviderInfoType = Pick<Provider, 'id' | 'corporate_id' | 'corporate_name' | 'office_name' | 'email' | 'role'>;
 
 type initialStateType = {
   loginProviderInfo: LoginProviderInfoType;
+  providerList: ReturnProvider[];
 };
 
-export type CreateProviderWithSignUpParams = Pick<
-  Provider,
-  'email' | 'password' | 'password_confirmation'
->;
+export type CreateProviderParams = Omit<Provider, 'id' | 'is_display' | 'created_at' | 'updated_at'>;
+export type CreateProviderWithSignUpParams = Pick<Provider, 'email' | 'password' | 'password_confirmation'>;
 export type CreateProviderWithSignUpResult = AuthResponse;
 
 export type LoginParams = Pick<Provider, 'email' | 'password'>;
 export type LoginResult = any;
 
-export type ReturnProvider = Omit<
-  Provider,
-  'password' | 'password_confirmation'
->;
+export type ReturnProvider = Omit<Provider, 'password' | 'password_confirmation'>;
 
 export type UpdateProviderParams = Omit<
   Provider,
-  | 'is_display'
-  | 'password'
-  | 'password_confirmation'
-  | 'created_at'
-  | 'updated_at'
+  'is_display' | 'password' | 'password_confirmation' | 'created_at' | 'updated_at'
 >;
 export type UpdateProviderResult = {
   error: PostgrestError | null;
@@ -58,7 +47,7 @@ export const createInitialState = {
   corporate_name: '',
   office_name: '',
   email: '',
-  role: 'corporate' as const,
+  role: 'corporate' as Provider['role'],
   password: '',
   password_confirmation: '',
 };
@@ -77,6 +66,7 @@ export const initialState: initialStateType = {
     email: '',
     role: 'corporate',
   },
+  providerList: [],
 };
 
 const providerSlice = createSlice({
@@ -88,17 +78,23 @@ const providerSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addMatcher(providerApi.endpoints.login.matchFulfilled, (state, action: PayloadAction<ReturnProvider>) => {
+      state.loginProviderInfo.id = action.payload.id;
+      state.loginProviderInfo.email = action.payload.email;
+      state.loginProviderInfo.corporate_id = action.payload.corporate_id;
+      state.loginProviderInfo.corporate_name = action.payload.corporate_name;
+      state.loginProviderInfo.office_name = action.payload.office_name;
+      state.loginProviderInfo.role = action.payload.role;
+    });
     builder.addMatcher(
-      providerApi.endpoints.login.matchFulfilled,
-      (state, action: any) => {
-        state.loginProviderInfo.id = action.payload.id;
-        state.loginProviderInfo.email = action.payload.email;
-        state.loginProviderInfo.corporate_id = action.payload.corporate_id;
-        state.loginProviderInfo.corporate_name = action.payload.corporate_name;
-        state.loginProviderInfo.office_name = action.payload.office_name;
-        state.loginProviderInfo.role = action.payload.role;
+      providerApi.endpoints.getProviderListByCorporateId.matchFulfilled,
+      (state, action: PayloadAction<ReturnProvider[]>) => {
+        state.providerList = action.payload;
       }
     );
+    builder.addMatcher(providerApi.endpoints.updateProvider.matchFulfilled, (state, action: PayloadAction<ReturnProvider>) => {
+      state.providerList = [action.payload, ...state.providerList];
+    });
   },
 });
 

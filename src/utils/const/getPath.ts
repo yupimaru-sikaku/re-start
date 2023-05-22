@@ -6,6 +6,10 @@ export const PATH = {
   SIGN_IN: '/auth/sign-in',
   CONFIRM_EMAIL: '/auth/confirm-email',
   FORGOT_PASSWORD: '/auth/forgot-password',
+  // 事業所
+  PROVIDER: '/provider',
+  PROVIDER_CREATE: '/provider/create',
+  PROVIDER_EDIT: '/provider/[id]/edit',
   // 利用者
   USER: '/user',
   USER_REGISTER: '/user/register',
