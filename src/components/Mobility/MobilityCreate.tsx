@@ -1,4 +1,4 @@
-import { Divider, LoadingOverlay, Paper, Space, Stack } from '@mantine/core';
+import { Divider, LoadingOverlay, Overlay, Paper, Space, Stack } from '@mantine/core';
 import React, { useState } from 'react';
 import { CustomStepper } from '../Common/CustomStepper';
 import { CreateMobilityParams, createInitialState } from '@/ducks/mobility/slice';
@@ -19,6 +19,7 @@ import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
 import { getPath } from '@/utils/const/getPath';
 import { useSelector } from '@/ducks/store';
+import { useHasPermit } from '@/hooks/form/useHasPermit';
 
 type Props = {
   type: 'create' | 'edit';
@@ -29,6 +30,7 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
   const SERVICE_CONTENT = '移動支援';
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
+  const { hasPermit } = useHasPermit();
   const mobilityId = router.query.id as string;
   const [isLoading, setIsLoading] = useState(false);
   const mobilityList = useSelector((state) => state.mobility.mobilityList);
@@ -86,7 +88,8 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomStepper />
       </Paper>
-      <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
+      <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef} style={{ position: 'relative' }}>
+        {!hasPermit(mobilityData?.status || 0, 'enableEdit') && <Overlay opacity={0.6} color="#fff" zIndex={5} radius="md" />}
         <Paper withBorder shadow="md" p={30} radius="md">
           <RecordBasicInfo type={type} form={form} recordList={mobilityList} amountTime={amountTime} />
           <Space h="lg" />

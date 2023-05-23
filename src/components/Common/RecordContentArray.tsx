@@ -1,16 +1,8 @@
 import { ContentArr } from '@/ducks/accompany/slice';
 import { RootState } from '@/ducks/root-reducer';
-import { ReturnStaff } from '@/ducks/staff/slice';
 import { useSelector } from '@/ducks/store';
 import { calcWorkTime, convertWeekItem } from '@/utils';
-import {
-  ActionIcon,
-  Group,
-  Paper,
-  Select,
-  Table,
-  TextInput,
-} from '@mantine/core';
+import { ActionIcon, Group, Overlay, Paper, Select, Table, TextInput } from '@mantine/core';
 import { TimeRangeInput } from '@mantine/dates';
 import { UseFormReturnType } from '@mantine/form';
 import { IconClock, IconRefresh } from '@tabler/icons';
@@ -32,14 +24,10 @@ export const RecordContentArray: NextPage<Props> = ({
   handleChangeStaff,
   handleRefresh,
 }) => {
-  const loginProviderInfo = useSelector(
-    (state: RootState) => state.provider.loginProviderInfo
-  );
+  const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
   const staffList = useSelector((state: RootState) => state.staff.staffList);
 
-  const convertTimeRange = (
-    content: ContentArr
-  ): [Date | null, Date | null] => {
+  const convertTimeRange = (content: ContentArr): [Date | null, Date | null] => {
     if (content.start_time && content.end_time) {
       return [new Date(content.start_time), new Date(content.end_time)];
     }
@@ -47,7 +35,7 @@ export const RecordContentArray: NextPage<Props> = ({
   };
 
   return (
-    <Paper sx={{ overflowX: 'auto' }}>
+    <Paper sx={{ overflowX: 'auto', position: 'relative' }}>
       <Table sx={{ width: '800px' }}>
         <thead>
           <tr>
@@ -55,9 +43,7 @@ export const RecordContentArray: NextPage<Props> = ({
             <th style={{ width: '100px' }}>曜日</th>
             <th style={{ width: '200px' }}>開始-終了時間</th>
             <th style={{ width: '170px' }}>算定時間数</th>
-            {loginProviderInfo.role === 'admin' && (
-              <th style={{ width: '200px' }}>スタッフ名</th>
-            )}
+            {loginProviderInfo.role === 'admin' && <th style={{ width: '200px' }}>スタッフ名</th>}
             <th style={{ width: '80px' }}>リセット</th>
           </tr>
         </thead>
@@ -78,11 +64,7 @@ export const RecordContentArray: NextPage<Props> = ({
                   sx={{
                     '& input:disabled': { color: 'black' },
                   }}
-                  value={convertWeekItem(
-                    form.values.year,
-                    form.values.month,
-                    content.work_date
-                  )}
+                  value={convertWeekItem(form.values.year, form.values.month, content.work_date)}
                   variant="filled"
                   disabled
                 />
@@ -113,9 +95,7 @@ export const RecordContentArray: NextPage<Props> = ({
                     data={staffList.map((staff) => staff.name)}
                     value={content.staff_name}
                     variant="filled"
-                    onChange={(staffName: string) =>
-                      handleChangeStaff(staffName, index)
-                    }
+                    onChange={(staffName: string) => handleChangeStaff(staffName, index)}
                   />
                 </td>
               )}
