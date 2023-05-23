@@ -165,7 +165,7 @@ export const TableRecordList = ({ path, loading, dataList, updateRecord }: Props
           {
             accessor: 'download',
             title: 'アクション',
-            width: 500,
+            width: 250,
             render: (service: ServiceType) => <OptionButton service={service} handleChangeStatus={handleChangeStatus} />,
           },
           {
