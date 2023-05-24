@@ -11,7 +11,7 @@ import { ReturnBehavior } from '@/ducks/behavior/slice';
 import { OptionButton } from './OptionButton';
 import { CustomConfirm } from './CustomConfirm';
 import { CreatePdf } from '../Accompany/CreatePdf';
-import { ServiceType } from '@/ducks/common-service/slice';
+import { RecordServiceType } from '@/ducks/common-service/slice';
 
 type Props = {
   path: keyof typeof PATH;
@@ -88,7 +88,7 @@ export const TableRecordList = ({ path, loading, dataList, updateRecord }: Props
     }
   };
 
-  const handleChangeStatus = async (service: ServiceType, statusId: number) => {
+  const handleChangeStatus = async (service: RecordServiceType, statusId: number) => {
     let confirmMessage = '';
     if (statusId === 0) {
       confirmMessage = 'この記録票を差戻ししますか？';
@@ -109,7 +109,7 @@ export const TableRecordList = ({ path, loading, dataList, updateRecord }: Props
     if (error) await CustomConfirm('記録表の更新に失敗しました', 'Caution');
   };
 
-  const handlePDFDownload = async (service: ServiceType) => {
+  const handlePDFDownload = async (service: RecordServiceType) => {
     const pdfBytes = await CreatePdf(recordPath, service);
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
     const link = document.createElement('a');
@@ -170,13 +170,13 @@ export const TableRecordList = ({ path, loading, dataList, updateRecord }: Props
             accessor: 'progress',
             title: '申請状況',
             width: 100,
-            render: (service: ServiceType) => <Text>{getStatusText(service.status)}</Text>,
+            render: (service: RecordServiceType) => <Text>{getStatusText(service.status)}</Text>,
           },
           {
             accessor: 'download',
             title: 'アクション',
             width: 250,
-            render: (service: ServiceType) => (
+            render: (service: RecordServiceType) => (
               <OptionButton service={service} handleChangeStatus={handleChangeStatus} handlePDFDownload={handlePDFDownload} />
             ),
           },
@@ -184,7 +184,7 @@ export const TableRecordList = ({ path, loading, dataList, updateRecord }: Props
             accessor: 'actions',
             title: '',
             width: 90,
-            render: (service: ServiceType) => (
+            render: (service: RecordServiceType) => (
               <Group spacing={4} position="center" noWrap>
                 <Link href={getPath(path, service.id)}>
                   <a>
@@ -200,7 +200,7 @@ export const TableRecordList = ({ path, loading, dataList, updateRecord }: Props
             accessor: 'updatedAt',
             title: '更新日時',
             width: 150,
-            render: (service: ServiceType) => (service.updated_at ? convertSupabaseTime(service.updated_at) : ''),
+            render: (service: RecordServiceType) => (service.updated_at ? convertSupabaseTime(service.updated_at) : ''),
           },
         ]}
       />

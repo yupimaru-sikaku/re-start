@@ -2,12 +2,12 @@ import React from 'react';
 import { CustomButton } from './CustomButton';
 import { Group } from '@mantine/core';
 import { useHasPermit } from '@/hooks/form/useHasPermit';
-import { ServiceType } from '@/ducks/common-service/slice';
+import { RecordServiceType } from '@/ducks/common-service/slice';
 
 type Props = {
-  service: ServiceType;
+  service: RecordServiceType;
   handleChangeStatus: (service: any, statusId: number) => void;
-  handlePDFDownload: (service: ServiceType) => Promise<void>;
+  handlePDFDownload: (service: RecordServiceType) => Promise<void>;
 };
 
 export const OptionButton = ({ service, handleChangeStatus, handlePDFDownload }: Props) => {

@@ -1,9 +1,9 @@
 import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { calcAllWorkTime, convertTime } from '@/utils';
-import { ServiceType } from '@/ducks/common-service/slice';
+import { RecordServiceType } from '@/ducks/common-service/slice';
 
-export const CreatePdf = async (pdfUrl: string, service: ServiceType) => {
+export const CreatePdf = async (pdfUrl: string, service: RecordServiceType) => {
   const existingPdfBytes = await fetch(pdfUrl).then((res) => res.arrayBuffer());
   const notoSansBytes = await fetch('/NotoSansJP-Regular.otf').then((res) => res.arrayBuffer());
   const pdfDoc = await PDFDocument.load(existingPdfBytes);

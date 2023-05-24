@@ -1,13 +1,20 @@
 import { CustomConfirm } from '@/components/Common/CustomConfirm';
 import { RootState } from '@/ducks/root-reducer';
 import { useCreateScheduleMutation, useGetScheduleListQuery, useUpdateScheduleMutation } from '@/ducks/schedule/query';
-import { useSelector } from '@/ducks/store';
+import { useAppDispatch, useSelector } from '@/ducks/store';
 import { calcWorkTime } from '@/utils';
 import { UseFormReturnType, useForm } from '@mantine/form';
 import { ChangeEvent, useEffect } from 'react';
 import { checkOverlap } from './checkOverlap';
-import { CreateScheduleResult, UpdateScheduleParams, UpdateScheduleResult } from '@/ducks/schedule/slice';
-import { ContentArr, ServiceType } from '@/ducks/common-service/slice';
+import { UpdateScheduleParams, UpdateScheduleResult, addScheduleList, updateScheduleList } from '@/ducks/schedule/slice';
+import {
+  ContentArr,
+  RecordServiceType,
+  CreateRecordInitialStateType,
+  CreateRecordValidateType,
+  CreateRecordType,
+  UpdateRecordType,
+} from '@/ducks/common-service/slice';
 
 export type UseGetFormType<T> = {
   form: UseFormReturnType<T>;
@@ -22,11 +29,11 @@ export type UseGetFormType<T> = {
 type GetFormType = {
   type: 'create' | 'edit';
   SERVICE_CONTENT: '同行援護' | '行動援護' | '移動支援';
-  createInitialState: any;
-  recordData?: ServiceType;
-  validate: any;
-  createRecord: any;
-  updateRecord: any;
+  createInitialState: CreateRecordInitialStateType;
+  recordData?: RecordServiceType;
+  validate: CreateRecordValidateType;
+  createRecord: CreateRecordType;
+  updateRecord: UpdateRecordType;
 };
 
 type RecordSubmitResult = {
@@ -45,6 +52,7 @@ export const useGetForm = ({
 }: GetFormType) => {
   const TITLE = type === 'create' ? '登録' : '更新';
   const currentDate = new Date();
+  const dispatch = useAppDispatch();
   const form = useForm({
     initialValues: {
       ...createInitialState,
@@ -235,6 +243,7 @@ export const useGetForm = ({
       if (loginProviderInfo.role === 'admin' && !allStaffNameEmpty) {
         format2DArr.map(async (contentList) => {
           const staffName = contentList[0].staff_name;
+          if (!staffName) return;
           const selectedStaff = staffList.find((staff) => staff.name === staffName);
           const selectedSchedule = scheduleList.find(
             (schedule) =>
@@ -263,14 +272,19 @@ export const useGetForm = ({
             month: form.values.month,
             content_arr: newContentArr,
           };
-          const { error } = selectedSchedule
+          const { data, error } = selectedSchedule
             ? ((await updateSchedule({
                 ...createScheduleParams,
                 id: selectedSchedule.id,
               })) as UpdateScheduleResult)
-            : ((await createSchedule(createScheduleParams)) as CreateScheduleResult);
+            : ((await createSchedule(createScheduleParams)) as any);
           if (error) {
             throw new Error(`スタッフのスケジュール${TITLE}に失敗しました。${error.message}`);
+          }
+          if (selectedSchedule) {
+            dispatch(updateScheduleList(data));
+          } else {
+            dispatch(addScheduleList(data));
           }
         });
       }

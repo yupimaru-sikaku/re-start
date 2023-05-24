@@ -48,15 +48,19 @@ export const scheduleApi = createApi({
      * @param {CreateScheduleParams} params
      * @return {CreateScheduleResult}
      */
-    createSchedule: builder.mutation<CreateScheduleResult, CreateScheduleParams>({
-      queryFn: async (params: CreateScheduleParams): Promise<CreateScheduleResult> => {
-        const { error } = await supabase.from(getDb('SCHEDULE')).insert({
-          staff_id: params.staff_id,
-          staff_name: params.staff_name,
-          year: params.year,
-          month: params.month,
-          content_arr: params.content_arr,
-        });
+    createSchedule: builder.mutation({
+      queryFn: async (params: CreateScheduleParams): Promise<any> => {
+        const { data, error } = await supabase
+          .from(getDb('SCHEDULE'))
+          .insert({
+            staff_id: params.staff_id,
+            staff_name: params.staff_name,
+            year: params.year,
+            month: params.month,
+            content_arr: params.content_arr,
+          })
+          .select();
+        if (!error && data[0]) return { data: data[0] };
         return { error };
       },
     }),
@@ -66,8 +70,8 @@ export const scheduleApi = createApi({
      * @return {UpdateScheduleResult}
      */
     updateSchedule: builder.mutation({
-      queryFn: async (params: UpdateScheduleParams): Promise<UpdateScheduleResult> => {
-        const { error } = await supabase
+      queryFn: async (params: UpdateScheduleParams): Promise<any> => {
+        const { data, error } = await supabase
           .from(getDb('SCHEDULE'))
           .update({
             staff_name: params.staff_name,
@@ -76,7 +80,9 @@ export const scheduleApi = createApi({
             month: params.month,
             content_arr: params.content_arr,
           })
-          .eq('id', params.id);
+          .eq('id', params.id)
+          .select();
+        if (!error && data[0]) return { data: data[0] };
         return { error };
       },
     }),

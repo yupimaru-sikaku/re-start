@@ -1,8 +1,17 @@
-import { ReturnAccompany } from '../accompany/slice';
-import { ReturnBehavior } from '../behavior/slice';
-import { ReturnMobility } from '../mobility/slice';
+import { validate as accompanyValidate } from '@/utils/validate/accompany';
+import { validate as mobilityValidate } from '@/utils/validate/mobility';
+import { validate as behaviorValidate } from '@/utils/validate/behavior';
 
-export type ServiceType = ReturnAccompany | ReturnMobility | ReturnBehavior;
+import { CreateAccompanyParams, ReturnAccompany } from '../accompany/slice';
+import { CreateBehaviorParams, ReturnBehavior } from '../behavior/slice';
+import { CreateMobilityParams, ReturnMobility } from '../mobility/slice';
+import { useCreateAccompanyMutation } from '../accompany/query';
+
+export type RecordServiceType = ReturnAccompany | ReturnMobility | ReturnBehavior;
+export type CreateRecordInitialStateType = CreateAccompanyParams | CreateBehaviorParams | CreateMobilityParams;
+export type CreateRecordValidateType = typeof accompanyValidate | typeof mobilityValidate | typeof behaviorValidate;
+export type CreateRecordType = any;
+export type UpdateRecordType = any;
 
 export type ContentArr = {
   work_date: number; // サービス提供日

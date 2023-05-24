@@ -63,7 +63,16 @@ const initialState = {
 const scheduleSlice = createSlice({
   name: 'schedule',
   initialState,
-  reducers: {},
+  reducers: {
+    addScheduleList: (state, action: PayloadAction<ReturnSchedule>) => {
+      state.scheduleList = [action.payload, ...state.scheduleList];
+    },
+    updateScheduleList: (state, action: PayloadAction<ReturnSchedule>) => {
+      state.scheduleList = state.scheduleList.map((schedule) =>
+        schedule.id === action.payload.id ? action.payload : schedule
+      );
+    },
+  },
   extraReducers: (builder) => {
     builder.addMatcher(
       scheduleApi.endpoints.getScheduleList.matchFulfilled,
@@ -85,3 +94,5 @@ const scheduleSlice = createSlice({
 });
 
 export default scheduleSlice;
+
+export const { addScheduleList, updateScheduleList } = scheduleSlice.actions;
