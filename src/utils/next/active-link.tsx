@@ -8,6 +8,9 @@ type Props = Omit<LinkProps, 'children'> & {
 };
 
 export const ActiveLink: FC<Props> = ({ children, ...linkProps }) => {
-  const { pathname } = useRouter();
-  return <Link {...linkProps}>{children(pathname === linkProps.href)}</Link>;
+  const { asPath } = useRouter();
+
+  const isActive = asPath === linkProps.href || asPath.startsWith(`${linkProps.href}/`);
+
+  return <Link {...linkProps}>{children(isActive)}</Link>;
 };
