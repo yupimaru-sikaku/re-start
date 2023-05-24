@@ -1,23 +1,22 @@
-import { Divider, LoadingOverlay, Overlay, Paper, Space, Stack } from '@mantine/core';
 import React, { useState } from 'react';
-import { CustomStepper } from '../Common/CustomStepper';
-import { CreateBehaviorParams, createInitialState } from '@/ducks/behavior/slice';
-import { validate } from '@/utils/validate/behavior';
-import { useFocusTrap } from '@mantine/hooks';
-import { useGetUserListByServiceQuery } from '@/ducks/user/query';
-import { useRouter } from 'next/router';
-import { useCreateBehaviorMutation, useGetBehaviorDataQuery, useUpdateBehaviorMutation } from '@/ducks/behavior/query';
-import { CustomButton } from '../Common/CustomButton';
 import { NextPage } from 'next';
-import { skipToken } from '@reduxjs/toolkit/dist/query';
-import { UseGetFormType, useGetForm } from '@/hooks/form/useGetForm';
-import { RecordBasicInfo } from '../Common/RecordBasicInfo';
-import { RecordContentArray } from '../Common/RecordContentArray';
+import { useFocusTrap } from '@mantine/hooks';
+import { useRouter } from 'next/router';
+import { CustomButton } from 'src/components/Common/CustomButton';
+import { CustomStepper } from 'src/components/Common/CustomStepper';
+import { RecordBasicInfo } from 'src/components/Common/RecordBasicInfo';
+import { RecordContentArray } from 'src/components/Common/RecordContentArray';
+import { CustomConfirm } from 'src/components/Common/CustomConfirm';
+import { Divider, LoadingOverlay, Overlay, Paper, Space, Stack } from '@mantine/core';
+import { CreateBehaviorParams, createInitialState } from '@/ducks/behavior/slice';
+import { useGetUserListByServiceQuery } from '@/ducks/user/query';
+import { useCreateBehaviorMutation, useUpdateBehaviorMutation } from '@/ducks/behavior/query';
 import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
-import { CustomConfirm } from '../Common/CustomConfirm';
+import { UseGetFormType, useGetForm } from '@/hooks/form/useGetForm';
+import { validate } from '@/utils/validate/behavior';
+import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
-import { getPath } from '@/utils/const/getPath';
 import { useSelector } from '@/ducks/store';
 import { useHasPermit } from '@/hooks/form/useHasPermit';
 
@@ -30,15 +29,11 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
   const SERVICE_CONTENT = '行動援護';
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
-  const { hasPermit } = useHasPermit();
   const behaviorId = router.query.id as string;
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { hasPermit } = useHasPermit();
   const behaviorList = useSelector((state) => state.behavior.behaviorList);
-  const {
-    data: behaviorData,
-    isLoading: behaviorLoading,
-    refetch: behaviorRefetch,
-  } = useGetBehaviorDataQuery(behaviorId || skipToken);
+  const behaviorData = behaviorList.find((behavior) => behavior.id === behaviorId);
   const { data: userList = [] } = useGetUserListByServiceQuery('is_kodo');
   const { data: staffList } = useGetStaffListByServiceQuery('kodo');
   const [createBehavior] = useCreateBehaviorMutation();
@@ -56,16 +51,14 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
     SERVICE_CONTENT,
     createInitialState,
     recordData: behaviorData,
-    refetch: behaviorRefetch,
+    createRecord: createBehavior,
+    updateRecord: updateBehavior,
     validate,
   });
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    const result = await recordSubmit({
-      createRecord: createBehavior,
-      updateRecord: updateBehavior,
-    });
+    const result = await recordSubmit();
     if (!result.isFinished) {
       if (result.message) {
         await CustomConfirm(result.message, 'Caution');
@@ -84,9 +77,9 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
 
   return (
     <Stack>
-      <LoadingOverlay className="relative" visible={behaviorLoading} />
+      <LoadingOverlay className="relative" visible={type === 'edit' && !behaviorData} />
       <Paper withBorder shadow="md" p={30} radius="md">
-        <CustomStepper />
+        <CustomStepper statusId={behaviorData?.status} />
       </Paper>
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef} style={{ position: 'relative' }}>
         {!hasPermit(behaviorData?.status || 0, 'enableEdit') && <Overlay opacity={0.6} color="#fff" zIndex={5} radius="md" />}

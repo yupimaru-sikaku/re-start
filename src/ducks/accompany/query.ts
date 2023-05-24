@@ -1,8 +1,7 @@
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
-import { DeleteAccompanyResult, ReturnAccompany, UpdateAccompanyParams, UpdateAccompanyResult } from './slice';
+import { DeleteAccompanyResult, UpdateAccompanyParams } from './slice';
 import { CreateAccompanyParams } from './slice';
-import { CreateAccompanyResult } from './slice';
 
 export const accompanyApi = createApi({
   reducerPath: 'accompanyApi',
@@ -12,9 +11,9 @@ export const accompanyApi = createApi({
     /**
      * GET/全実績記録票のリストを取得
      * @param {}
-     * @return {ReturnAccompany[]}
+     * @return {}
      */
-    getAccompanyList: builder.query<ReturnAccompany[], void>({
+    getAccompanyList: builder.query({
       queryFn: async (): Promise<any> => {
         const { data, error } = await supabase
           .from(getDb('ACCOMPANY'))
@@ -27,9 +26,9 @@ export const accompanyApi = createApi({
     /**
      * GET/法人IDに属する実績記録票のリストを取得
      * @param {string} corporateId
-     * @return {ReturnAccompany[][]}
+     * @return {}
      */
-    getAccompanyListByCorporateId: builder.query<ReturnAccompany[], string>({
+    getAccompanyListByCorporateId: builder.query({
       queryFn: async (corporateId: string): Promise<any> => {
         const { data, error } = await supabase
           .from(getDb('ACCOMPANY'))
@@ -43,9 +42,9 @@ export const accompanyApi = createApi({
     /**
      * GET/ログインIDに属する実績記録票のリストを取得
      * @param {string} loginId
-     * @return {ReturnAccompany[]}
+     * @return {}
      */
-    getAccompanyListByLoginId: builder.query<ReturnAccompany[], string>({
+    getAccompanyListByLoginId: builder.query({
       queryFn: async (loginId: string): Promise<any> => {
         const { data, error } = await supabase
           .from(getDb('ACCOMPANY'))
@@ -59,9 +58,9 @@ export const accompanyApi = createApi({
     /**
      * GET/IDに該当する実績記録票を取得
      * @param {string} id
-     * @return {ReturnAccompany}
+     * @return {}
      */
-    getAccompanyData: builder.query<ReturnAccompany, string>({
+    getAccompanyData: builder.query({
       queryFn: async (id: string): Promise<any> => {
         const { data, error } = await supabase
           .from(getDb('ACCOMPANY'))
@@ -75,7 +74,7 @@ export const accompanyApi = createApi({
     /**
      * POST/実績記録票を作成
      * @param {CreateAccompanyParams} params
-     * @return {CreateAccompanyResult}
+     * @return {}
      */
     createAccompany: builder.mutation({
       queryFn: async (params: CreateAccompanyParams): Promise<any> => {
@@ -99,7 +98,7 @@ export const accompanyApi = createApi({
     /**
      * PUT/IDの該当する実績記録票を更新
      * @param {UpdateAccompanyParams} params
-     * @return {UpdateAccompanyResult}
+     * @return {}
      */
     updateAccompany: builder.mutation({
       queryFn: async (params: UpdateAccompanyParams): Promise<any> => {

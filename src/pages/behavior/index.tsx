@@ -1,13 +1,13 @@
 import React from 'react';
+import { NextPage } from 'next';
 import Link from 'next/link';
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
 import { CustomButton } from '@/components/Common/CustomButton';
 import { BehaviorList } from '@/components/Behavior/BehaviorList';
 import { getPath } from '@/utils/const/getPath';
-import { Space } from '@mantine/core';
 import { useAuth } from '@/hooks/auth/useAuth';
-import { NextPage } from 'next';
+import { Space } from '@mantine/core';
 
 const BehaviorPage: NextPage = () => {
   useAuth();

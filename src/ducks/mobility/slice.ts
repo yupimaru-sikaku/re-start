@@ -5,13 +5,12 @@ import { ContentArr } from '../common-service/slice';
 
 type Mobility = {
   id: string;
-  corporate_id: string; // 作成した法人のID
   login_id: string; // ログインユーザのID
+  corporate_id: string; // 作成した法人のID
   year: number; // 作成する西暦
   month: number; // 作成する月
-  identification: string; // 受給者証番号
-  city: string; // 市区町村
   user_name: string; // 利用者名
+  identification: string; // 受給者証番号
   content_arr: ContentArr[];
   status: number; // 記録票の進捗状況
   is_display: boolean; // 表示するか
@@ -19,11 +18,12 @@ type Mobility = {
   updated_at: string; // 更新日時
 };
 
-export type CreateMobilityParams = Omit<Mobility, 'id' | 'is_display' | 'created_at' | 'updated_at'>;
+export type CreateMobilityParams = Omit<Mobility, 'id' | 'created_at' | 'updated_at'>;
 export type CreateMobilityResult = {
   error: PostgrestError | null;
 };
-export type UpdateMobilityParams = Omit<Mobility, 'is_display' | 'created_at' | 'updated_at'>;
+
+export type UpdateMobilityParams = Omit<Mobility, 'created_at' | 'updated_at'>;
 export type UpdateMobilityResult = {
   error: PostgrestError | null;
 };
@@ -35,12 +35,11 @@ export type DeleteMobilityResult = {
 export type ReturnMobility = Mobility;
 
 export const createInitialState: CreateMobilityParams = {
-  corporate_id: '',
   login_id: '',
+  corporate_id: '',
   year: 0,
   month: 0,
   identification: '',
-  city: '',
   user_name: '',
   content_arr: [
     {
@@ -53,6 +52,7 @@ export const createInitialState: CreateMobilityParams = {
     },
   ],
   status: 0,
+  is_display: false,
 };
 
 const initialState = {

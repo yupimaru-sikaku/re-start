@@ -1,20 +1,19 @@
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
-import { DeleteMobilityResult, ReturnMobility, UpdateMobilityParams, UpdateMobilityResult } from './slice';
+import { DeleteMobilityResult, UpdateMobilityParams } from './slice';
 import { CreateMobilityParams } from './slice';
-import { CreateMobilityResult } from './slice';
 
 export const mobilityApi = createApi({
-  reducerPath: 'MobilityApi',
+  reducerPath: 'mobilityApi',
   baseQuery: fakeBaseQuery(),
   tagTypes: ['MobilityApi'],
   endpoints: (builder) => ({
     /**
      * GET/全実績記録票のリストを取得
      * @param {}
-     * @return {ReturnMobility[][]}
+     * @return {}
      */
-    getMobilityList: builder.query<ReturnMobility[], void>({
+    getMobilityList: builder.query({
       queryFn: async (): Promise<any> => {
         const { data, error } = await supabase
           .from(getDb('MOBILITY'))
@@ -27,9 +26,9 @@ export const mobilityApi = createApi({
     /**
      * GET/法人IDに属する実績記録票のリストを取得
      * @param {string} corporateId
-     * @return {ReturnMobility[][]}
+     * @return {}
      */
-    getMobilityListByCorporateId: builder.query<ReturnMobility[], string>({
+    getMobilityListByCorporateId: builder.query({
       queryFn: async (corporateId: string): Promise<any> => {
         const { data, error } = await supabase
           .from(getDb('MOBILITY'))
@@ -43,9 +42,9 @@ export const mobilityApi = createApi({
     /**
      * GET/ログインIDに属する実績記録票のリストを取得
      * @param {string} loginId
-     * @return {ReturnMobility[]}
+     * @return {}
      */
-    getMobilityListByLoginId: builder.query<ReturnMobility[], string>({
+    getMobilityListByLoginId: builder.query({
       queryFn: async (loginId: string): Promise<any> => {
         const { data, error } = await supabase
           .from(getDb('MOBILITY'))
@@ -59,9 +58,9 @@ export const mobilityApi = createApi({
     /**
      * GET/IDに該当する実績記録票を取得
      * @param {string} id
-     * @return {ReturnMobility}
+     * @return {}
      */
-    getMobilityData: builder.query<ReturnMobility, string>({
+    getMobilityData: builder.query({
       queryFn: async (id: string): Promise<any> => {
         const { data, error } = await supabase
           .from(getDb('MOBILITY'))
@@ -75,7 +74,7 @@ export const mobilityApi = createApi({
     /**
      * POST/実績記録票を作成
      * @param {CreateMobilityParams} params
-     * @return {CreateMobilityResult}
+     * @return {}
      */
     createMobility: builder.mutation({
       queryFn: async (params: CreateMobilityParams): Promise<any> => {
@@ -99,7 +98,7 @@ export const mobilityApi = createApi({
     /**
      * PUT/IDの該当する実績記録票を更新
      * @param {UpdateMobilityParams} params
-     * @return {UpdateMobilityResult}
+     * @return {}
      */
     updateMobility: builder.mutation({
       queryFn: async (params: UpdateMobilityParams): Promise<any> => {

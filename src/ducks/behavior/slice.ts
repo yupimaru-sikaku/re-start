@@ -5,8 +5,8 @@ import { ContentArr } from '../common-service/slice';
 
 type Behavior = {
   id: string;
-  corporate_id: string; // 作成した法人のID
   login_id: string; // ログインユーザのID
+  corporate_id: string; // 作成した法人のID
   year: number; // 作成する西暦
   month: number; // 作成する月
   user_name: string; // 利用者名
@@ -18,11 +18,12 @@ type Behavior = {
   updated_at: string; // 更新日時
 };
 
-export type CreateBehaviorParams = Omit<Behavior, 'id' | 'is_display' | 'created_at' | 'updated_at'>;
+export type CreateBehaviorParams = Omit<Behavior, 'id' | 'created_at' | 'updated_at'>;
 export type CreateBehaviorResult = {
   error: PostgrestError | null;
 };
-export type UpdateBehaviorParams = Omit<Behavior, 'is_display' | 'created_at' | 'updated_at'>;
+
+export type UpdateBehaviorParams = Omit<Behavior, 'created_at' | 'updated_at'>;
 export type UpdateBehaviorResult = {
   error: PostgrestError | null;
 };
@@ -34,6 +35,8 @@ export type DeleteBehaviorResult = {
 export type ReturnBehavior = Behavior;
 
 export const createInitialState: CreateBehaviorParams = {
+  login_id: '',
+  corporate_id: '',
   year: 0,
   month: 0,
   identification: '',
@@ -49,8 +52,7 @@ export const createInitialState: CreateBehaviorParams = {
     },
   ],
   status: 0,
-  corporate_id: '',
-  login_id: '',
+  is_display: false,
 };
 
 const initialState = {
@@ -85,18 +87,27 @@ const behaviorSlice = createSlice({
         state.behaviorList = action.payload;
       }
     );
-    builder.addMatcher(behaviorApi.endpoints.getBehaviorData.matchFulfilled, (state, action: PayloadAction<ReturnBehavior>) => {
-      state.behaviorData = action.payload;
-    });
-    builder.addMatcher(behaviorApi.endpoints.createBehavior.matchFulfilled, (state, action: PayloadAction<ReturnBehavior>) => {
-      state.behaviorList = [action.payload, ...state.behaviorList];
-    });
-    builder.addMatcher(behaviorApi.endpoints.updateBehavior.matchFulfilled, (state, action: PayloadAction<ReturnBehavior>) => {
-      state.behaviorList = state.behaviorList.map((behavior) =>
-        behavior.id === action.payload.id ? action.payload : behavior
-      );
-      state.behaviorData = action.payload;
-    });
+    builder.addMatcher(
+      behaviorApi.endpoints.getBehaviorData.matchFulfilled,
+      (state, action: PayloadAction<ReturnBehavior>) => {
+        state.behaviorData = action.payload;
+      }
+    );
+    builder.addMatcher(
+      behaviorApi.endpoints.createBehavior.matchFulfilled,
+      (state, action: PayloadAction<ReturnBehavior>) => {
+        state.behaviorList = [action.payload, ...state.behaviorList];
+      }
+    );
+    builder.addMatcher(
+      behaviorApi.endpoints.updateBehavior.matchFulfilled,
+      (state, action: PayloadAction<ReturnBehavior>) => {
+        state.behaviorList = state.behaviorList.map((behavior) =>
+          behavior.id === action.payload.id ? action.payload : behavior
+        );
+        state.behaviorData = action.payload;
+      }
+    );
   },
 });
 

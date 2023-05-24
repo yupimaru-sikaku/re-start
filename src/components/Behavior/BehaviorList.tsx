@@ -1,17 +1,16 @@
 import React, { useMemo } from 'react';
+import { useSelector } from '@/ducks/store';
 import {
   useGetBehaviorListByCorporateIdQuery,
   useGetBehaviorListByLoginIdQuery,
   useGetBehaviorListQuery,
   useUpdateBehaviorMutation,
 } from '@/ducks/behavior/query';
-import { useSelector } from '@/ducks/store';
-import { RootState } from '@/ducks/root-reducer';
 import { TableRecordList } from '../Common/TableRecordList';
 
 export const BehaviorList = () => {
-  const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
-  const behaviorList = useSelector((state: RootState) => state.behavior.behaviorList);
+  const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
+  const behaviorList = useSelector((state) => state.behavior.behaviorList);
   const data1 = useGetBehaviorListQuery(undefined, {
     skip: loginProviderInfo.role !== 'admin',
   });

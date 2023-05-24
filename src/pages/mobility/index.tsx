@@ -1,14 +1,15 @@
-import { CustomButton } from '@/components/Common/CustomButton';
+import React from 'react';
+import { NextPage } from 'next';
+import Link from 'next/link';
 import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
-import { getPath } from '@/utils/const/getPath';
-import { Space } from '@mantine/core';
-import Link from 'next/link';
-import React from 'react';
-import { useAuth } from '@/hooks/auth/useAuth';
+import { CustomButton } from '@/components/Common/CustomButton';
 import { MobilityList } from '@/components/Mobility/MobilityList';
+import { getPath } from '@/utils/const/getPath';
+import { useAuth } from '@/hooks/auth/useAuth';
+import { Space } from '@mantine/core';
 
-const MobilityPage = () => {
+const MobilityPage: NextPage = () => {
   useAuth();
   return (
     <DashboardLayout title="移動支援">

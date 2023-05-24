@@ -7,7 +7,7 @@ import { UseFormReturnType, useForm } from '@mantine/form';
 import { ChangeEvent, useEffect } from 'react';
 import { checkOverlap } from './checkOverlap';
 import { CreateScheduleResult, UpdateScheduleParams, UpdateScheduleResult } from '@/ducks/schedule/slice';
-import { ContentArr } from '@/ducks/common-service/slice';
+import { ContentArr, ServiceType } from '@/ducks/common-service/slice';
 
 export type UseGetFormType<T> = {
   form: UseFormReturnType<T>;
@@ -23,12 +23,8 @@ type GetFormType = {
   type: 'create' | 'edit';
   SERVICE_CONTENT: '同行援護' | '行動援護' | '移動支援';
   createInitialState: any;
-  recordData: any;
-  refetch: any;
+  recordData?: ServiceType;
   validate: any;
-};
-
-type RecordSumbitParams = {
   createRecord: any;
   updateRecord: any;
 };
@@ -38,7 +34,15 @@ type RecordSubmitResult = {
   message: string;
 };
 
-export const useGetForm = ({ type, SERVICE_CONTENT, createInitialState, recordData, refetch, validate }: GetFormType) => {
+export const useGetForm = ({
+  type,
+  SERVICE_CONTENT,
+  createInitialState,
+  recordData,
+  validate,
+  createRecord,
+  updateRecord,
+}: GetFormType) => {
   const TITLE = type === 'create' ? '登録' : '更新';
   const currentDate = new Date();
   const form = useForm({
@@ -61,7 +65,6 @@ export const useGetForm = ({ type, SERVICE_CONTENT, createInitialState, recordDa
   // useFormは再レンダリングされないので更新時は再取得
   useEffect(() => {
     if (!recordData) return;
-    refetch();
     const newContentArr = [
       ...recordData.content_arr,
       ...Array.from({ length: 31 - recordData.content_arr.length }, () => createInitialState.content_arr[0]),
@@ -157,7 +160,7 @@ export const useGetForm = ({ type, SERVICE_CONTENT, createInitialState, recordDa
   }, 0);
 
   // 登録・更新メソッド
-  const recordSubmit = async ({ createRecord, updateRecord }: RecordSumbitParams): Promise<RecordSubmitResult> => {
+  const recordSubmit = async (): Promise<RecordSubmitResult> => {
     const isOK = await CustomConfirm(`実績記録票を${TITLE}しますか？後から修正は可能です。`, '確認画面');
     if (!isOK) return { isFinished: false, message: '' };
     // 空欄がある場合に除外して市区町村とサービス種別を加えて日付順にソート

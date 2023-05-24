@@ -33,11 +33,11 @@ export const store = configureStore({
       providerApi.middleware,
       staffApi.middleware,
       userApi.middleware,
-      homeCareApi.middleware,
+      accompanyApi.middleware,
       behaviorApi.middleware,
+      homeCareApi.middleware,
       mobilityApi.middleware,
-      scheduleApi.middleware,
-      accompanyApi.middleware
+      scheduleApi.middleware
     ),
 });
 

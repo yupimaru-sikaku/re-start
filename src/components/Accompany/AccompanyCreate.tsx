@@ -1,20 +1,19 @@
-import { Divider, LoadingOverlay, Overlay, Paper, Space, Stack } from '@mantine/core';
-import { useFocusTrap } from '@mantine/hooks';
-import { NextPage } from 'next';
-import { useRouter } from 'next/router';
 import React, { useState } from 'react';
-import { CustomButton } from '../Common/CustomButton';
-import { CustomStepper } from '../Common/CustomStepper';
+import { NextPage } from 'next';
+import { useFocusTrap } from '@mantine/hooks';
+import { useRouter } from 'next/router';
+import { CustomButton } from 'src/components/Common/CustomButton';
+import { CustomStepper } from 'src/components/Common/CustomStepper';
+import { RecordBasicInfo } from 'src/components/Common/RecordBasicInfo';
+import { RecordContentArray } from 'src/components/Common/RecordContentArray';
+import { CustomConfirm } from 'src/components/Common/CustomConfirm';
+import { Divider, LoadingOverlay, Overlay, Paper, Space, Stack } from '@mantine/core';
 import { CreateAccompanyParams, createInitialState } from '@/ducks/accompany/slice';
-import { skipToken } from '@reduxjs/toolkit/dist/query';
 import { useGetUserListByServiceQuery } from '@/ducks/user/query';
-import { useCreateAccompanyMutation, useGetAccompanyDataQuery, useUpdateAccompanyMutation } from '@/ducks/accompany/query';
+import { useCreateAccompanyMutation, useUpdateAccompanyMutation } from '@/ducks/accompany/query';
 import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
 import { UseGetFormType, useGetForm } from '@/hooks/form/useGetForm';
-import { RecordBasicInfo } from '../Common/RecordBasicInfo';
-import { RecordContentArray } from '../Common/RecordContentArray';
 import { validate } from '@/utils/validate/accompany';
-import { CustomConfirm } from '../Common/CustomConfirm';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
@@ -30,15 +29,11 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
   const SERVICE_CONTENT = '同行援護';
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
-  const { hasPermit } = useHasPermit();
   const accompanyId = router.query.id as string;
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { hasPermit } = useHasPermit();
   const accompanyList = useSelector((state) => state.accompany.accompanyList);
-  const {
-    data: accompanyData,
-    isLoading: accompanyLoading,
-    refetch: accompanyRefetch,
-  } = useGetAccompanyDataQuery(accompanyId || skipToken);
+  const accompanyData = accompanyList.find((accompany) => accompany.id === accompanyId);
   const { data: userList = [] } = useGetUserListByServiceQuery('is_doko');
   const { data: staffList = [] } = useGetStaffListByServiceQuery('doko');
   const [createAccompany] = useCreateAccompanyMutation();
@@ -56,16 +51,14 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
     SERVICE_CONTENT,
     createInitialState,
     recordData: accompanyData,
-    refetch: accompanyRefetch,
+    createRecord: createAccompany,
+    updateRecord: updateAccompany,
     validate,
   });
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    const result = await recordSubmit({
-      createRecord: createAccompany,
-      updateRecord: updateAccompany,
-    });
+    const result = await recordSubmit();
     if (!result.isFinished) {
       if (result.message) {
         await CustomConfirm(result.message, 'Caution');
@@ -84,7 +77,7 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
 
   return (
     <Stack>
-      <LoadingOverlay className="relative" visible={accompanyLoading} />
+      <LoadingOverlay className="relative" visible={type === 'edit' && !accompanyData} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomStepper statusId={accompanyData?.status} />
       </Paper>
