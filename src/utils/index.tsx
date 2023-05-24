@@ -1,5 +1,6 @@
 import { ReturnAccompany } from '@/ducks/accompany/slice';
 import { ReturnBehavior } from '@/ducks/behavior/slice';
+import { ContentArr } from '@/ducks/common-service/slice';
 import { CreateHomeCare, ReturnHomeCare } from '@/ducks/home-care/slice';
 import { ReturnMobility } from '@/ducks/mobility/slice';
 import { ReturnSchedule, ScheduleContentArr } from '@/ducks/schedule/slice';
@@ -58,7 +59,7 @@ export const convertWeekItem = (year: number, month: number, day: number): strin
     return '';
   }
 };
-// Date型の開始時間と終了時間から働いた時間をString型で返す
+// string型の開始時間と終了時間から働いた時間をString型で返す
 export const calcWorkTime = (start_time: string, end_time: string): string => {
   if (!start_time || !end_time) return '0';
   const startTime = new Date(start_time);
@@ -66,6 +67,15 @@ export const calcWorkTime = (start_time: string, end_time: string): string => {
   const time = endTime.getTime() - startTime.getTime();
   return (time / 3600000).toFixed(1);
 };
+
+// 実績記録票のcontent_arrから合計勤務時間を算出
+export const calcAllWorkTime = (content_arr: ContentArr[]) =>
+  content_arr.reduce((sum: number, content: ContentArr) => {
+    if (content.start_time === '' || content.end_time === '') {
+      return sum;
+    }
+    return sum + Number(calcWorkTime(content.start_time, content.end_time));
+  }, 0);
 
 // Date型の日付をString型の時間（例15:00）に変換
 export const convertTime = (date: string): string => {

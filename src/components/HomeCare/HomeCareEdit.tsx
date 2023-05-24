@@ -18,10 +18,9 @@ import { CustomStepper } from '../Common/CustomStepper';
 import { showNotification } from '@mantine/notifications';
 import { getPath } from '@/utils/const/getPath';
 import { ReturnStaff } from '@/ducks/staff/slice';
-import { format } from 'path';
 import { useSelector } from '@/ducks/store';
 import { RootState } from '@/ducks/root-reducer';
-import { ContentArr } from '@/ducks/accompany/slice';
+import { ContentArr } from '@/ducks/common-service/slice';
 
 type Props = {
   userData: ReturnHomeCare;

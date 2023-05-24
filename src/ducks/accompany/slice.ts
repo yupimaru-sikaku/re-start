@@ -1,15 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { PostgrestError } from '@supabase/supabase-js';
 import { accompanyApi } from './query';
-
-export type ContentArr = {
-  work_date: number; // サービス提供日
-  service_content: string; // サービス内容
-  start_time: string; // 開始時間
-  end_time: string; // 終了時間
-  city: string; // 市区町村
-  staff_name: string; // スタッフ名
-};
+import { ContentArr } from '../common-service/slice';
 
 type Accompany = {
   id: string;

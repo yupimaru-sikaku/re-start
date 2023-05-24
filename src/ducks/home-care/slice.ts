@@ -1,5 +1,5 @@
 import { PostgrestError } from '@supabase/supabase-js';
-import { ContentArr } from '../accompany/slice';
+import { ContentArr } from '../common-service/slice';
 
 type HomeCare = {
   id: string;
@@ -53,11 +53,7 @@ export type CreateHomeCare = Omit<
 
 export type ReturnHomeCare = Omit<
   HomeCare,
-  | 'amount_title_2'
-  | 'amount_value_2'
-  | 'amount_title_3'
-  | 'amount_value_3'
-  | 'content_arr'
+  'amount_title_2' | 'amount_value_2' | 'amount_title_3' | 'amount_value_3' | 'content_arr'
 > & {
   amount_title_2: string | null;
   amount_value_2: number | null;
@@ -74,13 +70,7 @@ export type ReturnHomeCare = Omit<
 
 export type UpdateHomeCareParams = Omit<
   HomeCare,
-  | 'amount_title_2'
-  | 'amount_value_2'
-  | 'amount_title_3'
-  | 'amount_value_3'
-  | 'content_arr'
-  | 'created_at'
-  | 'updated_at'
+  'amount_title_2' | 'amount_value_2' | 'amount_title_3' | 'amount_value_3' | 'content_arr' | 'created_at' | 'updated_at'
 > & {
   amount_title_2: string | null;
   amount_value_2: number | null;

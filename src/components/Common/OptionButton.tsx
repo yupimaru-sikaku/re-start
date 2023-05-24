@@ -1,17 +1,16 @@
 import React from 'react';
 import { CustomButton } from './CustomButton';
 import { Group } from '@mantine/core';
-import { ReturnAccompany } from '@/ducks/accompany/slice';
-import { ReturnMobility } from '@/ducks/mobility/slice';
-import { ReturnBehavior } from '@/ducks/behavior/slice';
 import { useHasPermit } from '@/hooks/form/useHasPermit';
+import { ServiceType } from '@/ducks/common-service/slice';
 
 type Props = {
-  service: ReturnAccompany | ReturnBehavior | ReturnMobility;
+  service: ServiceType;
   handleChangeStatus: (service: any, statusId: number) => void;
+  handlePDFDownload: (service: ServiceType) => Promise<void>;
 };
 
-export const OptionButton = ({ service, handleChangeStatus }: Props) => {
+export const OptionButton = ({ service, handleChangeStatus, handlePDFDownload }: Props) => {
   const { hasPermit } = useHasPermit();
 
   return (
@@ -48,7 +47,12 @@ export const OptionButton = ({ service, handleChangeStatus }: Props) => {
       >
         完了
       </CustomButton>
-      <CustomButton color="cyan" disabled={!hasPermit(service.status, 'download')} variant="light">
+      <CustomButton
+        color="cyan"
+        disabled={!hasPermit(service.status, 'download')}
+        variant="light"
+        onClick={() => handlePDFDownload(service)}
+      >
         ダウンロード
       </CustomButton>
     </Group>

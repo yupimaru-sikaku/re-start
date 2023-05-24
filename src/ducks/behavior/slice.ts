@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { PostgrestError } from '@supabase/supabase-js';
 import { behaviorApi } from './query';
-import { ContentArr } from '../accompany/slice';
+import { ContentArr } from '../common-service/slice';
 
 type Behavior = {
   id: string;

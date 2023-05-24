@@ -1,5 +1,4 @@
 import { CustomConfirm } from '@/components/Common/CustomConfirm';
-import { ContentArr } from '@/ducks/accompany/slice';
 import { RootState } from '@/ducks/root-reducer';
 import { useCreateScheduleMutation, useGetScheduleListQuery, useUpdateScheduleMutation } from '@/ducks/schedule/query';
 import { useSelector } from '@/ducks/store';
@@ -8,6 +7,7 @@ import { UseFormReturnType, useForm } from '@mantine/form';
 import { ChangeEvent, useEffect } from 'react';
 import { checkOverlap } from './checkOverlap';
 import { CreateScheduleResult, UpdateScheduleParams, UpdateScheduleResult } from '@/ducks/schedule/slice';
+import { ContentArr } from '@/ducks/common-service/slice';
 
 export type UseGetFormType<T> = {
   form: UseFormReturnType<T>;

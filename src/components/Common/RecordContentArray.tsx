@@ -1,4 +1,4 @@
-import { ContentArr } from '@/ducks/accompany/slice';
+import { ContentArr } from '@/ducks/common-service/slice';
 import { RootState } from '@/ducks/root-reducer';
 import { useSelector } from '@/ducks/store';
 import { calcWorkTime, convertWeekItem } from '@/utils';

@@ -10,6 +10,8 @@ import { ReturnMobility } from '@/ducks/mobility/slice';
 import { ReturnBehavior } from '@/ducks/behavior/slice';
 import { OptionButton } from './OptionButton';
 import { CustomConfirm } from './CustomConfirm';
+import { CreatePdf } from '../Accompany/CreatePdf';
+import { ServiceType } from '@/ducks/common-service/slice';
 
 type Props = {
   path: keyof typeof PATH;
@@ -18,11 +20,22 @@ type Props = {
   updateRecord: any;
 };
 
-type ServiceType = ReturnAccompany | ReturnMobility | ReturnBehavior;
-
 export const TableRecordList = ({ path, loading, dataList, updateRecord }: Props) => {
   const PAGE_SIZE = 10;
   const currentDate = new Date();
+  const recordPath = useMemo(() => {
+    const defaultPath = '/recordList';
+    switch (path) {
+      case 'ACCOMPANY_EDIT':
+        return `${defaultPath}/v1/doko_record.pdf`;
+      case 'BEHAVIOR_EDIT':
+        return `${defaultPath}/v1/kodo_record.pdf`;
+      case 'MOBILITY_EDIT':
+        return `${defaultPath}/v1/ido_record.pdf`;
+      default:
+        return '';
+    }
+  }, [path]);
 
   const [page, setPage] = useState(1);
   const from = useMemo(() => {
@@ -96,16 +109,13 @@ export const TableRecordList = ({ path, loading, dataList, updateRecord }: Props
     if (error) await CustomConfirm('記録表の更新に失敗しました', 'Caution');
   };
 
-  const handlePDFDownload = async () => {
-    // const pdfBytes = await CreatePdf(
-    //   '/home_care_records.pdf',
-    //   Mobility
-    // );
-    // const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    // const link = document.createElement('a');
-    // link.href = URL.createObjectURL(blob);
-    // link.download = `${Mobility.name}.pdf`;
-    // link.click();
+  const handlePDFDownload = async (service: ServiceType) => {
+    const pdfBytes = await CreatePdf(recordPath, service);
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${service.year}年${service.month}月_${service.user_name}.pdf`;
+    link.click();
   };
 
   return (
@@ -166,7 +176,9 @@ export const TableRecordList = ({ path, loading, dataList, updateRecord }: Props
             accessor: 'download',
             title: 'アクション',
             width: 250,
-            render: (service: ServiceType) => <OptionButton service={service} handleChangeStatus={handleChangeStatus} />,
+            render: (service: ServiceType) => (
+              <OptionButton service={service} handleChangeStatus={handleChangeStatus} handlePDFDownload={handlePDFDownload} />
+            ),
           },
           {
             accessor: 'actions',
