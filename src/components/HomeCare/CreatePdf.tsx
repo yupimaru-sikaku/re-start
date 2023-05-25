@@ -2,7 +2,7 @@
 import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { ReturnHomeCare } from '@/ducks/home-care/slice';
-import { calcEachWorkTime, convertTime, formatServiceContent } from '@/utils';
+import { KAZI, SHINTAI, calcEachWorkTime, convertTime, formatServiceContent } from '@/utils';
 
 export const CreatePdf = async (pdfUrl: string, homeCare: ReturnHomeCare) => {
   const existingPdfBytes = await fetch(pdfUrl).then((res) => res.arrayBuffer());
@@ -36,35 +36,35 @@ export const CreatePdf = async (pdfUrl: string, homeCare: ReturnHomeCare) => {
     });
   });
   // 契約支給量
-  const serviceArr = [
-    { value: homeCare.amount_title_1 || '', x: 82, y: 783 },
-    {
-      value: homeCare.amount_value_1 ? homeCare.amount_value_1.toString() : '',
-      x: 268,
-      y: 783,
-    },
-    { value: homeCare.amount_title_2 || '', x: 82, y: 771 },
-    {
-      value: homeCare.amount_value_2 ? homeCare.amount_value_2.toString() : '',
-      x: 268,
-      y: 771,
-    },
-    { value: homeCare.amount_title_3 || '', x: 82, y: 759 },
-    {
-      value: homeCare.amount_value_3 ? homeCare.amount_value_3.toString() : '',
-      x: 268,
-      y: 759,
-    },
-  ];
-  serviceArr.map(({ value, x, y }) => {
-    firstPage.drawText(value, {
-      x: x,
-      y: y,
-      size: 8,
-      font: notoSansFont,
-      color: rgb(0, 0, 0),
-    });
-  });
+  // const serviceArr = [
+  //   { value: homeCare.amount_title_1 || '', x: 82, y: 783 },
+  //   {
+  //     value: homeCare.amount_value_1 ? homeCare.amount_value_1.toString() : '',
+  //     x: 268,
+  //     y: 783,
+  //   },
+  //   { value: homeCare.amount_title_2 || '', x: 82, y: 771 },
+  //   {
+  //     value: homeCare.amount_value_2 ? homeCare.amount_value_2.toString() : '',
+  //     x: 268,
+  //     y: 771,
+  //   },
+  //   { value: homeCare.amount_title_3 || '', x: 82, y: 759 },
+  //   {
+  //     value: homeCare.amount_value_3 ? homeCare.amount_value_3.toString() : '',
+  //     x: 268,
+  //     y: 759,
+  //   },
+  // ];
+  // serviceArr.map(({ value, x, y }) => {
+  //   firstPage.drawText(value, {
+  //     x: x,
+  //     y: y,
+  //     size: 8,
+  //     font: notoSansFont,
+  //     color: rgb(0, 0, 0),
+  //   });
+  // });
 
   // 受給者証番号
   const numberArr = homeCare.identification.split('');
@@ -98,11 +98,8 @@ export const CreatePdf = async (pdfUrl: string, homeCare: ReturnHomeCare) => {
     });
     // サービス内容
     firstPage.drawText(content.service_content, {
-      x: content.service_content === '家事援助' || content.service_content === '身体介護' ? 77 : 75,
-      y:
-        content.service_content === '家事援助' || content.service_content === '身体介護'
-          ? 699 - index * 18.1
-          : 702 - index * 18.1,
+      x: content.service_content === KAZI || content.service_content === SHINTAI ? 77 : 75,
+      y: content.service_content === KAZI || content.service_content === SHINTAI ? 699 - index * 18.1 : 702 - index * 18.1,
       size: 5,
       font: notoSansFont,
       color: rgb(0, 0, 0),
@@ -142,58 +139,72 @@ export const CreatePdf = async (pdfUrl: string, homeCare: ReturnHomeCare) => {
     });
   });
   // 各サービスの合計時間
-  const { kaziAmount, shintaiAmount, withTsuinAmount, tsuinAmount } = calcEachWorkTime(homeCare.content_arr);
-  firstPage.drawText(kaziAmount.toString(), {
-    x: kaziAmount.length === 4 ? 157 : kaziAmount.length === 3 ? 158 : kaziAmount.length === 2 ? 161 : 163,
+  const { kaziAmountTime, shintaiAmountTime, withTsuinAmountTime, tsuinAmountTime } = calcEachWorkTime(homeCare.content_arr);
+  firstPage.drawText(kaziAmountTime.toString(), {
+    x: kaziAmountTime.toString().length === 4 ? 157 : kaziAmountTime.toString().length === 3 ? 158 : kaziAmountTime.toString().length === 2 ? 161 : 163,
     y: 73,
     size: 8,
     font: notoSansFont,
     color: rgb(0, 0, 0),
   });
-  firstPage.drawText(shintaiAmount.toString(), {
-    x: shintaiAmount.length === 4 ? 157 : shintaiAmount.length === 3 ? 158 : shintaiAmount.length === 2 ? 161 : 163,
+  firstPage.drawText(shintaiAmountTime.toString(), {
+    x:
+      shintaiAmountTime.toString().length === 4
+        ? 157
+        : shintaiAmountTime.toString().length === 3
+        ? 158
+        : shintaiAmountTime.toString().length === 2
+        ? 161
+        : 163,
     y: 110,
     size: 8,
     font: notoSansFont,
     color: rgb(0, 0, 0),
   });
-  firstPage.drawText(withTsuinAmount.toString(), {
-    x: withTsuinAmount.length === 4 ? 157 : withTsuinAmount.length === 3 ? 158 : withTsuinAmount.length === 2 ? 161 : 163,
+  firstPage.drawText(withTsuinAmountTime.toString(), {
+    x: withTsuinAmountTime.toString().length === 4 ? 157 : withTsuinAmountTime.toString().length === 3 ? 158 : withTsuinAmountTime.toString().length === 2 ? 161 : 163,
     y: 92,
     size: 8,
     font: notoSansFont,
     color: rgb(0, 0, 0),
   });
-  firstPage.drawText(tsuinAmount.toString(), {
-    x: tsuinAmount.length === 4 ? 157 : tsuinAmount.length === 3 ? 158 : tsuinAmount.length === 2 ? 161 : 163,
+  firstPage.drawText(tsuinAmountTime.toString(), {
+    x: tsuinAmountTime.toString().length === 4 ? 157 : tsuinAmountTime.toString().length === 3 ? 158 : tsuinAmountTime.toString().length === 2 ? 161 : 163,
     y: 55,
     size: 8,
     font: notoSansFont,
     color: rgb(0, 0, 0),
   });
-  firstPage.drawText(kaziAmount.toString(), {
-    x: kaziAmount.length === 4 ? 275 : kaziAmount.length === 3 ? 276 : kaziAmount.length === 2 ? 277 : 281,
+  firstPage.drawText(kaziAmountTime.toString(), {
+    x: kaziAmountTime.toString().length === 4 ? 275 : kaziAmountTime.toString().length === 3 ? 276 : kaziAmountTime.toString().length === 2 ? 277 : 281,
     y: 73,
     size: 8,
     font: notoSansFont,
     color: rgb(0, 0, 0),
   });
-  firstPage.drawText(shintaiAmount.toString(), {
-    x: shintaiAmount.length === 4 ? 275 : shintaiAmount.length === 3 ? 276 : shintaiAmount.length === 2 ? 277 : 281,
+  firstPage.drawText(shintaiAmountTime.toString(), {
+    x:
+      shintaiAmountTime.toString().length === 4
+        ? 275
+        : shintaiAmountTime.toString().length === 3
+        ? 276
+        : shintaiAmountTime.toString().length === 2
+        ? 277
+        : 281,
     y: 110,
     size: 8,
     font: notoSansFont,
     color: rgb(0, 0, 0),
   });
-  firstPage.drawText(withTsuinAmount.toString(), {
-    x: withTsuinAmount.length === 4 ? 275 : withTsuinAmount.length === 3 ? 276 : withTsuinAmount.length === 2 ? 277 : 281,
+  firstPage.drawText(withTsuinAmountTime.toString(), {
+    x: withTsuinAmountTime.toString().length === 4 ? 275 : withTsuinAmountTime.toString().length === 3 ? 276 : withTsuinAmountTime.toString().length === 2 ? 277 : 281,
     y: 92,
     size: 8,
     font: notoSansFont,
     color: rgb(0, 0, 0),
   });
-  firstPage.drawText(tsuinAmount.toString(), {
-    x: tsuinAmount.length === 4 ? 275 : tsuinAmount.length === 3 ? 276 : tsuinAmount.length === 2 ? 277 : 281,
+  firstPage.drawText(tsuinAmountTime.toString(), {
+    x: tsuinAmountTime.toString().length === 4 ? 275 : tsuinAmountTime.toString().length === 3 ? 276 : tsuinAmountTime.toString().length === 2 ? 277 : 281,
     y: 55,
     size: 8,
     font: notoSansFont,

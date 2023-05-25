@@ -1,3 +1,5 @@
+import { KAZI, SHINTAI, TSUIN, WITH_TSUIN } from '@/utils';
+
 export const useGetServiceList = (form: any) => {
   return [
     {
@@ -19,25 +21,25 @@ export const useGetServiceList = (form: any) => {
       form: form.values.is_doko,
     },
     {
-      title: '家事援助',
+      title: KAZI,
       formTitle: 'is_kazi',
       formValue: 'kazi_amount',
       form: form.values.is_kazi,
     },
     {
-      title: '身体介護',
+      title: SHINTAI,
       formTitle: 'is_shintai',
       formValue: 'shintai_amount',
       form: form.values.is_shintai,
     },
     {
-      title: '通院等介助（伴う）',
+      title: WITH_TSUIN,
       formTitle: 'is_with_tsuin',
       formValue: 'with_tsuin_amount',
       form: form.values.is_with_tsuin,
     },
     {
-      title: '通院等介助（伴わない）',
+      title: TSUIN,
       formTitle: 'is_tsuin',
       formValue: 'tsuin_amount',
       form: form.values.is_tsuin,

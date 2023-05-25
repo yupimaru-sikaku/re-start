@@ -1,13 +1,13 @@
-import { CustomButton } from '@/components/Common/CustomButton';
-import { HomeCareList } from '@/components/HomeCare/HomeCareList';
-import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
-import { PageContainer } from '@/components/PageContainer';
-import { useAuth } from '@/hooks/auth/useAuth';
-import { getPath } from '@/utils/const/getPath';
-import { Space } from '@mantine/core';
+import React from 'react';
 import { NextPage } from 'next';
 import Link from 'next/link';
-import React from 'react';
+import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
+import { PageContainer } from '@/components/PageContainer';
+import { CustomButton } from '@/components/Common/CustomButton';
+import { HomeCareList } from '@/components/HomeCare/HomeCareList';
+import { getPath } from '@/utils/const/getPath';
+import { useAuth } from '@/hooks/auth/useAuth';
+import { Space } from '@mantine/core';
 
 const HomeCarePage: NextPage = () => {
   useAuth();

@@ -12,7 +12,7 @@ import { CreateMobilityParams, createInitialState } from '@/ducks/mobility/slice
 import { useGetUserListByServiceQuery } from '@/ducks/user/query';
 import { useCreateMobilityMutation, useUpdateMobilityMutation } from '@/ducks/mobility/query';
 import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
-import { UseGetFormType, useGetForm } from '@/hooks/form/useGetForm';
+import { UseGetRecordFormType, useGetRecordForm } from '@/hooks/form/useGetRecordForm';
 import { validate } from '@/utils/validate/mobility';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
@@ -31,10 +31,14 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
   const router = useRouter();
   const mobilityId = router.query.id as string;
   const [isLoading, setIsLoading] = useState(false);
+  const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
   const { hasPermit } = useHasPermit();
   const mobilityList = useSelector((state) => state.mobility.mobilityList);
   const mobilityData = mobilityList.find((mobility) => mobility.id === mobilityId);
-  const { data: userList = [] } = useGetUserListByServiceQuery('is_ido');
+  const { data: userList = [] } = useGetUserListByServiceQuery({
+    corporateId: loginProviderInfo.corporate_id,
+    serviceName: 'is_ido',
+  });
   const { data: staffList } = useGetStaffListByServiceQuery('ido');
   const [createMobility] = useCreateMobilityMutation();
   const [updateMobility] = useUpdateMobilityMutation();
@@ -46,7 +50,7 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
     handleRefresh,
     amountTime,
     recordSubmit,
-  }: UseGetFormType<CreateMobilityParams> = useGetForm({
+  }: UseGetRecordFormType<CreateMobilityParams> = useGetRecordForm({
     type,
     SERVICE_CONTENT,
     createInitialState,

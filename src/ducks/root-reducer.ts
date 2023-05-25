@@ -14,23 +14,25 @@ import { homeCareApi } from './home-care/query';
 import accompanySlice from './accompany/slice';
 import { accompanyApi } from './accompany/query';
 import userSlice from './user/slice';
+import homeCareSlice from './home-care/slice';
 
 const rootReducer = combineReducers({
   provider: providerSlice.reducer,
   user: userSlice.reducer,
   staff: staffSlice.reducer,
+  accompany: accompanySlice.reducer,
   behavior: behaviorSlice.reducer,
+  homeCare: homeCareSlice.reducer,
   mobility: mobilitySlice.reducer,
   schedule: scheduleSlice.reducer,
-  accompany: accompanySlice.reducer,
   [providerApi.reducerPath]: providerApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [staffApi.reducerPath]: staffApi.reducer,
-  [homeCareApi.reducerPath]: homeCareApi.reducer,
+  [accompanyApi.reducerPath]: accompanyApi.reducer,
   [behaviorApi.reducerPath]: behaviorApi.reducer,
+  [homeCareApi.reducerPath]: homeCareApi.reducer,
   [mobilityApi.reducerPath]: mobilityApi.reducer,
   [scheduleApi.reducerPath]: scheduleApi.reducer,
-  [accompanyApi.reducerPath]: accompanyApi.reducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

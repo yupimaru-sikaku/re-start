@@ -1,90 +1,35 @@
 import { PostgrestError } from '@supabase/supabase-js';
 import { ContentArr } from '../common-service/slice';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { homeCareApi } from './query';
+
+type ServiceRecordArr = {
+  amount_title: string; // 契約サービス名
+  amount_value: number; // 契約支給量
+};
 
 type HomeCare = {
   id: string;
+  login_id: string; // ログインユーザのID
+  corporate_id: string; // 作成した法人のID
   year: number; // 作成する西暦
   month: number; // 作成する月
-  identification: string; // 受給者証番号
   user_name: string; // 利用者名
-  amount_title_1: string; // 契約支給量
-  amount_value_1: number; // 契約支給量
-  amount_title_2: string; // 契約支給量
-  amount_value_2: number; // 契約支給量
-  amount_title_3: string; // 契約支給量
-  amount_value_3: number; // 契約支給量
+  service_record_arr: ServiceRecordArr[];
+  identification: string; // 受給者証番号
   content_arr: ContentArr[];
   status: number; // 記録票の進捗状況
-  corporate_id: string; // 作成した法人のID
-  login_id: string; // ログインユーザのID
+  is_display: boolean; // 表示するか
   created_at: string; // 作成日時
   updated_at: string; // 更新日時
 };
 
-export type CreateHomeCare = Omit<
-  HomeCare,
-  | 'id'
-  | 'year'
-  | 'month'
-  | 'amount_value_1'
-  | 'amount_title_2'
-  | 'amount_value_2'
-  | 'amount_title_3'
-  | 'amount_value_3'
-  | 'content_arr'
-  | 'created_at'
-  | 'updated_at'
-> & {
-  year: number | null;
-  month: number | null;
-  amount_value_1: number | null;
-  amount_title_2: string | null;
-  amount_value_2: number | null;
-  amount_title_3: string | null;
-  amount_value_3: number | null;
-  content_arr: {
-    work_date: number | null;
-    service_content: string;
-    start_time: string | null;
-    end_time: string | null;
-    staff_name: string | null;
-  }[];
+export type CreateHomeCareParams = Omit<HomeCare, 'id' | 'created_at' | 'updated_at'>;
+export type CreateHomeCareResult = {
+  error: PostgrestError | null;
 };
 
-export type ReturnHomeCare = Omit<
-  HomeCare,
-  'amount_title_2' | 'amount_value_2' | 'amount_title_3' | 'amount_value_3' | 'content_arr'
-> & {
-  amount_title_2: string | null;
-  amount_value_2: number | null;
-  amount_title_3: string | null;
-  amount_value_3: number | null;
-  content_arr: {
-    work_date: number;
-    service_content: string;
-    start_time: string;
-    end_time: string;
-    staff_name: string | null;
-  }[];
-};
-
-export type UpdateHomeCareParams = Omit<
-  HomeCare,
-  'amount_title_2' | 'amount_value_2' | 'amount_title_3' | 'amount_value_3' | 'content_arr' | 'created_at' | 'updated_at'
-> & {
-  amount_title_2: string | null;
-  amount_value_2: number | null;
-  amount_title_3: string | null;
-  amount_value_3: number | null;
-  content_arr: {
-    work_date: number;
-    service_content: string;
-    start_time: string;
-    end_time: string;
-    staff_name: string | null;
-  }[];
-};
-
+export type UpdateHomeCareParams = Omit<HomeCare, 'created_at' | 'updated_at'>;
 export type UpdateHomeCareResult = {
   error: PostgrestError | null;
 };
@@ -93,17 +38,16 @@ export type DeleteHomeCareResult = {
   error: PostgrestError | null;
 };
 
-export const initialState = {
+export type ReturnHomeCare = HomeCare;
+
+export const createInitialState: CreateHomeCareParams = {
+  login_id: '',
+  corporate_id: '',
   year: 0,
   month: 0,
-  user_name: '',
   identification: '',
-  amount_title_1: '',
-  amount_value_1: 0,
-  amount_title_2: '',
-  amount_value_2: 0,
-  amount_title_3: '',
-  amount_value_3: 0,
+  user_name: '',
+  service_record_arr: [{ amount_title: '', amount_value: 0 }],
   content_arr: [
     {
       work_date: 0,
@@ -111,8 +55,60 @@ export const initialState = {
       start_time: '',
       end_time: '',
       staff_name: '',
+      city: '',
     },
   ],
   status: 0,
-  corporate_id: '',
+  is_display: false,
 };
+
+const initialState = {
+  homeCareData: {} as ReturnHomeCare,
+  homeCareList: [] as ReturnHomeCare[],
+};
+
+const homeCareSlice = createSlice({
+  name: 'homeCare',
+  initialState,
+  reducers: {
+    setHomeCareList: (state, action: PayloadAction<ReturnHomeCare[]>) => {
+      state.homeCareList = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      homeCareApi.endpoints.getHomeCareList.matchFulfilled,
+      (state, action: PayloadAction<ReturnHomeCare[]>) => {
+        state.homeCareList = action.payload;
+      }
+    );
+    builder.addMatcher(
+      homeCareApi.endpoints.getHomeCareListByCorporateId.matchFulfilled,
+      (state, action: PayloadAction<ReturnHomeCare[]>) => {
+        state.homeCareList = action.payload;
+      }
+    );
+    builder.addMatcher(
+      homeCareApi.endpoints.getHomeCareListByLoginId.matchFulfilled,
+      (state, action: PayloadAction<ReturnHomeCare[]>) => {
+        state.homeCareList = action.payload;
+      }
+    );
+    builder.addMatcher(homeCareApi.endpoints.getHomeCareData.matchFulfilled, (state, action: PayloadAction<ReturnHomeCare>) => {
+      state.homeCareData = action.payload;
+    });
+    builder.addMatcher(homeCareApi.endpoints.createHomeCare.matchFulfilled, (state, action: PayloadAction<ReturnHomeCare>) => {
+      state.homeCareList = [action.payload, ...state.homeCareList];
+    });
+    builder.addMatcher(homeCareApi.endpoints.updateHomeCare.matchFulfilled, (state, action: PayloadAction<ReturnHomeCare>) => {
+      state.homeCareList = state.homeCareList.map((homeCare) =>
+        homeCare.id === action.payload.id ? action.payload : homeCare
+      );
+      state.homeCareData = action.payload;
+    });
+  },
+});
+
+export default homeCareSlice;
+
+export const { setHomeCareList } = homeCareSlice.actions;

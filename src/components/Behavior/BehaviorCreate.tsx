@@ -12,7 +12,7 @@ import { CreateBehaviorParams, createInitialState } from '@/ducks/behavior/slice
 import { useGetUserListByServiceQuery } from '@/ducks/user/query';
 import { useCreateBehaviorMutation, useUpdateBehaviorMutation } from '@/ducks/behavior/query';
 import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
-import { UseGetFormType, useGetForm } from '@/hooks/form/useGetForm';
+import { UseGetRecordFormType, useGetRecordForm } from '@/hooks/form/useGetRecordForm';
 import { validate } from '@/utils/validate/behavior';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
@@ -32,9 +32,13 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
   const behaviorId = router.query.id as string;
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { hasPermit } = useHasPermit();
+  const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
   const behaviorList = useSelector((state) => state.behavior.behaviorList);
   const behaviorData = behaviorList.find((behavior) => behavior.id === behaviorId);
-  const { data: userList = [] } = useGetUserListByServiceQuery('is_kodo');
+  const { data: userList = [] } = useGetUserListByServiceQuery({
+    corporateId: loginProviderInfo.corporate_id,
+    serviceName: 'is_kodo',
+  });
   const { data: staffList } = useGetStaffListByServiceQuery('kodo');
   const [createBehavior] = useCreateBehaviorMutation();
   const [updateBehavior] = useUpdateBehaviorMutation();
@@ -46,7 +50,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
     handleRefresh,
     amountTime,
     recordSubmit,
-  }: UseGetFormType<CreateBehaviorParams> = useGetForm({
+  }: UseGetRecordFormType<CreateBehaviorParams> = useGetRecordForm({
     type,
     SERVICE_CONTENT,
     createInitialState,

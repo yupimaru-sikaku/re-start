@@ -1,8 +1,7 @@
 import { CustomConfirm } from '@/components/Common/CustomConfirm';
-import { RootState } from '@/ducks/root-reducer';
 import { useCreateScheduleMutation, useGetScheduleListQuery, useUpdateScheduleMutation } from '@/ducks/schedule/query';
 import { useAppDispatch, useSelector } from '@/ducks/store';
-import { calcWorkTime } from '@/utils';
+import { KAZI, KYOTAKU, SHINTAI, TSUIN, WITH_TSUIN, calcEachWorkTime } from '@/utils';
 import { UseFormReturnType, useForm } from '@mantine/form';
 import { ChangeEvent, useEffect } from 'react';
 import { checkOverlap } from './checkOverlap';
@@ -10,26 +9,29 @@ import { UpdateScheduleParams, UpdateScheduleResult, addScheduleList, updateSche
 import {
   ContentArr,
   RecordServiceType,
-  CreateRecordInitialStateType,
   CreateRecordValidateType,
   CreateRecordType,
   UpdateRecordType,
 } from '@/ducks/common-service/slice';
+import { CreateHomeCareParams } from '@/ducks/home-care/slice';
 
-export type UseGetFormType<T> = {
+export type UseGetHomeCareRecordFormType<T> = {
   form: UseFormReturnType<T>;
   handleChangeDate: (e: ChangeEvent<HTMLInputElement>, index: number) => void;
   handleChangeStaff: (staffName: string, index: number) => void;
   handleChangeTime: (time: Date[], index: number) => void;
+  handleChangeService: (serviceContent: string | null, index: number) => void;
   handleRefresh: (index: number) => void;
-  amountTime: number;
-  recordSubmit: any;
+  kaziAmountTime: number;
+  shintaiAmountTime: number;
+  withTsuinAmountTime: number;
+  tsuinAmountTime: number;
+  recordSubmit: () => Promise<RecordSubmitResult>;
 };
 
 type GetFormType = {
   type: 'create' | 'edit';
-  SERVICE_CONTENT: '同行援護' | '行動援護' | '移動支援';
-  createInitialState: CreateRecordInitialStateType;
+  createInitialState: CreateHomeCareParams;
   recordData?: RecordServiceType;
   validate: CreateRecordValidateType;
   createRecord: CreateRecordType;
@@ -41,9 +43,8 @@ type RecordSubmitResult = {
   message: string;
 };
 
-export const useGetForm = ({
+export const useGetHomeCareRecordForm = ({
   type,
-  SERVICE_CONTENT,
   createInitialState,
   recordData,
   validate,
@@ -51,6 +52,7 @@ export const useGetForm = ({
   updateRecord,
 }: GetFormType) => {
   const TITLE = type === 'create' ? '登録' : '更新';
+  const SERVICE_CONTENT = KYOTAKU;
   const currentDate = new Date();
   const dispatch = useAppDispatch();
   const form = useForm({
@@ -62,9 +64,9 @@ export const useGetForm = ({
     },
     validate: validate,
   });
-  const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
-  const userList = useSelector((state: RootState) => state.user.userList);
-  const staffList = useSelector((state: RootState) => state.staff.staffList);
+  const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
+  const userList = useSelector((state) => state.user.userList);
+  const staffList = useSelector((state) => state.staff.staffList);
   const selectedUser = userList.find((user) => user.name === form.values.user_name);
   const [createSchedule] = useCreateScheduleMutation();
   const [updateSchedule] = useUpdateScheduleMutation();
@@ -85,17 +87,19 @@ export const useGetForm = ({
 
   // 日付を入力した場合
   const handleChangeDate = (e: ChangeEvent<HTMLInputElement>, index: number) => {
-    const newContentArr = form.values.content_arr.map((content: ContentArr, contentIndex: number) => {
-      return contentIndex === index
-        ? {
-            ...content,
-            work_date: Number(e.target.value),
-          }
-        : content;
+    const newContentArr = form.values.content_arr.map((content, contentIndex) => {
+      return contentIndex === index ? { ...content, work_date: Number(e.target.value) } : content;
     });
     form.setFieldValue('content_arr', newContentArr);
   };
-
+  // サービスを選択した場合
+  const handleChangeService = (serviceContent: string | null, index: number) => {
+    if (!serviceContent) return;
+    const newContentArr = form.values.content_arr.map((content, contentIndex) => {
+      return contentIndex === index ? { ...content, service_content: serviceContent } : content;
+    });
+    form.setFieldValue('content_arr', newContentArr);
+  };
   // スタッフを入力した時
   const handleChangeStaff = (staffName: string, index: number) => {
     const newContentArr = form.values.content_arr.map((content: ContentArr, contentIndex: number) => {
@@ -159,19 +163,21 @@ export const useGetForm = ({
     form.setFieldValue('content_arr', newContentArr);
   };
 
-  // 合計勤務時間
-  const amountTime = form.values.content_arr.reduce((sum: number, content: ContentArr) => {
-    if (content.start_time === '' || content.end_time === '') {
-      return sum;
-    }
-    return sum + Number(calcWorkTime(content.start_time, content.end_time));
-  }, 0);
+  // 各サービスの各合計勤務時間
+  const { kaziAmountTime, shintaiAmountTime, withTsuinAmountTime, tsuinAmountTime } = calcEachWorkTime(form.values.content_arr);
+  // 各サービスの名称と契約支給量
+  const serviceRecordArr = [
+    selectedUser?.is_kazi ? { amount_title: KAZI, amount_value: kaziAmountTime } : null,
+    selectedUser?.is_shintai ? { amount_title: SHINTAI, amount_value: shintaiAmountTime } : null,
+    selectedUser?.is_tsuin ? { amount_title: TSUIN, amount_value: tsuinAmountTime } : null,
+    selectedUser?.is_with_tsuin ? { amount_title: WITH_TSUIN, amount_value: withTsuinAmountTime } : null,
+  ].filter((item) => item !== null) as { amount_title: string; amount_value: number }[];
 
   // 登録・更新メソッド
   const recordSubmit = async (): Promise<RecordSubmitResult> => {
     const isOK = await CustomConfirm(`実績記録票を${TITLE}しますか？後から修正は可能です。`, '確認画面');
     if (!isOK) return { isFinished: false, message: '' };
-    // 空欄がある場合に除外して市区町村とサービス種別を加えて日付順にソート
+    // 空欄がある場合に除外して市区町村を加えて日付順にソート
     const formatArr: ContentArr[] = form.values.content_arr
       .filter((content: ContentArr) => {
         return content.work_date && content.start_time && content.end_time;
@@ -180,7 +186,6 @@ export const useGetForm = ({
         return {
           ...content,
           city: selectedUser!.city,
-          service_content: SERVICE_CONTENT,
         };
       })
       .sort((a: ContentArr, b: ContentArr) => a.work_date! - b.work_date!);
@@ -201,7 +206,7 @@ export const useGetForm = ({
         message: '記録は、少なくとも一行は作成ください。',
       };
     }
-    // カレンダーが重複していないか確認
+    // カレンダーで日付が重複していないか確認
     if (loginProviderInfo.role === 'admin') {
       const errorMessageList = checkOverlap(
         format2DArr,
@@ -221,11 +226,12 @@ export const useGetForm = ({
 
     try {
       // 記録票の作成・更新
-      const createRecordParams = {
+      const createRecordParams: CreateHomeCareParams = {
         ...form.values,
         login_id: loginProviderInfo.id,
         corporate_id: loginProviderInfo.corporate_id,
         identification: selectedUser!.identification,
+        service_record_arr: serviceRecordArr,
         content_arr: formatArr,
       };
       const { createRecordError } =
@@ -252,7 +258,12 @@ export const useGetForm = ({
           let newContentArr = [];
           if (selectedSchedule) {
             const removeContentArr = selectedSchedule.content_arr.filter(
-              (content) => content.user_name !== selectedUser!.name || content.service_content !== SERVICE_CONTENT
+              (content) =>
+                content.user_name !== selectedUser!.name ||
+                (content.service_content !== KAZI &&
+                  content.service_content !== SHINTAI &&
+                  content.service_content !== TSUIN &&
+                  content.service_content !== WITH_TSUIN)
             );
             const contentNewList = contentList.map((content) => {
               let { staff_name, ...rest } = content;
@@ -343,8 +354,12 @@ export const useGetForm = ({
     handleChangeDate,
     handleChangeStaff,
     handleChangeTime,
+    handleChangeService,
     handleRefresh,
-    amountTime,
+    kaziAmountTime,
+    shintaiAmountTime,
+    withTsuinAmountTime,
+    tsuinAmountTime,
     recordSubmit,
   };
 };

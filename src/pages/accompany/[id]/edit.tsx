@@ -6,8 +6,8 @@ import { AccompanyCreate } from '@/components/Accompany/AccompanyCreate';
 
 const AccompanyEditPage: NextPage = () => {
   return (
-    <DashboardLayout title="記録票編集">
-      <PageContainer title="実績記録票編集" fluid>
+    <DashboardLayout title="実績記録票編集（同行援護）">
+      <PageContainer title="実績記録票編集（同行援護）" fluid>
         <AccompanyCreate type="edit" />
       </PageContainer>
     </DashboardLayout>

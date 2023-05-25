@@ -1,6 +1,7 @@
 import { ContentArr } from '@/ducks/common-service/slice';
 import { ReturnSchedule, ScheduleContentArr } from '@/ducks/schedule/slice';
 import { ReturnUser } from '@/ducks/user/slice';
+import { KAZI, SHINTAI, TSUIN, WITH_TSUIN } from '@/utils';
 
 export const checkOverlap = (
   format2DArray: ContentArr[][],
@@ -18,7 +19,12 @@ export const checkOverlap = (
       );
       if (selectedSchedule) {
         const removeContentArr = selectedSchedule.content_arr.filter(
-          (content) => content.user_name !== selectedUser!.name || content.service_content !== SERVICE_CONTENT
+          (content) =>
+            content.user_name !== selectedUser!.name ||
+            (content.service_content !== KAZI &&
+              content.service_content !== SHINTAI &&
+              content.service_content !== TSUIN &&
+              content.service_content !== WITH_TSUIN)
         );
         const isOverlap = hasOverlap(removeContentArr, contentList);
         if (isOverlap) {

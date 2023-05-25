@@ -1,7 +1,6 @@
 import { ReturnAccompany } from '@/ducks/accompany/slice';
 import { ReturnBehavior } from '@/ducks/behavior/slice';
 import { ContentArr } from '@/ducks/common-service/slice';
-import { CreateHomeCare, ReturnHomeCare } from '@/ducks/home-care/slice';
 import { ReturnMobility } from '@/ducks/mobility/slice';
 import { ReturnSchedule, ScheduleContentArr } from '@/ducks/schedule/slice';
 import { ReturnUser } from '@/ducks/user/slice';
@@ -10,6 +9,15 @@ import { UseFormReturnType } from '@mantine/form';
 export const PAGE_SIZE = 10;
 export const monthList = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
 export const yearList = ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027'];
+
+export const DOKO = '同行援護';
+export const KODO = '行動援護';
+export const IDO = '移動支援';
+export const KYOTAKU = '居宅介護';
+export const KAZI = '家事援助';
+export const SHINTAI = '身体介護';
+export const TSUIN = '通院等介助（伴わない）';
+export const WITH_TSUIN = '通院等介助（伴う）';
 
 export const dokoColor = '#008000';
 export const kodoColor = '#fd7e00';
@@ -96,44 +104,44 @@ export const convertStartEndTimeFromString2Date = (startTime: string, endTime: s
 
 // サービスの種類を改行して表示
 export const formatServiceContent = (serviceContent: string): string => {
-  if (serviceContent === '通院等介助（伴う）') {
+  if (serviceContent === WITH_TSUIN) {
     return '通院等介助\n    (伴う)';
-  } else if (serviceContent === '通院等介助（伴わない）') {
+  } else if (serviceContent === TSUIN) {
     return '通院等介助\n (伴わない)';
   }
   return serviceContent;
 };
 
 // （居宅介護専用）記録票のオブジェクトから各サービスの合計算定時間を算出
-export const calcEachWorkTime = (contentArr: CreateHomeCare['content_arr'] | ReturnHomeCare['content_arr']) => {
-  let kaziAmount = 0;
-  let shintaiAmount = 0;
-  let withTsuinAmount = 0;
-  let tsuinAmount = 0;
+export const calcEachWorkTime = (contentArr: ContentArr[]) => {
+  let kaziAmountTime = 0;
+  let shintaiAmountTime = 0;
+  let withTsuinAmountTime = 0;
+  let tsuinAmountTime = 0;
 
-  (contentArr || []).map((content) => {
+  contentArr.map((content) => {
     const workTime = Number(calcWorkTime(content.start_time!, content.end_time!));
 
     switch (content.service_content) {
-      case '家事援助':
-        kaziAmount += workTime;
+      case KAZI:
+        kaziAmountTime += workTime;
         break;
-      case '身体介護':
-        shintaiAmount += workTime;
+      case SHINTAI:
+        shintaiAmountTime += workTime;
         break;
-      case '通院等介助（伴う）':
-        withTsuinAmount += workTime;
+      case WITH_TSUIN:
+        withTsuinAmountTime += workTime;
         break;
-      case '通院等介助（伴わない）':
-        tsuinAmount += workTime;
+      case TSUIN:
+        tsuinAmountTime += workTime;
         break;
     }
   });
   return {
-    kaziAmount: kaziAmount.toString(),
-    shintaiAmount: shintaiAmount.toString(),
-    withTsuinAmount: withTsuinAmount.toString(),
-    tsuinAmount: tsuinAmount.toString(),
+    kaziAmountTime,
+    shintaiAmountTime,
+    withTsuinAmountTime,
+    tsuinAmountTime,
   };
 };
 

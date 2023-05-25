@@ -3,7 +3,7 @@ import { ActionIcon, Checkbox, Group, SimpleGrid, Space, TextInput } from '@mant
 import Link from 'next/link';
 import { getPath } from '@/utils/const/getPath';
 import { IconEdit } from '@tabler/icons';
-import { convertSupabaseTime } from '@/utils';
+import { KAZI, SHINTAI, TSUIN, WITH_TSUIN, convertSupabaseTime } from '@/utils';
 import { DataTable } from 'mantine-datatable';
 import { ReturnUser } from '@/ducks/user/slice';
 
@@ -106,7 +106,7 @@ export const UserTableList = ({ loading, dataList }: Props) => {
           {
             accessor: 'kazi',
             width: 80,
-            title: '家事援助',
+            title: KAZI,
             render: (user: ReturnUser) => (
               <Group position="center">
                 <Checkbox readOnly checked={user.is_kazi} />
@@ -116,7 +116,7 @@ export const UserTableList = ({ loading, dataList }: Props) => {
           {
             accessor: 'shintai',
             width: 80,
-            title: '身体家事',
+            title: SHINTAI,
             render: (user: ReturnUser) => (
               <Group position="center">
                 <Checkbox readOnly checked={user.is_shintai} />
@@ -126,7 +126,7 @@ export const UserTableList = ({ loading, dataList }: Props) => {
           {
             accessor: 'with_tsuin',
             width: 150,
-            title: '通院等介助（伴う）',
+            title: WITH_TSUIN,
             render: (user: ReturnUser) => (
               <Group position="center">
                 <Checkbox readOnly checked={user.is_with_tsuin} />
@@ -136,7 +136,7 @@ export const UserTableList = ({ loading, dataList }: Props) => {
           {
             accessor: 'tsuin',
             width: 180,
-            title: '通院等介助（伴わない）',
+            title: TSUIN,
             render: (user: ReturnUser) => (
               <Group position="center">
                 <Checkbox readOnly checked={user.is_tsuin} />

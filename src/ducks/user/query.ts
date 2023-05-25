@@ -3,6 +3,8 @@ import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 import { PostgrestError } from '@supabase/supabase-js';
 import { CreateUserParams, CreateUserResult, DeleteUserResult, ReturnUser, UpdateUserParams, UpdateUserResult } from './slice';
 
+type ServiceType = 'is_doko' | 'is_kodo' | 'is_ido' | 'is_kyotaku';
+
 export const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery: fakeBaseQuery(),
@@ -28,7 +30,7 @@ export const userApi = createApi({
      * @param {string} corporateId
      * @return {ReturnUser[]}
      */
-    getUserListByCorporateId: builder.query<ReturnUser[], string>({
+    getUserListByCorporateId: builder.query({
       queryFn: async (corporateId: string) => {
         if (!corporateId) return { data: [] };
         const { data, error } = await supabase
@@ -42,16 +44,28 @@ export const userApi = createApi({
     }),
     /**
      * GET/サービスに属する利用者のリストを取得
-     * @param {string} serviceName
+     * @param {string} corporateId
      * @return {ReturnUser[]}
      */
-    getUserListByService: builder.query<ReturnUser[], string>({
-      queryFn: async (serviceName: string) => {
-        const { data, error } = await supabase
-          .from(getDb('USER'))
-          .select('*')
-          .eq(serviceName, true)
-          .order('updated_at', { ascending: false });
+    getUserListByService: builder.query({
+      queryFn: async ({ corporateId, serviceName }: { corporateId: string; serviceName: ServiceType }): Promise<any> => {
+        let data, error;
+        if (serviceName === 'is_kyotaku') {
+          ({ data, error } = await supabase
+            .from(getDb('USER'))
+            .select('*')
+            .eq('corporate_id', corporateId)
+            .or(`is_kazi.eq.true,is_shintai.eq.true,is_tsuin.eq.true,is_with_tsuin.eq.true`)
+            .order('updated_at', { ascending: false }));
+        } else {
+          ({ data, error } = await supabase
+            .from(getDb('USER'))
+            .select('*')
+            .eq('corporate_id', corporateId)
+            .eq(serviceName, true)
+            .order('updated_at', { ascending: false }));
+        }
+
         return data ? { data: data as ReturnUser[] } : { error: error as PostgrestError };
       },
     }),
@@ -60,7 +74,7 @@ export const userApi = createApi({
      * @param {string} loginId
      * @return {ReturnUser[]}
      */
-    getUserListByLoginId: builder.query<ReturnUser[], string>({
+    getUserListByLoginId: builder.query({
       queryFn: async (loginId: string) => {
         if (!loginId) return { data: [] };
         const { data, error } = await supabase
@@ -77,8 +91,8 @@ export const userApi = createApi({
      * @param {string} id
      * @return {ReturnUser}
      */
-    getUserById: builder.query<ReturnUser, string>({
-      queryFn: async (id: string) => {
+    getUserById: builder.query({
+      queryFn: async (id: string): Promise<any> => {
         const { data, error } = await supabase.from(getDb('USER')).select('*').eq('id', id);
         return data ? { data: data[0] as ReturnUser } : { error };
       },

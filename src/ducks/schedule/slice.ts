@@ -68,9 +68,12 @@ const scheduleSlice = createSlice({
       state.scheduleList = [action.payload, ...state.scheduleList];
     },
     updateScheduleList: (state, action: PayloadAction<ReturnSchedule>) => {
+      console.log('state.scheduleList', state.scheduleList);
+      console.log('action.payload', action.payload);
       state.scheduleList = state.scheduleList.map((schedule) =>
         schedule.id === action.payload.id ? action.payload : schedule
       );
+      console.log('state.scheduleList', state.scheduleList);
     },
   },
   extraReducers: (builder) => {
@@ -78,13 +81,6 @@ const scheduleSlice = createSlice({
       scheduleApi.endpoints.getScheduleList.matchFulfilled,
       (state, action: PayloadAction<ReturnSchedule[]>) => {
         state.scheduleList = action.payload;
-      }
-    );
-    builder.addMatcher(
-      accompanyApi.endpoints.createAccompany.matchFulfilled,
-      (state, action: PayloadAction<ReturnAccompany>) => {
-        // 同行援護を作成したらスケジュールリストにも追加されるようにする
-        // 移動支援、行動援護も一緒
       }
     );
     builder.addMatcher(scheduleApi.endpoints.getSchedule.matchFulfilled, (state, action: PayloadAction<ReturnSchedule>) => {

@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { NextPage } from 'next';
+import React, { FC, useState } from 'react';
 import { useFocusTrap } from '@mantine/hooks';
 import { useRouter } from 'next/router';
 import { CustomButton } from 'src/components/Common/CustomButton';
@@ -12,7 +11,7 @@ import { CreateAccompanyParams, createInitialState } from '@/ducks/accompany/sli
 import { useGetUserListByServiceQuery } from '@/ducks/user/query';
 import { useCreateAccompanyMutation, useUpdateAccompanyMutation } from '@/ducks/accompany/query';
 import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
-import { UseGetFormType, useGetForm } from '@/hooks/form/useGetForm';
+import { UseGetRecordFormType, useGetRecordForm } from '@/hooks/form/useGetRecordForm';
 import { validate } from '@/utils/validate/accompany';
 import { getPath } from '@/utils/const/getPath';
 import { showNotification } from '@mantine/notifications';
@@ -24,7 +23,7 @@ type Props = {
   type: 'create' | 'edit';
 };
 
-export const AccompanyCreate: NextPage<Props> = ({ type }) => {
+export const AccompanyCreate: FC<Props> = ({ type }) => {
   const TITLE = type === 'create' ? '登録' : '更新';
   const SERVICE_CONTENT = '同行援護';
   const focusTrapRef = useFocusTrap();
@@ -32,9 +31,13 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
   const accompanyId = router.query.id as string;
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { hasPermit } = useHasPermit();
+  const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
   const accompanyList = useSelector((state) => state.accompany.accompanyList);
   const accompanyData = accompanyList.find((accompany) => accompany.id === accompanyId);
-  const { data: userList = [] } = useGetUserListByServiceQuery('is_doko');
+  const { data: userList = [] } = useGetUserListByServiceQuery({
+    corporateId: loginProviderInfo.corporate_id,
+    serviceName: 'is_doko',
+  });
   const { data: staffList = [] } = useGetStaffListByServiceQuery('doko');
   const [createAccompany] = useCreateAccompanyMutation();
   const [updateAccompany] = useUpdateAccompanyMutation();
@@ -46,7 +49,7 @@ export const AccompanyCreate: NextPage<Props> = ({ type }) => {
     handleRefresh,
     amountTime,
     recordSubmit,
-  }: UseGetFormType<CreateAccompanyParams> = useGetForm({
+  }: UseGetRecordFormType<CreateAccompanyParams> = useGetRecordForm({
     type,
     SERVICE_CONTENT,
     createInitialState,
