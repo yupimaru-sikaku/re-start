@@ -2,7 +2,7 @@ import { ReturnAccompany } from '@/ducks/accompany/slice';
 import { ReturnBehavior } from '@/ducks/behavior/slice';
 import { ContentArr } from '@/ducks/common-service/slice';
 import { ReturnMobility } from '@/ducks/mobility/slice';
-import { ReturnSchedule, ScheduleContentArr } from '@/ducks/schedule/slice';
+import { ReturnSchedule } from '@/ducks/schedule/slice';
 import { ReturnUser } from '@/ducks/user/slice';
 import { UseFormReturnType } from '@mantine/form';
 

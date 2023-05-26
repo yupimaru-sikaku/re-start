@@ -85,8 +85,9 @@ export const accompanyApi = createApi({
             login_id: params.login_id,
             year: params.year,
             month: params.month,
-            identification: params.identification,
             user_name: params.user_name,
+            amount_value: params.amount_value,
+            identification: params.identification,
             content_arr: params.content_arr,
             status: params.status,
           })
@@ -109,8 +110,9 @@ export const accompanyApi = createApi({
             login_id: params.login_id,
             year: params.year,
             month: params.month,
-            identification: params.identification,
             user_name: params.user_name,
+            amount_value: params.amount_value,
+            identification: params.identification,
             content_arr: params.content_arr,
             status: params.status,
           })

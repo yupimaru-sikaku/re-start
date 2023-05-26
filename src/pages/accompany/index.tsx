@@ -8,12 +8,13 @@ import { AccompanyList } from '@/components/Accompany/AccompanyList';
 import { getPath } from '@/utils/const/getPath';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { Space } from '@mantine/core';
+import { DOKO } from '@/utils';
 
 const AccompanyPage: NextPage = () => {
   useAuth();
   return (
-    <DashboardLayout title="同行援護">
-      <PageContainer title="同行援護" fluid>
+    <DashboardLayout title={DOKO}>
+      <PageContainer title={DOKO} fluid>
         <Link href={getPath('ACCOMPANY_CREATE')}>
           <a>
             <CustomButton>実績記録票を作成する</CustomButton>

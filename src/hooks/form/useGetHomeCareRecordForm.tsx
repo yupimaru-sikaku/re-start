@@ -32,7 +32,7 @@ export type UseGetHomeCareRecordFormType<T> = {
 type GetFormType = {
   type: 'create' | 'edit';
   createInitialState: CreateHomeCareParams;
-  recordData?: RecordServiceType;
+  recordData?: any;
   validate: CreateRecordValidateType;
   createRecord: CreateRecordType;
   updateRecord: UpdateRecordType;

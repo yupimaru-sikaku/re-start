@@ -8,12 +8,13 @@ import { MobilityList } from '@/components/Mobility/MobilityList';
 import { getPath } from '@/utils/const/getPath';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { Space } from '@mantine/core';
+import { IDO } from '@/utils';
 
 const MobilityPage: NextPage = () => {
   useAuth();
   return (
-    <DashboardLayout title="移動支援">
-      <PageContainer title="移動支援" fluid>
+    <DashboardLayout title={IDO}>
+      <PageContainer title={IDO} fluid>
         <Link href={getPath('MOBILITY_CREATE')}>
           <a>
             <CustomButton>実績記録票を作成する</CustomButton>

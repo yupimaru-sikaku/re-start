@@ -2,9 +2,9 @@ import { CustomConfirm } from '@/components/Common/CustomConfirm';
 import { RootState } from '@/ducks/root-reducer';
 import { useCreateScheduleMutation, useGetScheduleListQuery, useUpdateScheduleMutation } from '@/ducks/schedule/query';
 import { useAppDispatch, useSelector } from '@/ducks/store';
-import { calcWorkTime } from '@/utils';
+import { DOKO, KODO, IDO, calcWorkTime } from '@/utils';
 import { UseFormReturnType, useForm } from '@mantine/form';
-import { ChangeEvent, useEffect } from 'react';
+import { ChangeEvent, useEffect, useMemo } from 'react';
 import { checkOverlap } from './checkOverlap';
 import { UpdateScheduleParams, UpdateScheduleResult, addScheduleList, updateScheduleList } from '@/ducks/schedule/slice';
 import {
@@ -28,7 +28,7 @@ export type UseGetRecordFormType<T> = {
 
 type GetFormType = {
   type: 'create' | 'edit';
-  SERVICE_CONTENT: '同行援護' | '行動援護' | '移動支援';
+  SERVICE_CONTENT: typeof DOKO | typeof KODO | typeof IDO;
   createInitialState: CreateRecordInitialStateType;
   recordData?: RecordServiceType;
   validate: CreateRecordValidateType;
@@ -66,6 +66,16 @@ export const useGetRecordForm = ({
   const userList = useSelector((state: RootState) => state.user.userList);
   const staffList = useSelector((state: RootState) => state.staff.staffList);
   const selectedUser = userList.find((user) => user.name === form.values.user_name);
+  const amountValue = useMemo(() => {
+    switch (SERVICE_CONTENT) {
+      case DOKO:
+        return selectedUser?.doko_amount || 0;
+      case KODO:
+        return selectedUser?.kodo_amount || 0;
+      case IDO:
+        return selectedUser?.ido_amount || 0;
+    }
+  }, [selectedUser, SERVICE_CONTENT]);
   const [createSchedule] = useCreateScheduleMutation();
   const [updateSchedule] = useUpdateScheduleMutation();
   const { data: scheduleList = [], refetch: scheduleRefetch } = useGetScheduleListQuery();
@@ -218,13 +228,13 @@ export const useGetRecordForm = ({
         };
       }
     }
-
     try {
       // 記録票の作成・更新
       const createRecordParams = {
         ...form.values,
         login_id: loginProviderInfo.id,
         corporate_id: loginProviderInfo.corporate_id,
+        amount_value: amountValue,
         identification: selectedUser!.identification,
         content_arr: formatArr,
       };

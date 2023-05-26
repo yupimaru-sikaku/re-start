@@ -5,9 +5,10 @@ import { validate as behaviorValidate } from '@/utils/validate/behavior';
 import { CreateAccompanyParams, ReturnAccompany } from '../accompany/slice';
 import { CreateBehaviorParams, ReturnBehavior } from '../behavior/slice';
 import { CreateMobilityParams, ReturnMobility } from '../mobility/slice';
-import { useCreateAccompanyMutation } from '../accompany/query';
+import { ReturnHomeCare } from '../home-care/slice';
 
-export type RecordServiceType = ReturnAccompany | ReturnMobility | ReturnBehavior;
+export type RecordServiceType = ReturnAccompany | ReturnMobility | ReturnBehavior | ReturnHomeCare;
+export type RecordServiceListType = ReturnAccompany[] | ReturnMobility[] | ReturnBehavior[] | ReturnHomeCare[];
 export type CreateRecordInitialStateType = CreateAccompanyParams | CreateBehaviorParams | CreateMobilityParams;
 export type CreateRecordValidateType = typeof accompanyValidate | typeof mobilityValidate | typeof behaviorValidate;
 export type CreateRecordType = any;

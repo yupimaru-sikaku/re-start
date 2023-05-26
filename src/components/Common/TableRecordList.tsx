@@ -3,26 +3,23 @@ import { ActionIcon, Group, Radio, Select, SimpleGrid, Space, Text, TextInput } 
 import Link from 'next/link';
 import { PATH, getPath } from '@/utils/const/getPath';
 import { IconEdit } from '@tabler/icons';
-import { convertSupabaseTime, monthList, yearList } from '@/utils';
+import { PAGE_SIZE, convertSupabaseTime, monthList, yearList } from '@/utils';
 import { DataTable } from 'mantine-datatable';
-import { ReturnAccompany } from '@/ducks/accompany/slice';
-import { ReturnMobility } from '@/ducks/mobility/slice';
-import { ReturnBehavior } from '@/ducks/behavior/slice';
-import { OptionButton } from './OptionButton';
-import { CustomConfirm } from './CustomConfirm';
-import { CreatePdf } from '../Accompany/CreatePdf';
-import { RecordServiceType } from '@/ducks/common-service/slice';
+import { OptionButton } from 'src/components/Common/OptionButton';
+import { CustomConfirm } from 'src/components/Common/CustomConfirm';
+import { CreatePdf } from 'src/components/Accompany/CreatePdf';
+import { RecordServiceListType, RecordServiceType, UpdateRecordType } from '@/ducks/common-service/slice';
 
 type Props = {
   path: keyof typeof PATH;
   loading: boolean;
-  dataList?: ReturnAccompany[] | ReturnBehavior[] | ReturnMobility[];
-  updateRecord: any;
+  dataList?: any;
+  updateRecord: UpdateRecordType;
 };
 
 export const TableRecordList = ({ path, loading, dataList, updateRecord }: Props) => {
-  const PAGE_SIZE = 10;
   const currentDate = new Date();
+  const [page, setPage] = useState(1);
   const recordPath = useMemo(() => {
     const defaultPath = '/recordList';
     switch (path) {
@@ -32,12 +29,13 @@ export const TableRecordList = ({ path, loading, dataList, updateRecord }: Props
         return `${defaultPath}/v1/kodo_record.pdf`;
       case 'MOBILITY_EDIT':
         return `${defaultPath}/v1/ido_record.pdf`;
+      case 'HOME_CARE_EDIT':
+        return `${defaultPath}/v1/kyotaku_record.pdf`;
       default:
         return '';
     }
   }, [path]);
 
-  const [page, setPage] = useState(1);
   const from = useMemo(() => {
     return dataList ? (page - 1) * PAGE_SIZE : 0;
   }, [page, dataList]);
@@ -65,7 +63,7 @@ export const TableRecordList = ({ path, loading, dataList, updateRecord }: Props
   useEffect(() => {
     let filteredRecords = originalRecordList;
     filteredRecords = filteredRecords.filter(
-      (record) =>
+      (record: any) =>
         record.year.toString().includes(searchParamObj.year.toString()) &&
         record.month.toString().includes(searchParamObj.month.toString()) &&
         record.user_name.includes(searchParamObj.userName)
@@ -152,7 +150,6 @@ export const TableRecordList = ({ path, loading, dataList, updateRecord }: Props
       <Space h="lg" />
       <DataTable
         noRecordsText="対象のデータがありません"
-        // sx={{ maxWidth: '650px' }}
         fetching={loading}
         striped
         highlightOnHover

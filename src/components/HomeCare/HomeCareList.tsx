@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { useSelector } from '@/ducks/store';
 import {
+  useGetHomeCareListQuery,
   useGetHomeCareListByCorporateIdQuery,
   useGetHomeCareListByLoginIdQuery,
-  useGetHomeCareListQuery,
   useUpdateHomeCareMutation,
 } from '@/ducks/home-care/query';
-import { TableRecordList } from '../Common/TableRecordList';
+import { TableRecordList } from 'src/components/Common/TableRecordList';
 
 export const HomeCareList = () => {
   const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);

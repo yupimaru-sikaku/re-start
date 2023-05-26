@@ -10,6 +10,7 @@ type Mobility = {
   year: number; // 作成する西暦
   month: number; // 作成する月
   user_name: string; // 利用者名
+  amount_value: number; // 契約支給量
   identification: string; // 受給者証番号
   content_arr: ContentArr[];
   status: number; // 記録票の進捗状況
@@ -39,8 +40,9 @@ export const createInitialState: CreateMobilityParams = {
   corporate_id: '',
   year: 0,
   month: 0,
-  identification: '',
   user_name: '',
+  amount_value: 0,
+  identification: '',
   content_arr: [
     {
       work_date: 0,
