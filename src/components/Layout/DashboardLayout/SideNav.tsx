@@ -103,7 +103,7 @@ const useStyles = createStyles<string, { collapsed?: boolean }>((theme, params, 
 
     linkIcon: {
       ref: icon,
-      color: theme.colors.gray[6],
+      color: theme.colors.gray[7],
     },
 
     linkLabel: params?.collapsed ? { display: 'none' } : {},

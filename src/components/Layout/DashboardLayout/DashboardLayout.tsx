@@ -3,14 +3,7 @@ import type { CustomLayout } from 'next';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useDisclosure } from '@mantine/hooks';
-import {
-  ActionIcon,
-  AppShell,
-  Box,
-  CloseButton,
-  Drawer,
-  MediaQuery,
-} from '@mantine/core';
+import { ActionIcon, AppShell, Box, CloseButton, Drawer, MediaQuery } from '@mantine/core';
 import Head from 'next/head';
 
 import { LayoutErrorBoundary } from '../LayoutErrorBoundary';
@@ -53,10 +46,7 @@ export const DashboardLayout: CustomLayout = ({ children, title }) => {
   );
 };
 
-const DrawerNav: FC<{ opened: boolean; handleClose: () => void }> = ({
-  opened,
-  handleClose,
-}) => {
+const DrawerNav: FC<{ opened: boolean; handleClose: () => void }> = ({ opened, handleClose }) => {
   const router = useRouter();
 
   // SideNav のメニュークリックで Drawer を閉じる処理
@@ -68,13 +58,7 @@ const DrawerNav: FC<{ opened: boolean; handleClose: () => void }> = ({
   }, [handleClose, router.events]);
 
   return (
-    <Drawer
-      opened={opened}
-      onClose={handleClose}
-      size="auto"
-      withCloseButton={false}
-      sx={{ position: 'relative' }}
-    >
+    <Drawer opened={opened} onClose={handleClose} size="auto" withCloseButton={false} sx={{ position: 'relative' }}>
       <CloseButton
         size="xl"
         radius="xl"
