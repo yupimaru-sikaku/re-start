@@ -1,25 +1,17 @@
-import { Box, Paper, SimpleGrid } from '@mantine/core';
 import type { CustomNextPage } from 'next';
-import { DashboardLayout } from 'src/components/Layout/DashboardLayout/DashboardLayout';
 import Link from 'next/link';
+import { Paper, SimpleGrid } from '@mantine/core';
+import { DashboardLayout } from 'src/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
 import { ITEMS } from '@/components/Layout/DashboardLayout/SideNav';
 import { useAuth } from '@/hooks/auth/useAuth';
-import { Logout } from 'tabler-icons-react';
-import { useAppDispatch } from '@/ducks/store';
-import { clearLoginProviderInfo } from '@/ducks/provider/slice';
-import { supabase } from '@/libs/supabase/supabase';
+import { TOP } from '@/utils';
 
 const Index: CustomNextPage = () => {
-  const dispatch = useAppDispatch();
   useAuth();
-  const handleLogout = async () => {
-    dispatch(clearLoginProviderInfo());
-    await supabase.auth.signOut();
-  };
   return (
-    <DashboardLayout title="トップページ">
-      <PageContainer title="ホーム" fluid>
+    <DashboardLayout title={TOP}>
+      <PageContainer title={TOP} fluid>
         <SimpleGrid
           breakpoints={[
             { minWidth: 'sm', cols: 2 },
@@ -45,20 +37,6 @@ const Index: CustomNextPage = () => {
               </a>
             </Link>
           ))}
-          <Box sx={{ cursor: 'pointer' }} onClick={handleLogout}>
-            <Paper
-              p="xl"
-              shadow="xs"
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-              }}
-            >
-              <Logout />
-              ログアウト
-            </Paper>
-          </Box>
         </SimpleGrid>
       </PageContainer>
     </DashboardLayout>

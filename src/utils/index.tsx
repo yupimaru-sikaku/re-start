@@ -10,6 +10,7 @@ export const PAGE_SIZE = 10;
 export const monthList = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
 export const yearList = ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027'];
 
+export const TOP = 'トップページ';
 export const DOKO = '同行援護';
 export const KODO = '行動援護';
 export const IDO = '移動支援';
