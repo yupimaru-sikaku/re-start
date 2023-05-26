@@ -5,7 +5,7 @@ import { ActionIcon, Group } from '@mantine/core';
 import { IconEdit } from '@tabler/icons';
 import { DataTable } from 'mantine-datatable';
 import Link from 'next/link';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 type Props = {
   loading: boolean;
@@ -14,7 +14,6 @@ type Props = {
 
 export const TableProviderList = ({ loading, dataList }: Props) => {
   const PAGE_SIZE = 10;
-  const currentDate = new Date();
 
   const [page, setPage] = useState(1);
   const from = useMemo(() => {
@@ -29,13 +28,6 @@ export const TableProviderList = ({ loading, dataList }: Props) => {
 
   const [records, setRecords] = useState(originalRecordList);
   const [searchParamObj, setSearchParamObj] = useState({});
-
-  const handleChangeSearchObj = useCallback((value: string, field: keyof typeof searchParamObj) => {
-    setSearchParamObj((prevState) => ({
-      ...prevState,
-      [field]: value,
-    }));
-  }, []);
 
   useEffect(() => {
     let filteredRecords = originalRecordList;

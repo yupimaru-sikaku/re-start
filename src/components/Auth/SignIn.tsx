@@ -1,21 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import {
-  Anchor,
-  Paper,
-  Title,
-  Text,
-  Group,
-  Checkbox,
-  Space,
-} from '@mantine/core';
+import { Anchor, Paper, Title, Text, Group, Checkbox, Space } from '@mantine/core';
 import { getPath } from '@/utils/const/getPath';
 import { AuthLayout } from 'src/components/Layout/AuthLayout/AuthLayout';
 import { useForm } from '@mantine/form';
-import {
-  LoginResult,
-  loginInitialState,
-} from 'src/ducks/provider/slice';
+import { LoginResult, loginInitialState } from 'src/ducks/provider/slice';
 import { useFocusTrap } from '@mantine/hooks';
 import { CustomTextInput } from 'src/components/Common/CustomTextInput';
 import { CustomPasswordInput } from '../Common/CustomPasswordInput';
@@ -25,10 +14,7 @@ import { validateEmail } from '@/utils/validate/common';
 import { useRouter } from 'next/router';
 import { IconCheck } from '@tabler/icons';
 import { showNotification } from '@mantine/notifications';
-import {
-  useGetProviderByIdQuery,
-  useLoginMutation,
-} from '@/ducks/provider/query';
+import { useLoginMutation } from '@/ducks/provider/query';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { useAppDispatch } from '@/ducks/store';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
@@ -64,9 +50,7 @@ export const SignIn = () => {
       //{session: {...}, user: {...}}
       // user: {id}
       if (error) {
-        throw new Error(
-          'Eメールアドレスかパスワードが間違っています'
-        );
+        throw new Error('Eメールアドレスかパスワードが間違っています');
       }
       // const loginProviderParams = {
       //   id: data.user.id,
@@ -124,9 +108,7 @@ export const SignIn = () => {
           <Group position="apart" mt="md">
             <Checkbox label="ログイン状態を保持" />
             <Link href={getPath('FORGOT_PASSWORD')} passHref>
-              <Anchor<'a'> size="sm">
-                パスワードをお忘れですか？
-              </Anchor>
+              <Anchor<'a'> size="sm">パスワードをお忘れですか？</Anchor>
             </Link>
           </Group>
           <Space h="xs" />

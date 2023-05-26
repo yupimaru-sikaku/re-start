@@ -35,11 +35,14 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
   const { hasPermit } = useHasPermit();
   const mobilityList = useSelector((state) => state.mobility.mobilityList);
   const mobilityData = mobilityList.find((mobility) => mobility.id === mobilityId);
-  const { data: userList = [] } = useGetUserListByServiceQuery({
-    corporateId: loginProviderInfo.corporate_id,
-    serviceName: 'is_ido',
-  });
-  const { data: staffList } = useGetStaffListByServiceQuery('ido');
+  const { data: userList = [] } = useGetUserListByServiceQuery(
+    {
+      corporateId: loginProviderInfo.corporate_id,
+      serviceName: 'is_ido',
+    },
+    { refetchOnMountOrArgChange: true }
+  );
+  const { data: staffList } = useGetStaffListByServiceQuery('ido', { refetchOnMountOrArgChange: true });
   const [createMobility] = useCreateMobilityMutation();
   const [updateMobility] = useUpdateMobilityMutation();
   const {

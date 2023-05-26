@@ -13,12 +13,15 @@ export const BehaviorList = () => {
   const behaviorList = useSelector((state) => state.behavior.behaviorList);
   const data1 = useGetBehaviorListQuery(undefined, {
     skip: loginProviderInfo.role !== 'admin',
+    refetchOnMountOrArgChange: true,
   });
   const data2 = useGetBehaviorListByCorporateIdQuery(loginProviderInfo.corporate_id, {
     skip: loginProviderInfo.role !== 'corporate',
+    refetchOnMountOrArgChange: true,
   });
   const data3 = useGetBehaviorListByLoginIdQuery(loginProviderInfo.id, {
     skip: loginProviderInfo.role !== 'office',
+    refetchOnMountOrArgChange: true,
   });
   const { isLoading: behaviorLoading } = useMemo(() => {
     if (loginProviderInfo.role === 'admin') {

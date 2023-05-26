@@ -31,7 +31,7 @@ export const userApi = createApi({
      * @return {ReturnUser[]}
      */
     getUserListByCorporateId: builder.query({
-      queryFn: async (corporateId: string) => {
+      queryFn: async (corporateId: string): Promise<any> => {
         if (!corporateId) return { data: [] };
         const { data, error } = await supabase
           .from(getDb('USER'))

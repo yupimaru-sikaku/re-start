@@ -35,11 +35,16 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
   const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
   const behaviorList = useSelector((state) => state.behavior.behaviorList);
   const behaviorData = behaviorList.find((behavior) => behavior.id === behaviorId);
-  const { data: userList = [] } = useGetUserListByServiceQuery({
-    corporateId: loginProviderInfo.corporate_id,
-    serviceName: 'is_kodo',
-  });
-  const { data: staffList } = useGetStaffListByServiceQuery('kodo');
+  const { data: userList = [] } = useGetUserListByServiceQuery(
+    {
+      corporateId: loginProviderInfo.corporate_id,
+      serviceName: 'is_kodo',
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
+  const { data: staffList } = useGetStaffListByServiceQuery('kodo', { refetchOnMountOrArgChange: true });
   const [createBehavior] = useCreateBehaviorMutation();
   const [updateBehavior] = useUpdateBehaviorMutation();
   const {

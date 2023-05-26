@@ -7,7 +7,9 @@ import { TableProviderList } from './TableProviderList';
 export const ProviderList = () => {
   const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
   const providerList = useSelector((state) => state.provider.providerList);
-  const { isLoading: providerLoading } = useGetProviderListByCorporateIdQuery(loginProviderInfo.corporate_id || skipToken);
+  const { isLoading: providerLoading } = useGetProviderListByCorporateIdQuery(loginProviderInfo.corporate_id || skipToken, {
+    refetchOnMountOrArgChange: true,
+  });
 
   return <TableProviderList loading={providerLoading} dataList={providerList} />;
 };

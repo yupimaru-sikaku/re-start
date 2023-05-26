@@ -5,7 +5,7 @@ import { StaffTableList } from 'src/components/Staff/StaffTableList';
 
 export const StaffList = () => {
   const staffList = useSelector((state) => state.staff.staffList);
-  const { isLoading: staffLoading } = useGetStaffListQuery();
+  const { isLoading: staffLoading } = useGetStaffListQuery(undefined, { refetchOnMountOrArgChange: true });
 
   return <StaffTableList loading={staffLoading} dataList={staffList} />;
 };

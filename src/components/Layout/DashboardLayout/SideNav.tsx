@@ -1,32 +1,15 @@
 import { FC } from 'react';
 import Link from 'next/link';
 import { useDisclosure } from '@mantine/hooks';
-import { createStyles, Navbar, Group, UnstyledButton, Tooltip, MediaQuery, Paper, ActionIcon } from '@mantine/core';
-import {
-  Home,
-  Settings,
-  ArrowLeft,
-  ArrowRight,
-  DeviceAnalytics,
-  Logout,
-  User,
-  Login,
-  Router,
-  Car,
-  Friends,
-  Walk,
-  HomeHeart,
-  Disabled2,
-} from 'tabler-icons-react';
+import { createStyles, Navbar, Group, UnstyledButton, MediaQuery, ActionIcon } from '@mantine/core';
+import { Home, ArrowLeft, ArrowRight, User, Car, Friends, Walk, HomeHeart, Disabled2 } from 'tabler-icons-react';
 import { getPath } from '@/utils/const/getPath';
 import { ActiveLink } from '@/utils/next/active-link';
 import { supabase } from '@/libs/supabase/supabase';
 import Image from 'next/image';
-import { RootState } from '@/ducks/root-reducer';
 import { useAppDispatch, useSelector } from '@/ducks/store';
 import { IconBuilding, IconCalendarEvent, IconLogout } from '@tabler/icons';
 import { clearLoginProviderInfo } from '@/ducks/provider/slice';
-import { useRouter } from 'next/router';
 import { changeThemeMode } from '@/ducks/global/slice';
 import { IconSun, IconMoonStars } from '@tabler/icons';
 
@@ -111,15 +94,15 @@ const useStyles = createStyles<string, { collapsed?: boolean }>((theme, params, 
 });
 
 export const ITEMS = [
-  { href: getPath('INDEX'), label: 'ホーム', Icon: Home },
-  { href: getPath('PROVIDER'), label: '事業所情報', Icon: IconBuilding },
-  { href: getPath('USER'), label: '利用者情報', Icon: Friends },
-  { href: getPath('STAFF'), label: 'スタッフ情報', Icon: User },
-  { href: getPath('SCHEDULE'), label: 'シフト管理', Icon: IconCalendarEvent },
-  { href: getPath('ACCOMPANY'), label: '同行援護', Icon: Disabled2 },
-  { href: getPath('BEHAVIOR'), label: '行動援護', Icon: Car },
-  { href: getPath('HOME_CARE'), label: '居宅介護', Icon: HomeHeart },
-  { href: getPath('MOBILITY'), label: '移動支援', Icon: Walk },
+  { href: getPath('INDEX'), label: 'ホーム', Icon: Home, role: 'all' },
+  { href: getPath('PROVIDER'), label: '事業所情報', Icon: IconBuilding, role: 'all' },
+  { href: getPath('USER'), label: '利用者情報', Icon: Friends, role: 'all' },
+  { href: getPath('STAFF'), label: 'スタッフ情報', Icon: User, role: 'admin' },
+  { href: getPath('SCHEDULE'), label: 'シフト管理', Icon: IconCalendarEvent, role: 'admin' },
+  { href: getPath('ACCOMPANY'), label: '同行援護', Icon: Disabled2, role: 'all' },
+  { href: getPath('BEHAVIOR'), label: '行動援護', Icon: Car, role: 'all' },
+  { href: getPath('HOME_CARE'), label: '居宅介護', Icon: HomeHeart, role: 'all' },
+  { href: getPath('MOBILITY'), label: '移動支援', Icon: Walk, role: 'all' },
 ];
 
 export const SideNav: FC<{ className?: string }> = ({ className }) => {
@@ -135,6 +118,7 @@ export const SideNav: FC<{ className?: string }> = ({ className }) => {
     const mode = themeMode === 'light' ? 'dark' : 'light';
     dispatch(changeThemeMode(mode));
   };
+  const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
 
   return (
     <Navbar p="md" className={cx(classes.navbar, className)}>
@@ -147,22 +131,25 @@ export const SideNav: FC<{ className?: string }> = ({ className }) => {
             </a>
           </Link>
         </Group>
-        {ITEMS.map(({ label, href, Icon }) => (
-          <ActiveLink href={href} passHref key={label}>
-            {(isActive) => {
-              return (
-                <a
-                  className={cx(classes.link, {
-                    [classes.linkActive]: isActive,
-                  })}
-                >
-                  <Icon className={classes.linkIcon} />
-                  <span className={classes.linkLabel}>{label}</span>
-                </a>
-              );
-            }}
-          </ActiveLink>
-        ))}
+        {ITEMS.map(
+          ({ label, href, Icon, role }) =>
+            (role === 'all' || loginProviderInfo.role === 'admin') && (
+              <ActiveLink href={href} passHref key={label}>
+                {(isActive) => {
+                  return (
+                    <a
+                      className={cx(classes.link, {
+                        [classes.linkActive]: isActive,
+                      })}
+                    >
+                      <Icon className={classes.linkIcon} />
+                      <span className={classes.linkLabel}>{label}</span>
+                    </a>
+                  );
+                }}
+              </ActiveLink>
+            )
+        )}
         <a className={cx(classes.link)} onClick={handleLogout}>
           <IconLogout className={classes.linkIcon} />
           <span className={classes.linkLabel}>ログアウト</span>

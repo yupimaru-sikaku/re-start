@@ -92,10 +92,17 @@ const userSlice = createSlice({
     builder.addMatcher(userApi.endpoints.getUserList.matchFulfilled, (state, action: PayloadAction<ReturnUser[]>) => {
       state.userList = action.payload;
     });
+    builder.addMatcher(
+      userApi.endpoints.getUserListByCorporateId.matchFulfilled,
+      (state, action: PayloadAction<ReturnUser[]>) => {
+        state.userList = action.payload;
+      }
+    );
     builder.addMatcher(userApi.endpoints.getUserById.matchFulfilled, (state, action: PayloadAction<ReturnUser>) => {
       state.userData = action.payload;
     });
     builder.addMatcher(userApi.endpoints.getUserListByService.matchFulfilled, (state, action: PayloadAction<ReturnUser[]>) => {
+      console.log('action.payload', action.payload);
       state.userList = action.payload;
     });
     builder.addMatcher(userApi.endpoints.createUser.matchFulfilled, (state, action: PayloadAction<ReturnUser>) => {

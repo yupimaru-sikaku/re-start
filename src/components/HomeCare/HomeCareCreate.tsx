@@ -35,11 +35,14 @@ export const HomeCareCreate: FC<Props> = ({ type }: Props) => {
   const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
   const homeCareList = useSelector((state) => state.homeCare.homeCareList);
   const homeCareData = homeCareList.find((homeCare) => homeCare.id === homeCareId);
-  const { data: userList = [] } = useGetUserListByServiceQuery({
-    corporateId: loginProviderInfo.corporate_id,
-    serviceName: 'is_kyotaku',
-  });
-  const { data: staffList = [] } = useGetStaffListByServiceQuery('kyotaku');
+  const { data: userList = [] } = useGetUserListByServiceQuery(
+    {
+      corporateId: loginProviderInfo.corporate_id,
+      serviceName: 'is_kyotaku',
+    },
+    { refetchOnMountOrArgChange: true }
+  );
+  const { data: staffList = [] } = useGetStaffListByServiceQuery('kyotaku', { refetchOnMountOrArgChange: true });
   const [createHomeCare] = useCreateHomeCareMutation();
   const [updateHomeCare] = useUpdateHomeCareMutation();
   const {

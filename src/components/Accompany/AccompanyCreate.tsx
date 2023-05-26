@@ -34,11 +34,16 @@ export const AccompanyCreate: FC<Props> = ({ type }) => {
   const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
   const accompanyList = useSelector((state) => state.accompany.accompanyList);
   const accompanyData = accompanyList.find((accompany) => accompany.id === accompanyId);
-  const { data: userList = [] } = useGetUserListByServiceQuery({
-    corporateId: loginProviderInfo.corporate_id,
-    serviceName: 'is_doko',
-  });
-  const { data: staffList = [] } = useGetStaffListByServiceQuery('doko');
+  const { data: userList = [] } = useGetUserListByServiceQuery(
+    {
+      corporateId: loginProviderInfo.corporate_id,
+      serviceName: 'is_doko',
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
+  const { data: staffList = [] } = useGetStaffListByServiceQuery('doko', { refetchOnMountOrArgChange: true });
   const [createAccompany] = useCreateAccompanyMutation();
   const [updateAccompany] = useUpdateAccompanyMutation();
   const {

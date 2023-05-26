@@ -52,6 +52,7 @@ export const useGetUserForm = ({ type, createInitialState, validate }: GetFormTy
       const createParams: CreateUserParams = {
         ...form.values,
         login_id: loginProviderInfo.id,
+        corporate_id: loginProviderInfo.corporate_id,
       };
       const { error } =
         type === 'create'

@@ -78,7 +78,9 @@ export const useGetRecordForm = ({
   }, [selectedUser, SERVICE_CONTENT]);
   const [createSchedule] = useCreateScheduleMutation();
   const [updateSchedule] = useUpdateScheduleMutation();
-  const { data: scheduleList = [], refetch: scheduleRefetch } = useGetScheduleListQuery();
+  const { data: scheduleList = [], refetch: scheduleRefetch } = useGetScheduleListQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   // useFormは再レンダリングされないので更新時は再取得
   useEffect(() => {

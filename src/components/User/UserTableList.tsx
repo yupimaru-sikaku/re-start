@@ -6,23 +6,24 @@ import { IconEdit } from '@tabler/icons';
 import { KAZI, SHINTAI, TSUIN, WITH_TSUIN, convertSupabaseTime } from '@/utils';
 import { DataTable } from 'mantine-datatable';
 import { ReturnUser } from '@/ducks/user/slice';
+import { useSelector } from '@/ducks/store';
 
 type Props = {
   loading: boolean;
-  dataList?: ReturnUser[];
 };
 
-export const UserTableList = ({ loading, dataList }: Props) => {
+export const UserTableList = ({ loading }: Props) => {
+  const userList = useSelector((state) => state.user.userList);
   const PAGE_SIZE = 10;
   const [page, setPage] = useState(1);
   const from = useMemo(() => {
-    return dataList ? (page - 1) * PAGE_SIZE : 0;
-  }, [page, dataList]);
+    return userList ? (page - 1) * PAGE_SIZE : 0;
+  }, [page, userList]);
   const to = useMemo(() => {
-    return dataList?.length ? from + PAGE_SIZE : 0;
+    return userList?.length ? from + PAGE_SIZE : 0;
   }, [from]);
   const originalRecordList = useMemo(() => {
-    return dataList?.slice(from, to) || [];
+    return userList?.slice(from, to) || [];
   }, [from]);
 
   const [records, setRecords] = useState(originalRecordList);
@@ -62,7 +63,7 @@ export const UserTableList = ({ loading, dataList }: Props) => {
         withBorder
         records={records}
         recordsPerPage={PAGE_SIZE}
-        totalRecords={dataList?.length || 0}
+        totalRecords={userList?.length || 0}
         page={page}
         onPageChange={(p) => setPage(p)}
         columns={[

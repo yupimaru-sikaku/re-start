@@ -13,12 +13,15 @@ export const HomeCareList = () => {
   const homeCareList = useSelector((state) => state.homeCare.homeCareList);
   const data1 = useGetHomeCareListQuery(undefined, {
     skip: loginProviderInfo.role !== 'admin',
+    refetchOnMountOrArgChange: true,
   });
   const data2 = useGetHomeCareListByCorporateIdQuery(loginProviderInfo.corporate_id, {
     skip: loginProviderInfo.role !== 'corporate',
+    refetchOnMountOrArgChange: true,
   });
   const data3 = useGetHomeCareListByLoginIdQuery(loginProviderInfo.id, {
     skip: loginProviderInfo.role !== 'office',
+    refetchOnMountOrArgChange: true,
   });
   const { isLoading: homeCareLoading } = useMemo(() => {
     if (loginProviderInfo.role === 'admin') {

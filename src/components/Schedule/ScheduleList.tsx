@@ -5,7 +5,7 @@ import ScheduleTableList from 'src/components/Schedule/ScheduleTableList';
 
 const ScheduleList = () => {
   const scheduleList = useSelector((state) => state.schedule.scheduleList);
-  const { isLoading: scheduleLoading } = useGetScheduleListQuery();
+  const { isLoading: scheduleLoading } = useGetScheduleListQuery(undefined, { refetchOnMountOrArgChange: true });
 
   return <ScheduleTableList loading={scheduleLoading} dataList={scheduleList} />;
 };
