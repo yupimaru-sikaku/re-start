@@ -15,8 +15,10 @@ import accompanySlice from './accompany/slice';
 import { accompanyApi } from './accompany/query';
 import userSlice from './user/slice';
 import homeCareSlice from './home-care/slice';
+import globalSlice from './global/slice';
 
 const rootReducer = combineReducers({
+  global: globalSlice.reducer,
   provider: providerSlice.reducer,
   user: userSlice.reducer,
   staff: staffSlice.reducer,

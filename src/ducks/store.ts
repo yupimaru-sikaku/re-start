@@ -17,7 +17,7 @@ import { homeCareApi } from './home-care/query';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['provider', 'staff', 'user', 'homeCare', 'behavior', 'mobility', 'accompany', 'schedule'],
+  whitelist: ['global', 'provider', 'staff', 'user', 'homeCare', 'behavior', 'mobility', 'accompany', 'schedule'],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

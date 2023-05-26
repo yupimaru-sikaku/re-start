@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import Link from 'next/link';
 import { useDisclosure } from '@mantine/hooks';
-import { createStyles, Navbar, Group, UnstyledButton, Tooltip, MediaQuery, Paper } from '@mantine/core';
+import { createStyles, Navbar, Group, UnstyledButton, Tooltip, MediaQuery, Paper, ActionIcon } from '@mantine/core';
 import {
   Home,
   Settings,
@@ -27,6 +27,8 @@ import { useAppDispatch, useSelector } from '@/ducks/store';
 import { IconBuilding, IconCalendarEvent, IconLogout } from '@tabler/icons';
 import { clearLoginProviderInfo } from '@/ducks/provider/slice';
 import { useRouter } from 'next/router';
+import { changeThemeMode } from '@/ducks/global/slice';
+import { IconSun, IconMoonStars } from '@tabler/icons';
 
 const useStyles = createStyles<string, { collapsed?: boolean }>((theme, params, getRef) => {
   const icon: string = getRef('icon');
@@ -128,6 +130,11 @@ export const SideNav: FC<{ className?: string }> = ({ className }) => {
     dispatch(clearLoginProviderInfo());
     await supabase.auth.signOut();
   };
+  const themeMode = useSelector((state) => state.global.themeMode);
+  const changeMode = () => {
+    const mode = themeMode === 'light' ? 'dark' : 'light';
+    dispatch(changeThemeMode(mode));
+  };
 
   return (
     <Navbar p="md" className={cx(classes.navbar, className)}>
@@ -160,6 +167,14 @@ export const SideNav: FC<{ className?: string }> = ({ className }) => {
           <IconLogout className={classes.linkIcon} />
           <span className={classes.linkLabel}>ログアウト</span>
         </a>
+        <ActionIcon
+          className={cx(classes.link)}
+          variant="outline"
+          color={themeMode === 'dark' ? 'yellow' : 'blue'}
+          onClick={() => changeMode()}
+        >
+          {themeMode === 'dark' ? <IconSun size={18} /> : <IconMoonStars size={18} />}
+        </ActionIcon>
       </Navbar.Section>
 
       <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>

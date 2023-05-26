@@ -1,15 +1,32 @@
-import React from 'react';
-
-const primary = '#228be6';
-const secondary = '#536e95';
-const tertiary = '#11afd5';
-const bgColor = '#f8f9fa';
+const primary = '#7895B2';
+const secondary = '#AEBDCA';
+const tertiary = '#E8DFCA';
+const bgColor = '#F5EFE6';
 const white = '#fff';
 const black = '#495957';
+const extra1 = '#abcdef';
+const extra2 = '#fedcba';
+const extra3 = '#123456';
+const extra4 = '#654321';
 
-export const lightTheme = {};
+import { MantineTheme, DEFAULT_THEME, ColorScheme } from '@mantine/core';
 
-export const darkTheme = {};
+const lightTheme: MantineTheme = {
+  ...DEFAULT_THEME,
+  colorScheme: 'light' as ColorScheme,
+  colors: {
+    ...DEFAULT_THEME.colors,
+  },
+};
+
+const darkTheme: MantineTheme = {
+  ...DEFAULT_THEME,
+  colorScheme: 'dark' as ColorScheme,
+  colors: {
+    ...DEFAULT_THEME.colors,
+    dark: ['#d5d7e0', '#acaebf', '#8c8fa3', '#666980', '#4d4f66', '#34354a', '#2b2c3d', '#1d1e30', '#0c0d21', '#01010a'],
+  },
+};
 
 export const getTheme = (theme: 'light' | 'dark') => {
   return theme === 'light' ? lightTheme : darkTheme;
