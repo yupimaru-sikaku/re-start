@@ -81,7 +81,7 @@ export const MobilityCreate: NextPage<Props> = ({ type }) => {
 
   return (
     <Stack>
-      <LoadingOverlay className="relative" visible={type === 'edit' && !mobilityData} />
+      <LoadingOverlay sx={{ position: 'relative' }} visible={type === 'edit' && !mobilityData} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomStepper statusId={mobilityData?.status} />
       </Paper>

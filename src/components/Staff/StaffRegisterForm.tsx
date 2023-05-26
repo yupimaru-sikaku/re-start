@@ -50,7 +50,7 @@ export const StaffRegisterForm: NextPage<Props> = ({ type }) => {
   };
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef} className="relative">
+    <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef} style={{ position: 'relative' }}>
       <LoadingOverlay visible={type === 'edit' && !staffData} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomTextInput

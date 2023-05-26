@@ -48,7 +48,7 @@ export const ProviderCreate = ({ type }: Props) => {
   };
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef} className="relative">
+    <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef} style={{ position: 'relative' }}>
       <LoadingOverlay visible={type === 'edit' && !providerData} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomTextInput

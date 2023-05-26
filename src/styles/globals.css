@@ -365,5 +365,3 @@ Ensure the default browser behavior of the `hidden` attribute.
 [hidden] {
   display: none;
 }
-@tailwind components;
-@tailwind utilities;

@@ -56,7 +56,7 @@ export const UserRegisterForm: NextPage<Props> = ({ type }) => {
   };
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef} className="relative">
+    <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef} style={{ position: 'relative' }}>
       <LoadingOverlay visible={type === 'edit' && !userData} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomTextInput

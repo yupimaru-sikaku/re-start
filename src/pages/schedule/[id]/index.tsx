@@ -78,7 +78,7 @@ const ScheduleDetailPage: NextPage = () => {
 
   return (
     <DashboardLayout title={`勤怠状況（${staffName}）`}>
-      <LoadingOverlay className="relative" visible={!selectedSchedule} />
+      <LoadingOverlay sx={{ position: 'relative' }} visible={!selectedSchedule} />
       <PageContainer title={`勤怠状況（${staffName}）`} fluid>
         {selectedSchedule && (
           <>

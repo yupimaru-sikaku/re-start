@@ -142,7 +142,7 @@ export const SideNav: FC<{ className?: string }> = ({ className }) => {
         <Group className={classes.header} position="apart">
           <Link href={getPath('INDEX')}>
             <a className={classes.logo}>
-              <Image src="/icon.webp" alt="icon" width={50} height={50} className="rounded-xl" />
+              <Image src="/icon.webp" alt="icon" width={50} height={50} />
               <span className={classes.linkLabel}>管理画面</span>
             </a>
           </Link>

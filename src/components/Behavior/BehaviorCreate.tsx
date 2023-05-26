@@ -81,7 +81,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
 
   return (
     <Stack>
-      <LoadingOverlay className="relative" visible={type === 'edit' && !behaviorData} />
+      <LoadingOverlay sx={{ position: 'relative' }} visible={type === 'edit' && !behaviorData} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomStepper statusId={behaviorData?.status} />
       </Paper>
