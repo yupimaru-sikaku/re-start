@@ -63,7 +63,7 @@ export const AccompanyCreate: FC<Props> = ({ type }) => {
   const { isLoading: staffLoading } = useGetStaffListQuery(undefined);
   const staffList = useSelector((state) => state.staff.staffList);
   // TODO：どの資格があればサービスを提供できるか
-  const selectedStaffList = staffList.filter((staff) => staff.is_doko_apply && staff.is_doko_normal);
+  const selectedStaffList = staffList.filter((staff) => staff.is_doko_apply || staff.is_doko_normal);
   const [createAccompany] = useCreateAccompanyMutation();
   const [updateAccompany] = useUpdateAccompanyMutation();
   const {
