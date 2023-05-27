@@ -31,7 +31,6 @@ export const providerApi = createApi({
         return { data, error };
       },
     }),
-
     /**
      * POST/作成
      * @param {CreateProviderWithSignUpParams} params

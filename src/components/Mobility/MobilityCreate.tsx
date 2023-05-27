@@ -48,7 +48,18 @@ export const MobilityCreate: FC<Props> = ({ type }) => {
   const userList = useSelector((state) => state.user.userList);
   const mobilityData = selectedMobilityList.find((mobility) => mobility.id === mobilityId);
   const { isLoading: userLoading } = useGetUserListQuery(undefined);
-  const selectedUserList = userList.filter((user) => user.is_ido && user.corporate_id === loginProviderInfo.corporate_id);
+  const selectedUserList = useMemo(() => {
+    switch (loginProviderInfo.role) {
+      case 'admin':
+        return userList;
+      case 'corporate':
+        return userList.filter((user) => user.is_ido && user.corporate_id === loginProviderInfo.corporate_id);
+      case 'office':
+        return userList.filter((user) => user.is_ido && user.login_id === loginProviderInfo.id);
+      default:
+        return [];
+    }
+  }, [userList]);
   const { isLoading: staffLoading } = useGetStaffListQuery(undefined);
   const staffList = useSelector((state) => state.staff.staffList);
   // TODO：どの資格があればサービスを提供できるか

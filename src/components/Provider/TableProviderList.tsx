@@ -1,5 +1,6 @@
 import { ReturnProvider } from '@/ducks/provider/slice';
-import { convertSupabaseTime } from '@/utils';
+import { useSelector } from '@/ducks/store';
+import { PAGE_SIZE, convertSupabaseTime } from '@/utils';
 import { getPath } from '@/utils/const/getPath';
 import { ActionIcon, Group } from '@mantine/core';
 import { IconEdit } from '@tabler/icons';
@@ -13,9 +14,8 @@ type Props = {
 };
 
 export const TableProviderList = ({ loading, dataList }: Props) => {
-  const PAGE_SIZE = 10;
-
   const [page, setPage] = useState(1);
+  const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
   const from = useMemo(() => {
     return dataList ? (page - 1) * PAGE_SIZE : 0;
   }, [page, dataList]);
@@ -57,13 +57,11 @@ export const TableProviderList = ({ loading, dataList }: Props) => {
           width: 90,
           render: (provider: ReturnProvider) => (
             <Group spacing={4} position="center" noWrap>
-              <Link href={getPath('PROVIDER_EDIT', provider.id)}>
-                <a>
-                  <ActionIcon color="blue">
-                    <IconEdit size={20} />
-                  </ActionIcon>
-                </a>
-              </Link>
+              <ActionIcon color="blue">
+                <Link href={getPath('PROVIDER_EDIT', provider.id)}>
+                  <IconEdit size={20} />
+                </Link>
+              </ActionIcon>
             </Group>
           ),
         },

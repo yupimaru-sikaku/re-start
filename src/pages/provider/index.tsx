@@ -8,17 +8,21 @@ import { ProviderList } from '@/components/Provider/ProviderList';
 import { getPath } from '@/utils/const/getPath';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { Space } from '@mantine/core';
+import { useSelector } from '@/ducks/store';
 
 const ProviderPage: NextPage = () => {
+  const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
   useAuth();
   return (
     <DashboardLayout title="事業所情報">
       <PageContainer title="事業所情報" fluid>
-        <Link href={getPath('PROVIDER_CREATE')}>
-          <a>
-            <CustomButton>事業所情報登録</CustomButton>
-          </a>
-        </Link>
+        {loginProviderInfo.role !== 'office' && (
+          <Link href={getPath('PROVIDER_CREATE')}>
+            <a>
+              <CustomButton>事業所情報登録</CustomButton>
+            </a>
+          </Link>
+        )}
         <Space h="md" />
         <ProviderList />
       </PageContainer>

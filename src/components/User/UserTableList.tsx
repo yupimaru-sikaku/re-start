@@ -20,8 +20,9 @@ export const UserTableList = ({ loading }: Props) => {
       case 'admin':
         return userList;
       case 'corporate':
-      case 'office':
         return userList.filter((user) => user.corporate_id === loginProviderInfo.corporate_id);
+      case 'office':
+        return userList.filter((user) => user.login_id === loginProviderInfo.id);
       default:
         return [];
     }
@@ -74,7 +75,7 @@ export const UserTableList = ({ loading }: Props) => {
         withBorder
         records={records}
         recordsPerPage={PAGE_SIZE}
-        totalRecords={userList?.length || 0}
+        totalRecords={selectedUserList?.length || 0}
         page={page}
         onPageChange={(p) => setPage(p)}
         columns={[
