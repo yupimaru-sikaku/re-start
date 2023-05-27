@@ -1,6 +1,8 @@
 import { ContentArr } from '@/ducks/common-service/slice';
 import { CreateHomeCareParams } from '@/ducks/home-care/slice';
+import { ReturnStaff } from '@/ducks/staff/slice';
 import { useSelector } from '@/ducks/store';
+import { ReturnUser } from '@/ducks/user/slice';
 import { KAZI, SHINTAI, TSUIN, WITH_TSUIN, calcWorkTime, convertWeekItem } from '@/utils';
 import { ActionIcon, Group, Overlay, Paper, Select, Table, TextInput } from '@mantine/core';
 import { TimeRangeInput } from '@mantine/dates';
@@ -10,6 +12,8 @@ import React, { ChangeEvent, FC } from 'react';
 
 type Props = {
   form: UseFormReturnType<CreateHomeCareParams>;
+  staffList: ReturnStaff[];
+  userList: ReturnUser[];
   handleChangeDate: (e: ChangeEvent<HTMLInputElement>, index: number) => void;
   handleChangeService: (serviceContent: string | null, index: number) => void;
   handleChangeTime: (time: Date[], index: number) => void;
@@ -19,6 +23,8 @@ type Props = {
 
 export const HomeCareRecordContentArray: FC<Props> = ({
   form,
+  staffList,
+  userList,
   handleChangeDate,
   handleChangeService,
   handleChangeTime,
@@ -26,8 +32,6 @@ export const HomeCareRecordContentArray: FC<Props> = ({
   handleRefresh,
 }) => {
   const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
-  const staffList = useSelector((state) => state.staff.staffList);
-  const userList = useSelector((state) => state.user.userList);
   const selectedUser = userList.find((user) => user.name === form.values.user_name);
   const convertTimeRange = (content: ContentArr): [Date | null, Date | null] => {
     if (content.start_time && content.end_time) {

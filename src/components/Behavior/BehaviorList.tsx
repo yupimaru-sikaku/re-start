@@ -1,40 +1,32 @@
 import React, { useMemo } from 'react';
 import { useSelector } from '@/ducks/store';
-import {
-  useGetBehaviorListByCorporateIdQuery,
-  useGetBehaviorListByLoginIdQuery,
-  useGetBehaviorListQuery,
-  useUpdateBehaviorMutation,
-} from '@/ducks/behavior/query';
+import { useGetBehaviorListQuery, useUpdateBehaviorMutation } from '@/ducks/behavior/query';
 import { TableRecordList } from '../Common/TableRecordList';
 
 export const BehaviorList = () => {
   const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
   const behaviorList = useSelector((state) => state.behavior.behaviorList);
-  const data1 = useGetBehaviorListQuery(undefined, {
-    skip: loginProviderInfo.role !== 'admin',
-    refetchOnMountOrArgChange: true,
-  });
-  const data2 = useGetBehaviorListByCorporateIdQuery(loginProviderInfo.corporate_id, {
-    skip: loginProviderInfo.role !== 'corporate',
-    refetchOnMountOrArgChange: true,
-  });
-  const data3 = useGetBehaviorListByLoginIdQuery(loginProviderInfo.id, {
-    skip: loginProviderInfo.role !== 'office',
-    refetchOnMountOrArgChange: true,
-  });
-  const { isLoading: behaviorLoading } = useMemo(() => {
-    if (loginProviderInfo.role === 'admin') {
-      return data1;
-    } else if (loginProviderInfo.role === 'corporate') {
-      return data2;
-    } else {
-      return data3;
+  const { isLoading: behaviorLoading } = useGetBehaviorListQuery(undefined);
+  const selectedBehaviorList = useMemo(() => {
+    switch (loginProviderInfo.role) {
+      case 'admin':
+        return behaviorList;
+      case 'corporate':
+        return behaviorList.filter((behavior) => behavior.corporate_id === loginProviderInfo.corporate_id);
+      case 'office':
+        return behaviorList.filter((behavior) => behavior.login_id === loginProviderInfo.id);
+      default:
+        return [];
     }
-  }, [data1, data2, data3]);
+  }, [behaviorList, loginProviderInfo]);
   const [updateBehavior] = useUpdateBehaviorMutation();
 
   return (
-    <TableRecordList path="BEHAVIOR_EDIT" loading={behaviorLoading} dataList={behaviorList} updateRecord={updateBehavior} />
+    <TableRecordList
+      path="BEHAVIOR_EDIT"
+      loading={behaviorLoading}
+      dataList={selectedBehaviorList}
+      updateRecord={updateBehavior}
+    />
   );
 };

@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { useFocusTrap } from '@mantine/hooks';
 import { useRouter } from 'next/router';
 import { CustomButton } from 'src/components/Common/CustomButton';
@@ -8,9 +8,9 @@ import { RecordContentArray } from 'src/components/Common/RecordContentArray';
 import { CustomConfirm } from 'src/components/Common/CustomConfirm';
 import { Divider, LoadingOverlay, Overlay, Paper, Space, Stack } from '@mantine/core';
 import { CreateAccompanyParams, createInitialState } from '@/ducks/accompany/slice';
-import { useGetUserListByServiceQuery } from '@/ducks/user/query';
+import { useGetUserListQuery } from '@/ducks/user/query';
 import { useCreateAccompanyMutation, useUpdateAccompanyMutation } from '@/ducks/accompany/query';
-import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
+import { useGetStaffListQuery } from '@/ducks/staff/query';
 import { UseGetRecordFormType, useGetRecordForm } from '@/hooks/form/useGetRecordForm';
 import { validate } from '@/utils/validate/accompany';
 import { getPath } from '@/utils/const/getPath';
@@ -18,6 +18,7 @@ import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
 import { useSelector } from '@/ducks/store';
 import { useHasPermit } from '@/hooks/form/useHasPermit';
+import { DOKO } from '@/utils';
 
 type Props = {
   type: 'create' | 'edit';
@@ -25,25 +26,33 @@ type Props = {
 
 export const AccompanyCreate: FC<Props> = ({ type }) => {
   const TITLE = type === 'create' ? '登録' : '更新';
-  const SERVICE_CONTENT = '同行援護';
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
+  const { hasPermit } = useHasPermit();
   const accompanyId = router.query.id as string;
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { hasPermit } = useHasPermit();
   const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
   const accompanyList = useSelector((state) => state.accompany.accompanyList);
-  const accompanyData = accompanyList.find((accompany) => accompany.id === accompanyId);
-  const { data: userList = [] } = useGetUserListByServiceQuery(
-    {
-      corporateId: loginProviderInfo.corporate_id,
-      serviceName: 'is_doko',
-    },
-    {
-      refetchOnMountOrArgChange: true,
+  const selectedAccompanyList = useMemo(() => {
+    switch (loginProviderInfo.role) {
+      case 'admin':
+        return accompanyList;
+      case 'corporate':
+        return accompanyList.filter((accompany) => accompany.corporate_id === loginProviderInfo.corporate_id);
+      case 'office':
+        return accompanyList.filter((accompany) => accompany.login_id === loginProviderInfo.id);
+      default:
+        return [];
     }
-  );
-  const { data: staffList = [] } = useGetStaffListByServiceQuery('doko', { refetchOnMountOrArgChange: true });
+  }, [accompanyList, loginProviderInfo]);
+  const userList = useSelector((state) => state.user.userList);
+  const accompanyData = selectedAccompanyList.find((accompany) => accompany.id === accompanyId);
+  const { isLoading: userLoading } = useGetUserListQuery(undefined);
+  const selectedUserList = userList.filter((user) => user.is_doko && user.corporate_id === loginProviderInfo.corporate_id);
+  const { isLoading: staffLoading } = useGetStaffListQuery(undefined);
+  const staffList = useSelector((state) => state.staff.staffList);
+  // TODO：どの資格があればサービスを提供できるか
+  const selectedStaffList = staffList.filter((staff) => staff.is_doko_apply && staff.is_doko_normal);
   const [createAccompany] = useCreateAccompanyMutation();
   const [updateAccompany] = useUpdateAccompanyMutation();
   const {
@@ -56,7 +65,7 @@ export const AccompanyCreate: FC<Props> = ({ type }) => {
     recordSubmit,
   }: UseGetRecordFormType<CreateAccompanyParams> = useGetRecordForm({
     type,
-    SERVICE_CONTENT,
+    SERVICE_CONTENT: DOKO,
     createInitialState,
     recordData: accompanyData,
     createRecord: createAccompany,
@@ -92,12 +101,19 @@ export const AccompanyCreate: FC<Props> = ({ type }) => {
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef} style={{ position: 'relative' }}>
         {!hasPermit(accompanyData?.status || 0, 'enableEdit') && <Overlay opacity={0.6} color="#fff" zIndex={5} radius="md" />}
         <Paper withBorder shadow="md" p={30} radius="md">
-          <RecordBasicInfo type={type} form={form} recordList={accompanyList} amountTime={amountTime} />
+          <RecordBasicInfo
+            type={type}
+            form={form}
+            recordList={selectedAccompanyList}
+            userList={selectedUserList}
+            amountTime={amountTime}
+          />
           <Space h="lg" />
           <Divider variant="dotted" />
           <Space h="lg" />
           <RecordContentArray
             form={form}
+            staffList={selectedStaffList}
             handleChangeDate={handleChangeDate}
             handleChangeTime={handleChangeTime}
             handleChangeStaff={handleChangeStaff}

@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { NextPage } from 'next';
+import React, { FC, useMemo, useState } from 'react';
 import { useFocusTrap } from '@mantine/hooks';
 import { useRouter } from 'next/router';
 import { CustomButton } from 'src/components/Common/CustomButton';
@@ -9,9 +8,9 @@ import { RecordContentArray } from 'src/components/Common/RecordContentArray';
 import { CustomConfirm } from 'src/components/Common/CustomConfirm';
 import { Divider, LoadingOverlay, Overlay, Paper, Space, Stack } from '@mantine/core';
 import { CreateBehaviorParams, createInitialState } from '@/ducks/behavior/slice';
-import { useGetUserListByServiceQuery } from '@/ducks/user/query';
+import { useGetUserListQuery } from '@/ducks/user/query';
 import { useCreateBehaviorMutation, useUpdateBehaviorMutation } from '@/ducks/behavior/query';
-import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
+import { useGetStaffListQuery } from '@/ducks/staff/query';
 import { UseGetRecordFormType, useGetRecordForm } from '@/hooks/form/useGetRecordForm';
 import { validate } from '@/utils/validate/behavior';
 import { getPath } from '@/utils/const/getPath';
@@ -19,32 +18,41 @@ import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
 import { useSelector } from '@/ducks/store';
 import { useHasPermit } from '@/hooks/form/useHasPermit';
+import { KODO } from '@/utils';
 
 type Props = {
   type: 'create' | 'edit';
 };
 
-export const BehaviorCreate: NextPage<Props> = ({ type }) => {
+export const BehaviorCreate: FC<Props> = ({ type }) => {
   const TITLE = type === 'create' ? '登録' : '更新';
-  const SERVICE_CONTENT = '行動援護';
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
+  const { hasPermit } = useHasPermit();
   const behaviorId = router.query.id as string;
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { hasPermit } = useHasPermit();
   const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
   const behaviorList = useSelector((state) => state.behavior.behaviorList);
-  const behaviorData = behaviorList.find((behavior) => behavior.id === behaviorId);
-  const { data: userList = [] } = useGetUserListByServiceQuery(
-    {
-      corporateId: loginProviderInfo.corporate_id,
-      serviceName: 'is_kodo',
-    },
-    {
-      refetchOnMountOrArgChange: true,
+  const selectedBehaviorList = useMemo(() => {
+    switch (loginProviderInfo.role) {
+      case 'admin':
+        return behaviorList;
+      case 'corporate':
+        return behaviorList.filter((behavior) => behavior.corporate_id === loginProviderInfo.corporate_id);
+      case 'office':
+        return behaviorList.filter((behavior) => behavior.login_id === loginProviderInfo.id);
+      default:
+        return [];
     }
-  );
-  const { data: staffList } = useGetStaffListByServiceQuery('kodo', { refetchOnMountOrArgChange: true });
+  }, [behaviorList, loginProviderInfo]);
+  const userList = useSelector((state) => state.user.userList);
+  const behaviorData = selectedBehaviorList.find((behavior) => behavior.id === behaviorId);
+  const { isLoading: userLoading } = useGetUserListQuery(undefined);
+  const selectedUserList = userList.filter((user) => user.is_kodo && user.corporate_id === loginProviderInfo.corporate_id);
+  const { isLoading: staffLoading } = useGetStaffListQuery(undefined);
+  const staffList = useSelector((state) => state.staff.staffList);
+  // TODO：どの資格があればサービスを提供できるか
+  const selectedStaffList = staffList.filter((staff) => staff.is_kodo);
   const [createBehavior] = useCreateBehaviorMutation();
   const [updateBehavior] = useUpdateBehaviorMutation();
   const {
@@ -57,7 +65,7 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
     recordSubmit,
   }: UseGetRecordFormType<CreateBehaviorParams> = useGetRecordForm({
     type,
-    SERVICE_CONTENT,
+    SERVICE_CONTENT: KODO,
     createInitialState,
     recordData: behaviorData,
     createRecord: createBehavior,
@@ -93,12 +101,19 @@ export const BehaviorCreate: NextPage<Props> = ({ type }) => {
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef} style={{ position: 'relative' }}>
         {!hasPermit(behaviorData?.status || 0, 'enableEdit') && <Overlay opacity={0.6} color="#fff" zIndex={5} radius="md" />}
         <Paper withBorder shadow="md" p={30} radius="md">
-          <RecordBasicInfo type={type} form={form} recordList={behaviorList} amountTime={amountTime} />
+          <RecordBasicInfo
+            type={type}
+            form={form}
+            recordList={selectedBehaviorList}
+            userList={selectedUserList}
+            amountTime={amountTime}
+          />
           <Space h="lg" />
           <Divider variant="dotted" />
           <Space h="lg" />
           <RecordContentArray
             form={form}
+            staffList={selectedStaffList}
             handleChangeDate={handleChangeDate}
             handleChangeTime={handleChangeTime}
             handleChangeStaff={handleChangeStaff}

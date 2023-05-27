@@ -3,20 +3,19 @@ import React, { useMemo } from 'react';
 import { CustomTextInput } from './CustomTextInput';
 import { UseFormReturnType } from '@mantine/form';
 import { NextPage } from 'next';
-import { RootState } from '@/ducks/root-reducer';
-import { useSelector } from '@/ducks/store';
 import { excludingSelected } from '@/utils';
+import { ReturnUser } from '@/ducks/user/slice';
 
 type Props = {
   type: 'create' | 'edit';
   form: UseFormReturnType<any>;
   recordList: any;
+  userList: ReturnUser[];
   amountTime: number;
 };
 
-export const RecordBasicInfo: NextPage<Props> = ({ type, form, recordList, amountTime }) => {
+export const RecordBasicInfo: NextPage<Props> = ({ type, form, recordList, userList, amountTime }) => {
   const isEdit = type === 'edit';
-  const userList = useSelector((state: RootState) => state.user.userList);
   const selectedUser = userList.find((user) => user.name === form.values.user_name);
   const userListExcludingSelected = useMemo(() => {
     return excludingSelected(userList, recordList, form);

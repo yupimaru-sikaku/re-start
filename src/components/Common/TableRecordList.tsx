@@ -8,7 +8,7 @@ import { DataTable } from 'mantine-datatable';
 import { OptionButton } from 'src/components/Common/OptionButton';
 import { CustomConfirm } from 'src/components/Common/CustomConfirm';
 import { CreatePdf } from 'src/components/Accompany/CreatePdf';
-import { RecordServiceListType, RecordServiceType, UpdateRecordType } from '@/ducks/common-service/slice';
+import { RecordServiceType, UpdateRecordType } from '@/ducks/common-service/slice';
 
 type Props = {
   path: keyof typeof PATH;

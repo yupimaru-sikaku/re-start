@@ -3,7 +3,7 @@ import { ActionIcon, Checkbox, Group, SimpleGrid, Space, TextInput } from '@mant
 import Link from 'next/link';
 import { getPath } from '@/utils/const/getPath';
 import { IconEdit } from '@tabler/icons';
-import { KAZI, SHINTAI, TSUIN, WITH_TSUIN, convertSupabaseTime } from '@/utils';
+import { KAZI, PAGE_SIZE, SHINTAI, TSUIN, WITH_TSUIN, convertSupabaseTime } from '@/utils';
 import { DataTable } from 'mantine-datatable';
 import { ReturnUser } from '@/ducks/user/slice';
 import { useSelector } from '@/ducks/store';
@@ -13,18 +13,29 @@ type Props = {
 };
 
 export const UserTableList = ({ loading }: Props) => {
+  const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
   const userList = useSelector((state) => state.user.userList);
-  const PAGE_SIZE = 10;
+  const selectedUserList = useMemo(() => {
+    switch (loginProviderInfo.role) {
+      case 'admin':
+        return userList;
+      case 'corporate':
+      case 'office':
+        return userList.filter((user) => user.corporate_id === loginProviderInfo.corporate_id);
+      default:
+        return [];
+    }
+  }, [userList, loginProviderInfo]);
   const [page, setPage] = useState(1);
   const from = useMemo(() => {
-    return userList ? (page - 1) * PAGE_SIZE : 0;
-  }, [page, userList]);
+    return selectedUserList ? (page - 1) * PAGE_SIZE : 0;
+  }, [page, selectedUserList]);
   const to = useMemo(() => {
-    return userList?.length ? from + PAGE_SIZE : 0;
-  }, [from]);
+    return selectedUserList?.length ? from + PAGE_SIZE : 0;
+  }, [from, selectedUserList]);
   const originalRecordList = useMemo(() => {
-    return userList?.slice(from, to) || [];
-  }, [from]);
+    return selectedUserList?.slice(from, to) || [];
+  }, [from, to, selectedUserList]);
 
   const [records, setRecords] = useState(originalRecordList);
   const [searchParamObj, setSearchParamObj] = useState({ name: '' });

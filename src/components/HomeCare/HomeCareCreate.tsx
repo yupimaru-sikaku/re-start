@@ -1,6 +1,6 @@
 import { useFocusTrap } from '@mantine/hooks';
 import { useRouter } from 'next/router';
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { Overlay, Divider, LoadingOverlay, Paper, Space, Stack } from '@mantine/core';
 import { CustomButton } from '../Common/CustomButton';
 import { IconCheckbox } from '@tabler/icons';
@@ -12,9 +12,9 @@ import { showNotification } from '@mantine/notifications';
 import { getPath } from '@/utils/const/getPath';
 import { useSelector } from '@/ducks/store';
 import { RootState } from '@/ducks/root-reducer';
-import { useGetUserListByServiceQuery } from '@/ducks/user/query';
+import { useGetUserListByServiceQuery, useGetUserListQuery } from '@/ducks/user/query';
 import { useHasPermit } from '@/hooks/form/useHasPermit';
-import { useGetStaffListByServiceQuery } from '@/ducks/staff/query';
+import { useGetStaffListByServiceQuery, useGetStaffListQuery } from '@/ducks/staff/query';
 import { useCreateHomeCareMutation, useUpdateHomeCareMutation } from '@/ducks/home-care/query';
 import { UseGetHomeCareRecordFormType, useGetHomeCareRecordForm } from '@/hooks/form/useGetHomeCareRecordForm';
 import { HomeCareRecordBasicInfo } from './HomeCareRecordBasicInfo';
@@ -26,23 +26,33 @@ type Props = {
 
 export const HomeCareCreate: FC<Props> = ({ type }: Props) => {
   const TITLE = type === 'create' ? '登録' : '更新';
-  const SERVICE_CONTENT = '居宅介護';
   const focusTrapRef = useFocusTrap();
   const router = useRouter();
+  const { hasPermit } = useHasPermit();
   const homeCareId = router.query.id as string;
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { hasPermit } = useHasPermit();
-  const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
+  const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);
   const homeCareList = useSelector((state) => state.homeCare.homeCareList);
-  const homeCareData = homeCareList.find((homeCare) => homeCare.id === homeCareId);
-  const { data: userList = [] } = useGetUserListByServiceQuery(
-    {
-      corporateId: loginProviderInfo.corporate_id,
-      serviceName: 'is_kyotaku',
-    },
-    { refetchOnMountOrArgChange: true }
-  );
-  const { data: staffList = [] } = useGetStaffListByServiceQuery('kyotaku', { refetchOnMountOrArgChange: true });
+  const selectedHomeCareList = useMemo(() => {
+    switch (loginProviderInfo.role) {
+      case 'admin':
+        return homeCareList;
+      case 'corporate':
+        return homeCareList.filter((homeCare) => homeCare.corporate_id === loginProviderInfo.corporate_id);
+      case 'office':
+        return homeCareList.filter((homeCare) => homeCare.login_id === loginProviderInfo.id);
+      default:
+        return [];
+    }
+  }, [homeCareList, loginProviderInfo]);
+  const userList = useSelector((state) => state.user.userList);
+  const homeCareData = selectedHomeCareList.find((homeCare) => homeCare.id === homeCareId);
+  const { isLoading: userLoading } = useGetUserListQuery(undefined);
+  const selectedUserList = userList.filter((user) => user.is_doko && user.corporate_id === loginProviderInfo.corporate_id);
+  const { isLoading: staffLoading } = useGetStaffListQuery(undefined);
+  const staffList = useSelector((state) => state.staff.staffList);
+  // TODO：どの資格があればサービスを提供できるか
+  const selectedStaffList = staffList.filter((staff) => staff.is_syoninsya);
   const [createHomeCare] = useCreateHomeCareMutation();
   const [updateHomeCare] = useUpdateHomeCareMutation();
   const {
@@ -96,12 +106,20 @@ export const HomeCareCreate: FC<Props> = ({ type }: Props) => {
       <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef} style={{ position: 'relative' }}>
         {!hasPermit(homeCareData?.status || 0, 'enableEdit') && <Overlay opacity={0.6} color="#fff" zIndex={5} radius="md" />}
         <Paper withBorder shadow="md" p={30} radius="md">
-          <HomeCareRecordBasicInfo type={type} form={form} recordList={homeCareList} amountTime={timeObj} />
+          <HomeCareRecordBasicInfo
+            type={type}
+            form={form}
+            userList={selectedUserList}
+            recordList={selectedHomeCareList}
+            amountTime={timeObj}
+          />
           <Space h="lg" />
           <Divider variant="dotted" />
           <Space h="lg" />
           <HomeCareRecordContentArray
             form={form}
+            staffList={selectedStaffList}
+            userList={selectedUserList}
             handleChangeDate={handleChangeDate}
             handleChangeService={handleChangeService}
             handleChangeTime={handleChangeTime}

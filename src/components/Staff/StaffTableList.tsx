@@ -20,10 +20,10 @@ export const StaffTableList = ({ loading, dataList }: Props) => {
   }, [page, dataList]);
   const to = useMemo(() => {
     return dataList?.length ? from + PAGE_SIZE : 0;
-  }, [from]);
+  }, [from, dataList]);
   const originalRecordList = useMemo(() => {
     return dataList?.slice(from, to) || [];
-  }, [from]);
+  }, [from, to, dataList]);
 
   const [records, setRecords] = useState(originalRecordList);
   const [searchParamObj, setSearchParamObj] = useState({ name: '' });

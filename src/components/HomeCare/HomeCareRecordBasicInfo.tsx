@@ -1,22 +1,20 @@
 import { Select, SimpleGrid, TextInput } from '@mantine/core';
-import React, { useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { UseFormReturnType } from '@mantine/form';
-import { NextPage } from 'next';
-import { RootState } from '@/ducks/root-reducer';
-import { useSelector } from '@/ducks/store';
 import { KAZI, SHINTAI, TSUIN, WITH_TSUIN, excludingSelected } from '@/utils';
 import { CustomTextInput } from '../Common/CustomTextInput';
+import { ReturnUser } from '@/ducks/user/slice';
 
 type Props = {
   type: 'create' | 'edit';
   form: UseFormReturnType<any>;
+  userList: ReturnUser[];
   recordList: any;
   amountTime: any;
 };
 
-export const HomeCareRecordBasicInfo: NextPage<Props> = ({ type, form, recordList, amountTime }) => {
+export const HomeCareRecordBasicInfo: FC<Props> = ({ type, form, userList, recordList, amountTime }) => {
   const isEdit = type === 'edit';
-  const userList = useSelector((state: RootState) => state.user.userList);
   const selectedUser = userList.find((user) => user.name === form.values.user_name);
   const userListExcludingSelected = useMemo(() => {
     return excludingSelected(userList, recordList, form);

@@ -1,5 +1,6 @@
 import { ContentArr } from '@/ducks/common-service/slice';
 import { RootState } from '@/ducks/root-reducer';
+import { ReturnStaff } from '@/ducks/staff/slice';
 import { useSelector } from '@/ducks/store';
 import { calcWorkTime, convertWeekItem } from '@/utils';
 import { ActionIcon, Group, Overlay, Paper, Select, Table, TextInput } from '@mantine/core';
@@ -11,6 +12,7 @@ import React from 'react';
 
 type Props = {
   form: UseFormReturnType<any>;
+  staffList: ReturnStaff[];
   handleChangeDate: any;
   handleChangeTime: any;
   handleChangeStaff: any;
@@ -19,13 +21,13 @@ type Props = {
 
 export const RecordContentArray: NextPage<Props> = ({
   form,
+  staffList,
   handleChangeDate,
   handleChangeTime,
   handleChangeStaff,
   handleRefresh,
 }) => {
   const loginProviderInfo = useSelector((state: RootState) => state.provider.loginProviderInfo);
-  const staffList = useSelector((state: RootState) => state.staff.staffList);
 
   const convertTimeRange = (content: ContentArr): [Date | null, Date | null] => {
     if (content.start_time && content.end_time) {

@@ -12,10 +12,7 @@ type Props = {
   handlePDFDownload: (Mobility: ReturnMobility) => Promise<void>;
 };
 
-export const MobilityListRecords = ({
-  handleDelete,
-  handlePDFDownload,
-}: Props) => {
+export const MobilityListRecords = ({ handleDelete, handlePDFDownload }: Props) => {
   return [
     { accessor: 'year', title: '西暦', width: 110 },
     { accessor: 'month', title: '月', width: 110 },
@@ -25,11 +22,7 @@ export const MobilityListRecords = ({
       title: 'ダウンロード',
       width: 150,
       render: (Mobility: ReturnMobility) => (
-        <CustomButton
-          color="cyan"
-          variant="light"
-          onClick={() => handlePDFDownload(Mobility)}
-        >
+        <CustomButton color="cyan" variant="light" onClick={() => handlePDFDownload(Mobility)}>
           ダウンロード
         </CustomButton>
       ),
@@ -48,10 +41,7 @@ export const MobilityListRecords = ({
               </ActionIcon>
             </a>
           </Link>
-          <ActionIcon
-            color="red"
-            onClick={() => handleDelete(Mobility.id)}
-          >
+          <ActionIcon color="red" onClick={() => handleDelete(Mobility.id)}>
             <IconTrash size={20} />
           </ActionIcon>
         </Group>
@@ -61,10 +51,7 @@ export const MobilityListRecords = ({
       accessor: 'updatedAt',
       title: '更新日時',
       width: 150,
-      render: (Mobility: ReturnMobility) =>
-        Mobility.updated_at
-          ? convertSupabaseTime(Mobility.updated_at)
-          : '',
+      render: (Mobility: ReturnMobility) => (Mobility.updated_at ? convertSupabaseTime(Mobility.updated_at) : ''),
     },
   ];
 };
