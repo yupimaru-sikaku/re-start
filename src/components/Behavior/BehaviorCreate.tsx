@@ -60,10 +60,19 @@ export const BehaviorCreate: FC<Props> = ({ type }) => {
         return [];
     }
   }, [userList]);
+  const selectedUser = userList.find((user) => user.name === form.values.user_name);
   const { isLoading: staffLoading } = useGetStaffListQuery(undefined);
   const staffList = useSelector((state) => state.staff.staffList);
   // TODO：どの資格があればサービスを提供できるか
-  const selectedStaffList = staffList.filter((staff) => staff.is_kodo);
+  const selectedStaffList = staffList.filter((staff) => {
+    if (staff.is_kodo) {
+      if (selectedUser && selectedUser.gender_specification) {
+        return staff.gender === selectedUser.gender_specification;
+      }
+      return true;
+    }
+    return false;
+  });
   const [createBehavior] = useCreateBehaviorMutation();
   const [updateBehavior] = useUpdateBehaviorMutation();
   const {
