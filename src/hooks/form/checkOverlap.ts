@@ -1,6 +1,7 @@
 import { ContentArr } from '@/ducks/common-service/slice';
 import { ReturnSchedule, ScheduleContentArr } from '@/ducks/schedule/slice';
 import { ReturnUser } from '@/ducks/user/slice';
+import { KYOTAKU } from '@/utils';
 import { KAZI, SHINTAI, TSUIN, WITH_TSUIN } from '@/utils';
 
 export const checkOverlap = (
@@ -18,14 +19,19 @@ export const checkOverlap = (
         (schedule) => schedule.year === year && schedule.month === month && schedule.staff_name === staffName
       );
       if (selectedSchedule) {
-        const removeContentArr = selectedSchedule.content_arr.filter(
-          (content) =>
-            content.user_name !== selectedUser!.name ||
-            (content.service_content !== KAZI &&
-              content.service_content !== SHINTAI &&
-              content.service_content !== TSUIN &&
-              content.service_content !== WITH_TSUIN)
-        );
+        const removeContentArr = selectedSchedule.content_arr.filter((content) => {
+          if (SERVICE_CONTENT === KYOTAKU) {
+            content.user_name !== selectedUser!.name &&
+              !(
+                content.service_content === KAZI ||
+                content.service_content === SHINTAI ||
+                content.service_content === TSUIN ||
+                content.service_content === WITH_TSUIN
+              );
+          } else {
+            content.user_name !== selectedUser!.name && content.service_content !== SERVICE_CONTENT;
+          }
+        });
         const isOverlap = hasOverlap(removeContentArr, contentList);
         if (isOverlap) {
           return staffName;

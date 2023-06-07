@@ -93,6 +93,7 @@ export const RecordContentArray: NextPage<Props> = ({
                 <td>
                   <Select
                     searchable
+                    clearable
                     nothingFound="No Data"
                     data={staffList.map((staff) => staff.name)}
                     value={content.staff_name}
