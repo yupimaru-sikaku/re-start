@@ -17,6 +17,7 @@ type Props = {
 
 export const RecordBasicInfo: NextPage<Props> = ({ type, form, recordList, userList, amountTime, contractedAmountTime }) => {
   const isEdit = type === 'edit';
+  const isOver = amountTime > contractedAmountTime;
   const selectedUser = userList.find((user) => user.name === form.values.user_name);
   const userListExcludingSelected = useMemo(() => {
     return excludingSelected(userList, recordList, form);
@@ -90,7 +91,7 @@ export const RecordBasicInfo: NextPage<Props> = ({ type, form, recordList, userL
         value={`${amountTime}時間 / ${contractedAmountTime}時間中`}
         variant="filled"
         disabled
-        sx={{ '& input:disabled': { color: 'black' } }}
+        sx={{ '& input:disabled': { color: isOver ? 'red' : 'black' } }}
       />
     </SimpleGrid>
   );

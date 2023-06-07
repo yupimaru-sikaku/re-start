@@ -184,6 +184,8 @@ export const useGetRecordForm = ({
   const recordSubmit = async (): Promise<RecordSubmitResult> => {
     const isOK = await CustomConfirm(`実績記録票を${TITLE}しますか？後から修正は可能です。`, '確認画面');
     if (!isOK) return { isFinished: false, message: '' };
+    if (amountTime > contractedAmountTime)
+      return { isFinished: false, message: '算定時間数の合計が契約支給量を超えています。' };
     // 空欄がある場合に除外して市区町村とサービス種別を加えて日付順にソート
     const formatArr: ContentArr[] = form.values.content_arr
       .filter((content: ContentArr) => {

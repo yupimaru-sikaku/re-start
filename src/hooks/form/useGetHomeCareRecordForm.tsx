@@ -167,6 +167,11 @@ export const useGetHomeCareRecordForm = ({
 
   // 各サービスの各合計勤務時間
   const { kaziAmountTime, shintaiAmountTime, withTsuinAmountTime, tsuinAmountTime } = calcEachWorkTime(form.values.content_arr);
+  const isOver =
+    kaziAmountTime > (selectedUser?.kazi_amount || 0) ||
+    shintaiAmountTime > (selectedUser?.shintai_amount || 0) ||
+    tsuinAmountTime > (selectedUser?.tsuin_amount || 0) ||
+    withTsuinAmountTime > (selectedUser?.with_tsuin_amount || 0);
   // 各サービスの名称と契約支給量
   const serviceRecordArr = [
     selectedUser?.is_kazi ? { amount_title: KAZI, amount_value: kaziAmountTime } : null,
@@ -179,6 +184,7 @@ export const useGetHomeCareRecordForm = ({
   const recordSubmit = async (): Promise<RecordSubmitResult> => {
     const isOK = await CustomConfirm(`実績記録票を${TITLE}しますか？後から修正は可能です。`, '確認画面');
     if (!isOK) return { isFinished: false, message: '' };
+    if (isOver) return { isFinished: false, message: '算定時間数の合計が契約支給量を超えています。' };
     // 空欄がある場合に除外して市区町村を加えて日付順にソート
     const formatArr: ContentArr[] = form.values.content_arr
       .filter((content: ContentArr) => {

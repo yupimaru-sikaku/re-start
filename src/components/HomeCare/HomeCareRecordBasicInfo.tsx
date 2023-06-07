@@ -93,7 +93,7 @@ export const HomeCareRecordBasicInfo: FC<Props> = ({ type, form, userList, recor
         breakpoints={[
           { minWidth: 'sm', cols: 2 },
           { minWidth: 'md', cols: 5 },
-          { minWidth: 'xl', cols: 7 },
+          { minWidth: 'xl', cols: 6 },
         ]}
       >
         <TextInput
