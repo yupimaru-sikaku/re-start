@@ -12,9 +12,10 @@ type Props = {
   recordList: any;
   userList: ReturnUser[];
   amountTime: number;
+  contractedAmountTime: number;
 };
 
-export const RecordBasicInfo: NextPage<Props> = ({ type, form, recordList, userList, amountTime }) => {
+export const RecordBasicInfo: NextPage<Props> = ({ type, form, recordList, userList, amountTime, contractedAmountTime }) => {
   const isEdit = type === 'edit';
   const selectedUser = userList.find((user) => user.name === form.values.user_name);
   const userListExcludingSelected = useMemo(() => {
@@ -86,14 +87,7 @@ export const RecordBasicInfo: NextPage<Props> = ({ type, form, recordList, userL
       />
       <TextInput
         label="契約支給量"
-        value={`${selectedUser?.kodo_amount || 0} 時間/月`}
-        variant="filled"
-        disabled
-        sx={{ '& input:disabled': { color: 'black' } }}
-      />
-      <TextInput
-        label="合計算定時間数"
-        value={`${amountTime} 時間`}
+        value={`${amountTime}時間 / ${contractedAmountTime}時間中`}
         variant="filled"
         disabled
         sx={{ '& input:disabled': { color: 'black' } }}

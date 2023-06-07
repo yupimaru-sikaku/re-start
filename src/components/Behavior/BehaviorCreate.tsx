@@ -73,6 +73,7 @@ export const BehaviorCreate: FC<Props> = ({ type }) => {
     handleChangeTime,
     handleRefresh,
     amountTime,
+    contractedAmountTime,
     recordSubmit,
   }: UseGetRecordFormType<CreateBehaviorParams> = useGetRecordForm({
     type,
@@ -118,6 +119,7 @@ export const BehaviorCreate: FC<Props> = ({ type }) => {
             recordList={selectedBehaviorList}
             userList={selectedUserList}
             amountTime={amountTime}
+            contractedAmountTime={contractedAmountTime}
           />
           <Space h="lg" />
           <Divider variant="dotted" />

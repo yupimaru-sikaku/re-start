@@ -73,6 +73,7 @@ export const AccompanyCreate: FC<Props> = ({ type }) => {
     handleChangeTime,
     handleRefresh,
     amountTime,
+    contractedAmountTime,
     recordSubmit,
   }: UseGetRecordFormType<CreateAccompanyParams> = useGetRecordForm({
     type,
@@ -118,6 +119,7 @@ export const AccompanyCreate: FC<Props> = ({ type }) => {
             recordList={selectedAccompanyList}
             userList={selectedUserList}
             amountTime={amountTime}
+            contractedAmountTime={contractedAmountTime}
           />
           <Space h="lg" />
           <Divider variant="dotted" />

@@ -73,6 +73,7 @@ export const MobilityCreate: FC<Props> = ({ type }) => {
     handleChangeTime,
     handleRefresh,
     amountTime,
+    contractedAmountTime,
     recordSubmit,
   }: UseGetRecordFormType<CreateMobilityParams> = useGetRecordForm({
     type,
@@ -118,6 +119,7 @@ export const MobilityCreate: FC<Props> = ({ type }) => {
             recordList={selectedMobilityList}
             userList={selectedUserList}
             amountTime={amountTime}
+            contractedAmountTime={contractedAmountTime}
           />
           <Space h="lg" />
           <Divider variant="dotted" />

@@ -23,6 +23,7 @@ export type UseGetRecordFormType<T> = {
   handleChangeTime: (time: Date[], index: number) => void;
   handleRefresh: (index: number) => void;
   amountTime: number;
+  contractedAmountTime: number;
   recordSubmit: any;
 };
 
@@ -66,7 +67,7 @@ export const useGetRecordForm = ({
   const userList = useSelector((state: RootState) => state.user.userList);
   const staffList = useSelector((state: RootState) => state.staff.staffList);
   const selectedUser = userList.find((user) => user.name === form.values.user_name);
-  const amountValue = useMemo(() => {
+  const contractedAmountTime = useMemo(() => {
     switch (SERVICE_CONTENT) {
       case DOKO:
         return selectedUser?.doko_amount || 0;
@@ -236,7 +237,7 @@ export const useGetRecordForm = ({
         ...form.values,
         login_id: loginProviderInfo.id,
         corporate_id: loginProviderInfo.corporate_id,
-        amount_value: amountValue,
+        amount_value: contractedAmountTime,
         identification: selectedUser!.identification,
         content_arr: formatArr,
       };
@@ -357,6 +358,7 @@ export const useGetRecordForm = ({
     handleChangeTime,
     handleRefresh,
     amountTime,
+    contractedAmountTime,
     recordSubmit,
   };
 };
