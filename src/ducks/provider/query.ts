@@ -16,6 +16,21 @@ export const providerApi = createApi({
   tagTypes: ['Provider'],
   endpoints: (builder) => ({
     /**
+     * GET/全体のリストを取得
+     * @param {}
+     * @return {ReturnProvider[]}
+     */
+    getProviderList: builder.query({
+      queryFn: async (): Promise<any> => {
+        const { data, error } = await supabase
+          .from(getDb('PROVIDER'))
+          .select('*')
+          .eq('is_display', true)
+          .order('updated_at', { ascending: false });
+        return { data, error };
+      },
+    }),
+    /**
      * GET/法人IDに属するリストを取得
      * @param {string} corporate_id
      * @return {ReturnProvider[]}
@@ -36,14 +51,14 @@ export const providerApi = createApi({
      * @param {CreateProviderWithSignUpParams} params
      * @return {CreateProviderWithSignUpResult}
      */
-    createProviderWithSignUp: builder.mutation<CreateProviderWithSignUpResult, CreateProviderWithSignUpParams>({
+    createProviderWithSignUp: builder.mutation({
       // TODO 型付け
       queryFn: async (params: CreateProviderWithSignUpParams): Promise<any> => {
         const { data, error } = await supabase.auth.signUp({
           email: params.email,
           password: params.password,
         });
-        return { data, error };
+        return { data: data.user, error };
       },
     }),
     /**
@@ -115,6 +130,7 @@ export const providerApi = createApi({
 });
 
 export const {
+  useGetProviderListQuery,
   useGetProviderListByCorporateIdQuery,
   useCreateProviderWithSignUpMutation,
   useLoginMutation,

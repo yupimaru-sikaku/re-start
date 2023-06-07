@@ -87,9 +87,21 @@ const providerSlice = createSlice({
       state.loginProviderInfo.role = action.payload.role;
     });
     builder.addMatcher(
+      providerApi.endpoints.getProviderList.matchFulfilled,
+      (state, action: PayloadAction<ReturnProvider[]>) => {
+        state.providerList = action.payload;
+      }
+    );
+    builder.addMatcher(
       providerApi.endpoints.getProviderListByCorporateId.matchFulfilled,
       (state, action: PayloadAction<ReturnProvider[]>) => {
         state.providerList = action.payload;
+      }
+    );
+    builder.addMatcher(
+      providerApi.endpoints.createProviderWithSignUp.matchFulfilled,
+      (state, action: PayloadAction<ReturnProvider>) => {
+        state.providerList = [action.payload, ...state.providerList];
       }
     );
     builder.addMatcher(providerApi.endpoints.updateProvider.matchFulfilled, (state, action: PayloadAction<ReturnProvider>) => {
