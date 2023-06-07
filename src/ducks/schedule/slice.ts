@@ -42,6 +42,7 @@ export const createInitialState: CreateScheduleParams = {
   year: 0,
   month: 0,
   staff_name: '',
+  staff_work_time_per_week: 0,
   content_arr: [
     {
       work_date: 0,

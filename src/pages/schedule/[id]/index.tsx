@@ -76,12 +76,21 @@ const ScheduleDetailPage: NextPage = () => {
 
   const timePerWeekList = splitByWeeks(selectedSchedule, year, month);
 
+  const checkWorkTimeOver = (workTime: number) => {
+    if (selectedSchedule) {
+      return workTime > selectedSchedule?.staff_work_time_per_week;
+    } else {
+      return false;
+    }
+  };
+
   return (
     <DashboardLayout title={`勤怠状況（${staffName}）`}>
       <LoadingOverlay sx={{ position: 'relative' }} visible={!selectedSchedule} />
       <PageContainer title={`勤怠状況（${staffName}）`} fluid>
         {selectedSchedule && (
           <>
+            <Text>週の合計勤務時間上限：{selectedSchedule.staff_work_time_per_week}時間</Text>
             <Text>
               {month}月の合計時間：{amountTime}時間
             </Text>
@@ -93,7 +102,9 @@ const ScheduleDetailPage: NextPage = () => {
               ]}
             >
               {timePerWeekList.map((time, index) => (
-                <Text key={index}>{`${index + 1}週目：${time.toString()}時間`}</Text>
+                <Text key={index} color={checkWorkTimeOver(time) ? 'red' : 'black'}>{`${
+                  index + 1
+                }週目：${time.toString()}時間`}</Text>
               ))}
             </SimpleGrid>
             <Space h="sm" />
