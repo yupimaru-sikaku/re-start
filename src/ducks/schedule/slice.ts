@@ -1,8 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { PostgrestError } from '@supabase/supabase-js';
 import { scheduleApi } from './query';
-import { accompanyApi } from '../accompany/query';
-import { ReturnAccompany } from '../accompany/slice';
 
 export type ScheduleContentArr = {
   work_date: number; // サービス提供日
@@ -19,6 +17,7 @@ type Schedule = {
   year: number; // 年
   month: number; // 月
   staff_name: string; // スタッフ名
+  staff_work_time_per_week: number; // スタッフの週の勤務時間上限
   content_arr: ScheduleContentArr[];
   created_at: string; // 作成日時
   updated_at: string; // 更新日時

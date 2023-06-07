@@ -55,6 +55,7 @@ export const scheduleApi = createApi({
           .insert({
             staff_id: params.staff_id,
             staff_name: params.staff_name,
+            staff_work_time_per_week: params.staff_work_time_per_week,
             year: params.year,
             month: params.month,
             content_arr: params.content_arr,
@@ -74,8 +75,9 @@ export const scheduleApi = createApi({
         const { data, error } = await supabase
           .from(getDb('SCHEDULE'))
           .update({
-            staff_name: params.staff_name,
             staff_id: params.staff_id,
+            staff_name: params.staff_name,
+            staff_work_time_per_week: params.staff_work_time_per_week,
             year: params.year,
             month: params.month,
             content_arr: params.content_arr,

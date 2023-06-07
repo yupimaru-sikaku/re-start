@@ -6,13 +6,7 @@ import { UseFormReturnType, useForm } from '@mantine/form';
 import { ChangeEvent, useEffect } from 'react';
 import { checkOverlap } from './checkOverlap';
 import { UpdateScheduleParams, UpdateScheduleResult, addScheduleList, updateScheduleList } from '@/ducks/schedule/slice';
-import {
-  ContentArr,
-  RecordServiceType,
-  CreateRecordValidateType,
-  CreateRecordType,
-  UpdateRecordType,
-} from '@/ducks/common-service/slice';
+import { ContentArr, CreateRecordValidateType, CreateRecordType, UpdateRecordType } from '@/ducks/common-service/slice';
 import { CreateHomeCareParams } from '@/ducks/home-care/slice';
 
 export type UseGetHomeCareRecordFormType<T> = {
@@ -287,6 +281,7 @@ export const useGetHomeCareRecordForm = ({
           const createScheduleParams = {
             staff_id: selectedStaff!.id,
             staff_name: selectedStaff!.name,
+            staff_work_time_per_week: selectedStaff!.work_time_per_week,
             year: form.values.year,
             month: form.values.month,
             content_arr: newContentArr,
@@ -336,6 +331,7 @@ export const useGetHomeCareRecordForm = ({
             const updateParams: UpdateScheduleParams = {
               id: selectedSchedule!.id,
               staff_name: staffName,
+              staff_work_time_per_week: selectedStaff!.work_time_per_week,
               staff_id: selectedStaff!.id,
               year: form.values.year,
               month: form.values.month,

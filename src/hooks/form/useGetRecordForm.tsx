@@ -283,6 +283,7 @@ export const useGetRecordForm = ({
           const createScheduleParams = {
             staff_id: selectedStaff!.id,
             staff_name: selectedStaff!.name,
+            staff_work_time_per_week: selectedStaff!.work_time_per_week,
             year: form.values.year,
             month: form.values.month,
             content_arr: newContentArr,
@@ -332,6 +333,7 @@ export const useGetRecordForm = ({
             const updateParams: UpdateScheduleParams = {
               id: selectedSchedule!.id,
               staff_name: staffName,
+              staff_work_time_per_week: selectedStaff!.work_time_per_week,
               staff_id: selectedStaff!.id,
               year: form.values.year,
               month: form.values.month,
