@@ -105,7 +105,9 @@ const providerSlice = createSlice({
       }
     );
     builder.addMatcher(providerApi.endpoints.updateProvider.matchFulfilled, (state, action: PayloadAction<ReturnProvider>) => {
-      state.providerList = [action.payload, ...state.providerList];
+      state.providerList = state.providerList.map((provider) =>
+        provider.id === action.payload.id ? action.payload : provider
+      );
     });
   },
 });

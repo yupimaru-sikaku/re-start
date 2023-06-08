@@ -71,7 +71,7 @@ export const SignUp = () => {
       }
       // 法人更新
       const corporate_id = generateRandomCorporateId();
-      const providerParams: UpdateProviderParams = {
+      const updateProviderParams: UpdateProviderParams = {
         id: createAdminData.user!.id,
         user_id: createAdminData.user!.id,
         corporate_id: corporate_id,
@@ -80,7 +80,7 @@ export const SignUp = () => {
         email: form.values.email,
         role: form.values.role,
       };
-      const { error: createProviderError } = (await updatePvider(providerParams)) as UpdateProviderResult;
+      const { error: createProviderError } = (await updatePvider(updateProviderParams)) as UpdateProviderResult;
       if (createProviderError) {
         throw new Error(`法人情報の登録に失敗しました。${createProviderError.message}`);
       }

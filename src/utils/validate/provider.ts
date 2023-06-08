@@ -6,7 +6,7 @@ type ReturnType = {
   text: string;
 };
 
-export const validate = {
+export const validate = (type: 'create' | 'edit') => ({
   corporate_name: (value: string) => {
     const { error, text } = validateCorporateName(value);
     return error ? text : null;
@@ -20,12 +20,12 @@ export const validate = {
     return error ? text : null;
   },
   password: (value: string) => {
-    const { error, text } = validatePassword(value);
+    const { error, text } = validatePassword(value, type);
     return error ? text : null;
   },
   password_confirmation: (value: string, values: CreateProviderWithSignUpParams) =>
     value !== values.password && 'パスワードが一致しません',
-};
+});
 
 export const validateCorporateName = (value: string): ReturnType => {
   if (value === '') {
@@ -53,8 +53,13 @@ export const validateOfficeName = (value: string): ReturnType => {
   };
 };
 
-export const validatePassword = (value: string): ReturnType => {
-  if (value === '') {
+export const validatePassword = (value: string, type: 'create' | 'edit' = 'create'): ReturnType => {
+  if (type === 'edit') {
+    return {
+      error: false,
+      text: '',
+    };
+  } else if (value === '') {
     return {
       error: true,
       text: 'パスワードを入力してください',

@@ -4,7 +4,7 @@ import { RootState } from '@/ducks/root-reducer';
 import { CustomConfirm } from '@/components/Common/CustomConfirm';
 import { UseFormReturnType, useForm } from '@mantine/form';
 import { BaseQueryFn, MutationDefinition } from '@rtk-incubator/rtk-query/dist';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { CreateProviderParams, CreateProviderWithSignUpParams, ReturnProvider } from '@/ducks/provider/slice';
 import { useCreateProviderWithSignUpMutation, useUpdateProviderMutation } from '@/ducks/provider/query';
 import { UpdateProviderParams } from '@/ducks/provider/slice';
@@ -40,8 +40,12 @@ export const useGetProviderForm = ({ type, createInitialState, validate }: GetFo
       corporate_id: loginProviderInfo.corporate_id,
       corporate_name: loginProviderInfo.corporate_name,
     },
-    validate: validate,
+    validate: validate(type),
   });
+  const oldOfficeName = useMemo(() => {
+    return form.values.office_name;
+  }, []);
+
   const [createProviderWithSignUp] = useCreateProviderWithSignUpMutation();
   const [updateProvider] = useUpdateProviderMutation();
 
@@ -55,6 +59,10 @@ export const useGetProviderForm = ({ type, createInitialState, validate }: GetFo
   const recordSubmit = async (): Promise<RecordSubmitResult> => {
     const isOK = await CustomConfirm(`事業所情報を${TITLE}しますか？`, '確認画面');
     if (!isOK) return { isFinished: false, message: '' };
+    const isDuplicateOfficeName = providerList.some(
+      (provider) => provider.office_name === form.values.office_name && oldOfficeName !== form.values.office_name
+    );
+    if (isDuplicateOfficeName) return { isFinished: false, message: '既に登録されている事業所名です' };
     try {
       if (type === 'create') {
         const signUpParams: CreateProviderWithSignUpParams = {
@@ -68,7 +76,7 @@ export const useGetProviderForm = ({ type, createInitialState, validate }: GetFo
         }
         const updateProviderParams: UpdateProviderParams = {
           id: signUpData.user.id,
-          user_id: form.values.user_id,
+          user_id: signUpData.user.id,
           corporate_id: form.values.corporate_id,
           corporate_name: form.values.corporate_name,
           office_name: form.values.office_name,

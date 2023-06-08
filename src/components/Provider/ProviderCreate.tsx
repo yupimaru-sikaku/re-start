@@ -75,6 +75,7 @@ export const ProviderCreate = ({ type }: Props) => {
           required={true}
           form={form}
           formValue="email"
+          disabled={type === 'edit'}
         />
         {type === 'create' && (
           <>
