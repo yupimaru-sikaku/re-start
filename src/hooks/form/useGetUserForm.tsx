@@ -6,7 +6,7 @@ import { UseFormReturnType, useForm } from '@mantine/form';
 import { useCreateUserMutation, useUpdateUserMutation } from '@/ducks/user/query';
 import { CreateUserParams, CreateUserResult, ReturnUser, UpdateUserResult } from '@/ducks/user/slice';
 import { BaseQueryFn, MutationDefinition } from '@rtk-incubator/rtk-query/dist';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 export type UseGetUserFormType = {
   form: UseFormReturnType<CreateUserParams>;
@@ -48,6 +48,8 @@ export const useGetUserForm = ({ type, createInitialState, validate }: GetFormTy
   const recordSubmit = async (): Promise<RecordSubmitResult> => {
     const isOK = await CustomConfirm(`利用者情報を${TITLE}しますか？後から修正は可能です。`, '確認画面');
     if (!isOK) return { isFinished: false, message: '' };
+    const isDuplicateUserName = userList.some((user) => user.name === form.values.name && userData?.name !== form.values.name);
+    if (isDuplicateUserName) return { isFinished: false, message: '既に登録されている利用者名です' };
     try {
       const createParams: CreateUserParams = {
         ...form.values,
