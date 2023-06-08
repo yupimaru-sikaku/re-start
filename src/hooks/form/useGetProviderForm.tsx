@@ -42,9 +42,6 @@ export const useGetProviderForm = ({ type, createInitialState, validate }: GetFo
     },
     validate: validate(type),
   });
-  const oldOfficeName = useMemo(() => {
-    return form.values.office_name;
-  }, []);
 
   const [createProviderWithSignUp] = useCreateProviderWithSignUpMutation();
   const [updateProvider] = useUpdateProviderMutation();
@@ -60,7 +57,7 @@ export const useGetProviderForm = ({ type, createInitialState, validate }: GetFo
     const isOK = await CustomConfirm(`事業所情報を${TITLE}しますか？`, '確認画面');
     if (!isOK) return { isFinished: false, message: '' };
     const isDuplicateOfficeName = providerList.some(
-      (provider) => provider.office_name === form.values.office_name && oldOfficeName !== form.values.office_name
+      (provider) => provider.office_name === form.values.office_name && providerData?.office_name !== form.values.office_name
     );
     if (isDuplicateOfficeName) return { isFinished: false, message: '既に登録されている事業所名です' };
     try {
