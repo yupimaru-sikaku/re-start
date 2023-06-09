@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { PostgrestError } from '@supabase/supabase-js';
 import { userApi } from './query';
+import { disabilityTypeList } from '@/utils/user';
 
 export type User = {
   id: string;
@@ -26,7 +27,7 @@ export type User = {
   is_tsuin: boolean; // 通院等介助（伴わない）を受けているか
   tsuin_amount: number; // 通院等介助（伴わない）の契約支給量
   city: string; // サービスを受けている市区町村
-  disability_type: string; // 障害種別
+  disability_type: (typeof disabilityTypeList)[number]; // 障害種別
   is_display: boolean; // 表示するか
   created_at: string; // 作成日時
   updated_at: string; // 更新日時

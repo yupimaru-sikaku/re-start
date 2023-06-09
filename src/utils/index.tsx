@@ -3,7 +3,8 @@ import { ReturnBehavior } from '@/ducks/behavior/slice';
 import { ContentArr } from '@/ducks/common-service/slice';
 import { ReturnMobility } from '@/ducks/mobility/slice';
 import { ReturnSchedule } from '@/ducks/schedule/slice';
-import { ReturnUser } from '@/ducks/user/slice';
+import { ReturnStaff } from '@/ducks/staff/slice';
+import { ReturnUser, User } from '@/ducks/user/slice';
 import { UseFormReturnType } from '@mantine/form';
 
 export const PAGE_SIZE = 10;
@@ -208,4 +209,61 @@ export const splitByWeeks = (schedule: ReturnSchedule | undefined, year: number,
   });
 
   return timePerWeekList;
+};
+
+// 任意のスタッフがサービスを提供できる資格があるか判断
+// TODO:要リファクタリング
+export const isQualifiedToProvideService = (
+  staff: ReturnStaff,
+  type: typeof DOKO | typeof KODO | typeof IDO | typeof KYOTAKU,
+  user?: User
+): boolean => {
+  if (!user) return false;
+  switch (type) {
+    case DOKO:
+      if (user.gender_specification) {
+        return staff.gender === user.gender_specification && (staff.is_doko_normal || staff.is_doko_apply);
+      } else {
+        return staff.is_doko_normal || staff.is_doko_apply;
+      }
+    case KODO:
+      if (user.gender_specification) {
+        return staff.gender === user.gender_specification && staff.is_kodo;
+      } else {
+        return staff.is_kodo;
+      }
+    case IDO:
+      if (
+        user.is_gender_specification &&
+        user.city === '枚方市' &&
+        (user.disability_type === '精神' ||
+          user.disability_type === '精神・身体' ||
+          user.disability_type === '知的・精神' ||
+          user.disability_type === '知的・精神・身体')
+      ) {
+        return (
+          staff.gender === user.gender_specification &&
+          (staff.is_syoninsya || staff.is_zitsumusya) &&
+          (staff.is_kodo || staff.is_kaigo)
+        );
+      } else if (
+        user.city === '枚方市' &&
+        (user.disability_type === '精神' ||
+          user.disability_type === '精神・身体' ||
+          user.disability_type === '知的・精神' ||
+          user.disability_type === '知的・精神・身体')
+      ) {
+        return (staff.is_syoninsya || staff.is_zitsumusya) && (staff.is_kodo || staff.is_kaigo);
+      } else {
+        return staff.is_syoninsya || staff.is_zitsumusya || staff.is_kaigo;
+      }
+    case KYOTAKU:
+      if (user.gender_specification) {
+        return staff.gender === user.gender_specification && (staff.is_syoninsya || staff.is_zitsumusya || staff.is_kaigo);
+      } else {
+        return staff.is_syoninsya || staff.is_zitsumusya || staff.is_kaigo;
+      }
+    default:
+      return false;
+  }
 };

@@ -158,4 +158,4 @@ export const disabilityTypeList = [
   '知的・身体',
   '精神・身体',
   '知的・精神・身体',
-];
+] as const;

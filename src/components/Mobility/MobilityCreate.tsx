@@ -18,7 +18,7 @@ import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
 import { useSelector } from '@/ducks/store';
 import { useHasPermit } from '@/hooks/form/useHasPermit';
-import { IDO } from '@/utils';
+import { IDO, isQualifiedToProvideService } from '@/utils';
 
 type Props = {
   type: 'create' | 'edit';
@@ -63,15 +63,8 @@ export const MobilityCreate: FC<Props> = ({ type }) => {
   const selectedUser = userList.find((user) => user.name === form.values.user_name);
   const { isLoading: staffLoading } = useGetStaffListQuery(undefined);
   const staffList = useSelector((state) => state.staff.staffList);
-  // TODO：どの資格があればサービスを提供できるか
   const selectedStaffList = staffList.filter((staff) => {
-    if (staff.is_syoninsya) {
-      if (selectedUser && selectedUser.gender_specification) {
-        return staff.gender === selectedUser.gender_specification;
-      }
-      return true;
-    }
-    return false;
+    return isQualifiedToProvideService(staff, IDO, selectedUser);
   });
   const [createMobility] = useCreateMobilityMutation();
   const [updateMobility] = useUpdateMobilityMutation();

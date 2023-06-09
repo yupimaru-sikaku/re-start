@@ -19,6 +19,7 @@ import { useCreateHomeCareMutation, useUpdateHomeCareMutation } from '@/ducks/ho
 import { UseGetHomeCareRecordFormType, useGetHomeCareRecordForm } from '@/hooks/form/useGetHomeCareRecordForm';
 import { HomeCareRecordBasicInfo } from './HomeCareRecordBasicInfo';
 import { HomeCareRecordContentArray } from './HomeCareRecordContentArray';
+import { KYOTAKU, isQualifiedToProvideService } from '@/utils';
 
 type Props = {
   type: 'create' | 'edit';
@@ -70,15 +71,8 @@ export const HomeCareCreate: FC<Props> = ({ type }: Props) => {
   const selectedUser = userList.find((user) => user.name === form.values.user_name);
   const { isLoading: staffLoading } = useGetStaffListQuery(undefined);
   const staffList = useSelector((state) => state.staff.staffList);
-  // TODO：どの資格があればサービスを提供できるか
   const selectedStaffList = staffList.filter((staff) => {
-    if (staff.is_syoninsya) {
-      if (selectedUser && selectedUser.gender_specification) {
-        return staff.gender === selectedUser.gender_specification;
-      }
-      return true;
-    }
-    return false;
+    return isQualifiedToProvideService(staff, KYOTAKU, selectedUser);
   });
   const [createHomeCare] = useCreateHomeCareMutation();
   const [updateHomeCare] = useUpdateHomeCareMutation();
