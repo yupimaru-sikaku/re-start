@@ -72,7 +72,7 @@ export const createInitialState: CreateUserParams = {
   is_tsuin: false,
   tsuin_amount: 0,
   city: '',
-  disability_type: '',
+  disability_type: '知的',
   is_display: true,
 };
 
