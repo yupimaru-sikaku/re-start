@@ -23,13 +23,12 @@ import { IconCheckbox } from '@tabler/icons';
 import { generateRandomCorporateId } from '@/utils';
 import { useCreateProviderWithSignUpMutation, useUpdateProviderMutation } from '@/ducks/provider/query';
 import { CustomConfirm } from '../Common/CustomConfirm';
+import { getDb, supabase } from '@/libs/supabase/supabase';
 
 export const SignUp = () => {
   const router = useRouter();
   const focusTrapRef = useFocusTrap();
   const [isLoading, setIsLoading] = useState(false);
-  const [createProviderWithSignUp] = useCreateProviderWithSignUpMutation();
-  const [updatePvider] = useUpdateProviderMutation();
   const form = useForm({
     initialValues: createInitialState,
     validate: {
@@ -54,9 +53,17 @@ export const SignUp = () => {
     },
   });
 
+  const [createProviderWithSignUp] = useCreateProviderWithSignUpMutation();
+  const [updatePvider] = useUpdateProviderMutation();
+
   const handleSubmit = useCallback(async () => {
     setIsLoading(true);
     try {
+      const { count } = await supabase
+        .from(getDb('PROVIDER'))
+        .select('corporate_name', { count: 'exact' })
+        .eq('corporate_name', form.values.corporate_name);
+      if (count! > 0) throw new Error('既に存在している法人名です。');
       // ユーザー登録
       const adminParams = {
         email: form.values.email,
