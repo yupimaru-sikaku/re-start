@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/auth/useAuth';
 import { TOP } from '@/utils';
 
 const Index: CustomNextPage = () => {
+  console.log(process.env.NEXT_PUBLIC_BASE_URL);
   useAuth();
   return (
     <DashboardLayout title={TOP}>
