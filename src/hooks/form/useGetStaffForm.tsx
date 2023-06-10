@@ -48,6 +48,10 @@ export const useGetStaffForm = ({ type, createInitialState, validate }: GetFormT
   const recordSubmit = async (): Promise<RecordSubmitResult> => {
     const isOK = await CustomConfirm(`スタッフ情報を${TITLE}しますか？後から修正は可能です。`, '確認画面');
     if (!isOK) return { isFinished: false, message: '' };
+    const isDuplicateStaffName = staffList.some(
+      (staff) => staff.name === form.values.name && staffData?.name !== form.values.name
+    );
+    if (isDuplicateStaffName) return { isFinished: false, message: '既に登録されている利用者名です' };
     try {
       const createParams: CreateStaffParams = {
         ...form.values,
