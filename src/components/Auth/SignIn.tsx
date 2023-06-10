@@ -9,7 +9,6 @@ import { useFocusTrap } from '@mantine/hooks';
 import { CustomTextInput } from 'src/components/Common/CustomTextInput';
 import { CustomPasswordInput } from '../Common/CustomPasswordInput';
 import { CustomButton } from 'src/components/Common/CustomButton';
-import { supabase } from 'src/libs/supabase/supabase';
 import { validateEmail } from '@/utils/validate/common';
 import { useRouter } from 'next/router';
 import { IconCheck } from '@tabler/icons';
@@ -17,7 +16,6 @@ import { showNotification } from '@mantine/notifications';
 import { useLoginMutation } from '@/ducks/provider/query';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { useAppDispatch } from '@/ducks/store';
-import { skipToken } from '@reduxjs/toolkit/dist/query';
 
 export const SignIn = () => {
   const [id, setId] = useState('');
