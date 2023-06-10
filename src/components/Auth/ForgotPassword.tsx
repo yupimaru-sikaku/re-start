@@ -1,20 +1,15 @@
-import React from 'react';
-import {
-  createStyles,
-  Paper,
-  Title,
-  Text,
-  TextInput,
-  Group,
-  Anchor,
-  Center,
-  Box,
-  Button,
-} from '@mantine/core';
-import { ArrowLeft } from 'tabler-icons-react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { AuthLayout } from 'src/components/Layout/AuthLayout/AuthLayout';
+import { createStyles, Paper, Title, Text, Group, Anchor, Center, Box } from '@mantine/core';
+import { ArrowLeft } from 'tabler-icons-react';
 import { getPath } from '@/utils/const/getPath';
+import { useForm } from '@mantine/form';
+import { validateEmail } from 'src/utils/validate/common';
+import { CustomConfirm } from '../Common/CustomConfirm';
+import { CustomButton } from '../Common/CustomButton';
+import { useFocusTrap } from '@mantine/hooks';
+import { CustomTextInput } from '../Common/CustomTextInput';
+import { useResetPasswordForEmailMutation } from '@/ducks/auth/query';
 
 const useStyles = createStyles((theme) => ({
   title: {
@@ -37,36 +32,71 @@ const useStyles = createStyles((theme) => ({
 
 export const ForgotPassword = () => {
   const { classes } = useStyles();
-  const handleClick = () => {};
+  const focusTrapRef = useFocusTrap();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
+  const form = useForm({
+    initialValues: {
+      email: '',
+    },
+    validate: {
+      email: (value: string) => {
+        const { error, text } = validateEmail(value);
+        return error ? text : null;
+      },
+    },
+  });
+  const [resetPasswordForEmail] = useResetPasswordForEmailMutation();
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    try {
+      const { error } = (await resetPasswordForEmail(form.values.email)) as any;
+      if (error) throw new Error('パスワード再設定の処理に失敗しました。');
+      setIsFinished(true);
+    } catch (err: any) {
+      await CustomConfirm(err.message, 'Caution');
+    }
+    setIsLoading(false);
+  };
+
   return (
-    <AuthLayout>
+    <>
       <Title className={classes.title} align="center">
-        パスワードリセット
+        {isFinished ? 'メール送信完了' : 'パスワードをお忘れですか？'}
       </Title>
       <Text color="dimmed" size="sm" align="center">
-        リセットするためにメールアドレスをご入力ください
+        {isFinished
+          ? '入力したアドレスにパスワード変更手続きのメールを送信しました。'
+          : 'リセットするためにメールアドレスをご入力ください'}
       </Text>
-
-      <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
-        <TextInput
-          label="メールアドレス"
-          placeholder="test@example.com"
-          required
-        />
-        <Group position="apart" mt="lg" className={classes.controls}>
-          <Link href={getPath('SIGN_IN')} passHref>
-            <Anchor<'a'> color="dimmed" size="sm" className={classes.control}>
-              <Center inline>
-                <ArrowLeft size={12} />
-                <Box ml={5}>ログインページに戻る</Box>
-              </Center>
-            </Anchor>
-          </Link>
-          <Button className={classes.control} onClick={handleClick}>
-            リセットする
-          </Button>
-        </Group>
-      </Paper>
-    </AuthLayout>
+      {!isFinished && (
+        <form onSubmit={form.onSubmit(handleSubmit)} ref={focusTrapRef}>
+          <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
+            <CustomTextInput
+              idText="email"
+              label="メールアドレス"
+              description="例）test@example.com"
+              required={true}
+              form={form}
+              formValue="email"
+            />
+            <Group position="apart" mt="lg" className={classes.controls}>
+              <Link href={getPath('SIGN_IN')} passHref>
+                <Anchor<'a'> color="dimmed" size="sm" className={classes.control}>
+                  <Center inline>
+                    <ArrowLeft size={12} />
+                    <Box ml={5}>ログインページに戻る</Box>
+                  </Center>
+                </Anchor>
+              </Link>
+              <CustomButton type="submit" fullWidth loading={isLoading}>
+                リセットする
+              </CustomButton>
+            </Group>
+          </Paper>
+        </form>
+      )}
+    </>
   );
 };

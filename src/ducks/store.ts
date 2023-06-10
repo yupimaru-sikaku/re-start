@@ -13,11 +13,12 @@ import { mobilityApi } from './mobility/query';
 import { scheduleApi } from './schedule/query';
 import { accompanyApi } from './accompany/query';
 import { homeCareApi } from './home-care/query';
+import { authApi } from './auth/query';
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['global', 'provider', 'staff', 'user', 'homeCare', 'behavior', 'mobility', 'accompany', 'schedule'],
+  whitelist: ['global', 'auth', 'provider', 'staff', 'user', 'homeCare', 'behavior', 'mobility', 'accompany', 'schedule'],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
@@ -30,6 +31,7 @@ export const store = configureStore({
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }).concat(
+      authApi.middleware,
       providerApi.middleware,
       staffApi.middleware,
       userApi.middleware,

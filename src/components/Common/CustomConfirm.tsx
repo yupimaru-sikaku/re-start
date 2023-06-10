@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Button, Text, Modal, Paper, Group, Space } from '@mantine/core';
+import { Button, Text, Modal, Group, Space } from '@mantine/core';
 
 type Props = {
   title?: string;
@@ -9,12 +9,7 @@ type Props = {
   cleanup: () => void;
 };
 
-const AlertDialog: React.FC<Props> = ({
-  title = '',
-  message = '',
-  resolve,
-  cleanup,
-}) => {
+const AlertDialog: React.FC<Props> = ({ title = '', message = '', resolve, cleanup }) => {
   const [open, setOpen] = useState(true);
 
   useEffect(() => cleanup);
@@ -30,13 +25,7 @@ const AlertDialog: React.FC<Props> = ({
   };
 
   return (
-    <Modal
-      centered
-      opened={open}
-      onClose={handleCancel}
-      title={title}
-      withCloseButton={false}
-    >
+    <Modal centered opened={open} onClose={handleCancel} title={title} withCloseButton={false}>
       <Text align="center">{message}</Text>
       <Space h="lg" />
       <Group position="right" spacing="xs">
@@ -49,10 +38,7 @@ const AlertDialog: React.FC<Props> = ({
   );
 };
 
-export const CustomConfirm = (
-  message: string,
-  title = ''
-): Promise<boolean> => {
+export const CustomConfirm = (message: string, title = ''): Promise<boolean> => {
   const wrapper = document.body.appendChild(document.createElement('div'));
   const root = createRoot(wrapper);
   const cleanup = () => {
@@ -63,14 +49,7 @@ export const CustomConfirm = (
   };
   return new Promise<boolean>((resolve, reject) => {
     try {
-      root.render(
-        <AlertDialog
-          title={title}
-          message={message}
-          resolve={resolve}
-          cleanup={cleanup}
-        />
-      );
+      root.render(<AlertDialog title={title} message={message} resolve={resolve} cleanup={cleanup} />);
     } catch (err) {
       cleanup();
       reject(err);

@@ -6,6 +6,7 @@ export const PATH = {
   SIGN_IN: '/auth/sign-in',
   CONFIRM_EMAIL: '/auth/confirm-email',
   FORGOT_PASSWORD: '/auth/forgot-password',
+  RESET_PASSWORD: '/auth/reset-password',
   // 事業所
   PROVIDER: '/provider',
   PROVIDER_CREATE: '/provider/create',

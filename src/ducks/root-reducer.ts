@@ -16,6 +16,7 @@ import { accompanyApi } from './accompany/query';
 import userSlice from './user/slice';
 import homeCareSlice from './home-care/slice';
 import globalSlice from './global/slice';
+import { authApi } from './auth/query';
 
 const rootReducer = combineReducers({
   global: globalSlice.reducer,
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   homeCare: homeCareSlice.reducer,
   mobility: mobilitySlice.reducer,
   schedule: scheduleSlice.reducer,
+  [authApi.reducerPath]: authApi.reducer,
   [providerApi.reducerPath]: providerApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [staffApi.reducerPath]: staffApi.reducer,
