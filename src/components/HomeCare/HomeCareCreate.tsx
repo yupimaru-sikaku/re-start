@@ -27,7 +27,6 @@ type Props = {
 
 export const HomeCareCreate: FC<Props> = ({ type }: Props) => {
   const TITLE = type === 'create' ? '登録' : '更新';
-  const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const { hasPermit } = useHasPermit();
   const homeCareId = router.query.id as string;
@@ -48,6 +47,7 @@ export const HomeCareCreate: FC<Props> = ({ type }: Props) => {
   }, [homeCareList, loginProviderInfo]);
   const userList = useSelector((state) => state.user.userList);
   const homeCareData = selectedHomeCareList.find((homeCare) => homeCare.id === homeCareId);
+  const focusTrapRef = useFocusTrap(hasPermit(homeCareData?.status || 0, 'enableEdit'));
   const { isLoading: userLoading } = useGetUserListQuery(undefined);
   const selectedUserList = useMemo(() => {
     switch (loginProviderInfo.role) {
@@ -68,7 +68,6 @@ export const HomeCareCreate: FC<Props> = ({ type }: Props) => {
         return [];
     }
   }, [userList]);
-  const selectedUser = userList.find((user) => user.name === form.values.user_name);
   const { isLoading: staffLoading } = useGetStaffListQuery(undefined);
   const staffList = useSelector((state) => state.staff.staffList);
   const selectedStaffList = staffList.filter((staff) => {
@@ -96,6 +95,7 @@ export const HomeCareCreate: FC<Props> = ({ type }: Props) => {
     updateRecord: updateHomeCare,
     validate,
   });
+  const selectedUser = userList.find((user) => user.name === form.values.user_name);
 
   const timeObj = { kaziAmountTime, shintaiAmountTime, withTsuinAmountTime, tsuinAmountTime };
 

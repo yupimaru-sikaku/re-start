@@ -26,7 +26,6 @@ type Props = {
 
 export const BehaviorCreate: FC<Props> = ({ type }) => {
   const TITLE = type === 'create' ? '登録' : '更新';
-  const focusTrapRef = useFocusTrap();
   const router = useRouter();
   const { hasPermit } = useHasPermit();
   const behaviorId = router.query.id as string;
@@ -47,6 +46,7 @@ export const BehaviorCreate: FC<Props> = ({ type }) => {
   }, [behaviorList, loginProviderInfo]);
   const userList = useSelector((state) => state.user.userList);
   const behaviorData = selectedBehaviorList.find((behavior) => behavior.id === behaviorId);
+  const focusTrapRef = useFocusTrap(hasPermit(behaviorData?.status || 0, 'enableEdit'));
   const { isLoading: userLoading } = useGetUserListQuery(undefined);
   const selectedUserList = useMemo(() => {
     switch (loginProviderInfo.role) {
@@ -60,7 +60,6 @@ export const BehaviorCreate: FC<Props> = ({ type }) => {
         return [];
     }
   }, [userList]);
-  const selectedUser = userList.find((user) => user.name === form.values.user_name);
   const { isLoading: staffLoading } = useGetStaffListQuery(undefined);
   const staffList = useSelector((state) => state.staff.staffList);
   const selectedStaffList = staffList.filter((staff) => {
@@ -86,6 +85,7 @@ export const BehaviorCreate: FC<Props> = ({ type }) => {
     updateRecord: updateBehavior,
     validate,
   });
+  const selectedUser = userList.find((user) => user.name === form.values.user_name);
 
   const handleSubmit = async () => {
     setIsLoading(true);
