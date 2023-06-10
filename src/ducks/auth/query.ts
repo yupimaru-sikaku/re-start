@@ -26,7 +26,7 @@ export const authApi = createApi({
     resetPasswordForEmail: builder.mutation({
       queryFn: async (email: string): Promise<any> => {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${process.env.NEXT_PUBLIC_BASEURL}${getPath('RESET_PASSWORD')}`,
+          redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}${getPath('RESET_PASSWORD')}`,
         });
         return { error };
       },
