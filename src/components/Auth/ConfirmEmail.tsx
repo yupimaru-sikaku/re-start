@@ -1,10 +1,9 @@
 import React from 'react';
 import { Title, Text } from '@mantine/core';
-import { AuthLayout } from 'src/components/Layout/AuthLayout/AuthLayout';
 
 export const ConfirmEmail = () => {
   return (
-    <AuthLayout>
+    <>
       <Title
         align="center"
         sx={(theme) => ({
@@ -21,6 +20,6 @@ export const ConfirmEmail = () => {
         <br />
         メールが届いていない場合は、迷惑メールフォルダをご確認ください。
       </Text>
-    </AuthLayout>
+    </>
   );
 };
