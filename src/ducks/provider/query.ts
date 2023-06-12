@@ -69,7 +69,7 @@ export const providerApi = createApi({
           const { data: providerData, error: providerError } = await supabase
             .from(getDb('PROVIDER'))
             .select('*')
-            .eq('id', signInData.user.id);
+            .eq('login_id', signInData.user.id);
           if (providerError) return { error: providerError };
           const returnData = {
             id: signInData.user.id,
@@ -105,7 +105,7 @@ export const providerApi = createApi({
         const { data, error } = await supabase
           .from(getDb('PROVIDER'))
           .update({
-            user_id: params.user_id,
+            login_id: params.login_id,
             corporate_id: params.corporate_id,
             corporate_name: params.corporate_name,
             office_name: params.office_name,

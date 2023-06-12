@@ -45,16 +45,10 @@ export const SignIn = () => {
       // ログイン
       const params = form.values;
       const { data, error } = (await login(params)) as LoginResult;
-      //{session: {...}, user: {...}}
-      // user: {id}
+      console.log(error);
       if (error) {
-        throw new Error('Eメールアドレスかパスワードが間違っています');
+        throw new Error(`Eメールアドレスかパスワードが間違っています。${error.message}`);
       }
-      // const loginProviderParams = {
-      //   id: data.user.id,
-      //   email: data.user.email,
-      // };
-      // dispatch(setLoginProviderInfo(loginProviderParams));
       showNotification({
         icon: <IconCheck />,
         message: 'ログインに成功しました！',

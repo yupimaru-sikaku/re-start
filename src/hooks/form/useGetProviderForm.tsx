@@ -36,7 +36,7 @@ export const useGetProviderForm = ({ type, createInitialState, validate }: GetFo
   const form = useForm({
     initialValues: {
       ...createInitialState,
-      user_id: loginProviderInfo.id,
+      login_id: loginProviderInfo.id,
       corporate_id: loginProviderInfo.corporate_id,
       corporate_name: loginProviderInfo.corporate_name,
     },
@@ -73,7 +73,7 @@ export const useGetProviderForm = ({ type, createInitialState, validate }: GetFo
         }
         const updateProviderParams: UpdateProviderParams = {
           id: signUpData.user.id,
-          user_id: signUpData.user.id,
+          login_id: signUpData.user.id,
           corporate_id: form.values.corporate_id,
           corporate_name: form.values.corporate_name,
           office_name: form.values.office_name,
@@ -87,7 +87,7 @@ export const useGetProviderForm = ({ type, createInitialState, validate }: GetFo
       } else {
         const updateProviderParams: UpdateProviderParams = {
           id: providerData!.id,
-          user_id: form.values.user_id,
+          login_id: form.values.login_id,
           corporate_id: form.values.corporate_id,
           corporate_name: form.values.corporate_name,
           office_name: form.values.office_name,

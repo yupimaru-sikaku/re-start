@@ -80,7 +80,7 @@ export const SignUp = () => {
       const corporate_id = generateRandomCorporateId();
       const updateProviderParams: UpdateProviderParams = {
         id: createAdminData.user!.id,
-        user_id: createAdminData.user!.id,
+        login_id: createAdminData.user!.id,
         corporate_id: corporate_id,
         corporate_name: form.values.corporate_name,
         office_name: form.values.office_name,

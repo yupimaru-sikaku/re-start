@@ -4,7 +4,7 @@ import { providerApi } from './query';
 
 export type Provider = {
   id: string;
-  user_id: string; // 属するログインID
+  login_id: string; // 属するログインID
   corporate_id: string; // 法人ID
   corporate_name: string; // 法人名
   office_name: string; // 事業所名
@@ -42,7 +42,7 @@ export type UpdateProviderResult = {
 };
 
 export const createInitialState = {
-  user_id: '',
+  login_id: '',
   corporate_id: '',
   corporate_name: '',
   office_name: '',
