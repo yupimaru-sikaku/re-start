@@ -62,9 +62,6 @@ export const MobilityCreate: FC<Props> = ({ type }) => {
   }, [userList]);
   const { isLoading: staffLoading } = useGetStaffListQuery(undefined);
   const staffList = useSelector((state) => state.staff.staffList);
-  const selectedStaffList = staffList.filter((staff) => {
-    return isQualifiedToProvideService(staff, IDO, selectedUser);
-  });
   const [createMobility] = useCreateMobilityMutation();
   const [updateMobility] = useUpdateMobilityMutation();
   const {
@@ -86,6 +83,9 @@ export const MobilityCreate: FC<Props> = ({ type }) => {
     validate,
   });
   const selectedUser = userList.find((user) => user.name === form.values.user_name);
+  const selectedStaffList = staffList.filter((staff) => {
+    return isQualifiedToProvideService(staff, IDO, selectedUser);
+  });
 
   const handleSubmit = async () => {
     setIsLoading(true);

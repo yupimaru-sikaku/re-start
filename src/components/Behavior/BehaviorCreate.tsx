@@ -62,9 +62,6 @@ export const BehaviorCreate: FC<Props> = ({ type }) => {
   }, [userList]);
   const { isLoading: staffLoading } = useGetStaffListQuery(undefined);
   const staffList = useSelector((state) => state.staff.staffList);
-  const selectedStaffList = staffList.filter((staff) => {
-    return isQualifiedToProvideService(staff, KODO, selectedUser);
-  });
   const [createBehavior] = useCreateBehaviorMutation();
   const [updateBehavior] = useUpdateBehaviorMutation();
   const {
@@ -86,6 +83,9 @@ export const BehaviorCreate: FC<Props> = ({ type }) => {
     validate,
   });
   const selectedUser = userList.find((user) => user.name === form.values.user_name);
+  const selectedStaffList = staffList.filter((staff) => {
+    return isQualifiedToProvideService(staff, KODO, selectedUser);
+  });
 
   const handleSubmit = async () => {
     setIsLoading(true);
