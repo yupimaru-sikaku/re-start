@@ -68,12 +68,9 @@ const scheduleSlice = createSlice({
       state.scheduleList = [action.payload, ...state.scheduleList];
     },
     updateScheduleList: (state, action: PayloadAction<ReturnSchedule>) => {
-      console.log('state.scheduleList', state.scheduleList);
-      console.log('action.payload', action.payload);
       state.scheduleList = state.scheduleList.map((schedule) =>
         schedule.id === action.payload.id ? action.payload : schedule
       );
-      console.log('state.scheduleList', state.scheduleList);
     },
   },
   extraReducers: (builder) => {

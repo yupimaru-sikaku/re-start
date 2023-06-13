@@ -67,7 +67,6 @@ const accompanySlice = createSlice({
   initialState,
   reducers: {
     setAccompanyList: (state, action: PayloadAction<ReturnAccompany[]>) => {
-      console.log('action.payload', action.payload);
       state.accompanyList = action.payload;
     },
   },

@@ -45,7 +45,6 @@ export const SignIn = () => {
       // ログイン
       const params = form.values;
       const { data, error } = (await login(params)) as LoginResult;
-      console.log(error);
       if (error) {
         throw new Error(`Eメールアドレスかパスワードが間違っています。${error.message}`);
       }
