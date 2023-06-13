@@ -120,7 +120,7 @@ export const HomeCareCreate: FC<Props> = ({ type }: Props) => {
 
   return (
     <Stack>
-      <LoadingOverlay sx={{ position: 'relative' }} visible={type === 'edit' && !homeCareData} />
+      <LoadingOverlay visible={type === 'edit' && !homeCareData} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomStepper statusId={homeCareData?.status} />
       </Paper>

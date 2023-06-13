@@ -108,7 +108,7 @@ export const BehaviorCreate: FC<Props> = ({ type }) => {
 
   return (
     <Stack>
-      <LoadingOverlay sx={{ position: 'relative' }} visible={type === 'edit' && !behaviorData} />
+      <LoadingOverlay visible={type === 'edit' && !behaviorData} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomStepper statusId={behaviorData?.status} />
       </Paper>

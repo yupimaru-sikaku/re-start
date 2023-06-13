@@ -108,7 +108,7 @@ export const AccompanyCreate: FC<Props> = ({ type }) => {
 
   return (
     <Stack>
-      <LoadingOverlay sx={{ position: 'relative' }} visible={type === 'edit' && !accompanyData} />
+      <LoadingOverlay visible={type === 'edit' && !accompanyData} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomStepper statusId={accompanyData?.status} />
       </Paper>

@@ -108,7 +108,7 @@ export const MobilityCreate: FC<Props> = ({ type }) => {
 
   return (
     <Stack>
-      <LoadingOverlay sx={{ position: 'relative' }} visible={type === 'edit' && !mobilityData} />
+      <LoadingOverlay visible={type === 'edit' && !mobilityData} />
       <Paper withBorder shadow="md" p={30} radius="md">
         <CustomStepper statusId={mobilityData?.status} />
       </Paper>
