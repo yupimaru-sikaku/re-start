@@ -19,17 +19,20 @@ export const checkOverlap = (
         (schedule) => schedule.year === year && schedule.month === month && schedule.staff_name === staffName
       );
       if (selectedSchedule) {
+        // 利用者名とサービス名が異なる配列を作成
         const removeContentArr = selectedSchedule.content_arr.filter((content) => {
           if (SERVICE_CONTENT === KYOTAKU) {
-            content.user_name !== selectedUser!.name &&
+            return (
+              content.user_name !== selectedUser!.name &&
               !(
                 content.service_content === KAZI ||
                 content.service_content === SHINTAI ||
                 content.service_content === TSUIN ||
                 content.service_content === WITH_TSUIN
-              );
+              )
+            );
           } else {
-            content.user_name !== selectedUser!.name && content.service_content !== SERVICE_CONTENT;
+            return content.user_name !== selectedUser!.name && content.service_content !== SERVICE_CONTENT;
           }
         });
         const isOverlap = hasOverlap(removeContentArr, contentList);
