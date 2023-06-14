@@ -221,7 +221,7 @@ export const useGetHomeCareRecordForm = ({
       if (errorMessageList.length) {
         return {
           isFinished: false,
-          message: `スケジュールの時間が重複しています。${errorMessageList.join(' ')}`,
+          message: `スケジュールの時間が重複しています。\n${errorMessageList.join('\n')}`,
         };
       }
     }
