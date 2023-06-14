@@ -52,7 +52,7 @@ export const HomeCareCreate: FC<Props> = ({ type }: Props) => {
   const selectedUserList = useMemo(() => {
     switch (loginProviderInfo.role) {
       case 'admin':
-        return userList;
+        return userList.filter((user) => user.is_kazi || user.is_shintai || user.is_tsuin || user.is_with_tsuin);
       case 'corporate':
         return userList.filter(
           (user) =>

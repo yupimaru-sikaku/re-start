@@ -51,7 +51,7 @@ export const BehaviorCreate: FC<Props> = ({ type }) => {
   const selectedUserList = useMemo(() => {
     switch (loginProviderInfo.role) {
       case 'admin':
-        return userList;
+        return userList.filter((user) => user.is_kodo);
       case 'corporate':
         return userList.filter((user) => user.is_kodo && user.corporate_id === loginProviderInfo.corporate_id);
       case 'office':

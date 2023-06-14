@@ -51,7 +51,7 @@ export const MobilityCreate: FC<Props> = ({ type }) => {
   const selectedUserList = useMemo(() => {
     switch (loginProviderInfo.role) {
       case 'admin':
-        return userList;
+        return userList.filter((user) => user.is_ido);
       case 'corporate':
         return userList.filter((user) => user.is_ido && user.corporate_id === loginProviderInfo.corporate_id);
       case 'office':
