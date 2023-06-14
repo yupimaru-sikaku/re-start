@@ -15,6 +15,7 @@ import {
   CreateRecordType,
   UpdateRecordType,
 } from '@/ducks/common-service/slice';
+import { checkOverWorkTimePerWeek } from './checkOverWorkTimePerWeek';
 
 export type UseGetRecordFormType<T> = {
   form: UseFormReturnType<T>;
@@ -218,7 +219,7 @@ export const useGetRecordForm = ({
     }
     // カレンダーが重複していないか確認
     if (loginProviderInfo.role === 'admin') {
-      const errorMessageList = checkOverlap(
+      const overWorkTimePerWeekStaffList = checkOverWorkTimePerWeek(
         format2DArr,
         scheduleList,
         selectedUser,
@@ -226,10 +227,24 @@ export const useGetRecordForm = ({
         form.values.year,
         form.values.month
       );
-      if (errorMessageList.length) {
+      const duplicateStaffList = checkOverlap(
+        format2DArr,
+        scheduleList,
+        selectedUser,
+        SERVICE_CONTENT,
+        form.values.year,
+        form.values.month
+      );
+      if (duplicateStaffList.length) {
         return {
           isFinished: false,
-          message: `スケジュールの時間が重複しています。\n${errorMessageList.join('\n')}`,
+          message: `スケジュールの時間が重複しています。\n${duplicateStaffList.join('\n')}`,
+        };
+      }
+      if (overWorkTimePerWeekStaffList.length) {
+        return {
+          isFinished: false,
+          message: `週の合計勤務時間が超えています。\n${overWorkTimePerWeekStaffList.join('\n')}`,
         };
       }
     }
