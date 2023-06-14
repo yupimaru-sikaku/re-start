@@ -28,7 +28,6 @@ export const authApi = createApi({
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}${getPath('RESET_PASSWORD')}`,
         });
-        console.log('redirect_path', `${process.env.NEXT_PUBLIC_BASE_URL}${getPath('RESET_PASSWORD')}`);
         return { error };
       },
     }),
