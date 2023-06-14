@@ -1,7 +1,7 @@
 import { CustomConfirm } from '@/components/Common/CustomConfirm';
 import { useCreateScheduleMutation, useGetScheduleListQuery, useUpdateScheduleMutation } from '@/ducks/schedule/query';
 import { useAppDispatch, useSelector } from '@/ducks/store';
-import { KAZI, KYOTAKU, SHINTAI, TSUIN, WITH_TSUIN, calcEachWorkTime } from '@/utils';
+import { KAZI, KYOTAKU, SHINTAI, TSUIN, WITH_TSUIN, calcEachWorkTime, recordRowLength } from '@/utils';
 import { UseFormReturnType, useForm } from '@mantine/form';
 import { ChangeEvent, useEffect } from 'react';
 import { checkOverlap } from './checkOverlap';
@@ -54,7 +54,7 @@ export const useGetHomeCareRecordForm = ({
       ...createInitialState,
       year: currentDate.getFullYear(),
       month: currentDate.getMonth() + 1,
-      content_arr: Array.from({ length: 31 }, () => createInitialState.content_arr[0]),
+      content_arr: Array.from({ length: recordRowLength }, () => createInitialState.content_arr[0]),
     },
     validate: validate,
   });
@@ -73,7 +73,7 @@ export const useGetHomeCareRecordForm = ({
     if (!recordData) return;
     const newContentArr = [
       ...recordData.content_arr,
-      ...Array.from({ length: 31 - recordData.content_arr.length }, () => createInitialState.content_arr[0]),
+      ...Array.from({ length: recordRowLength - recordData.content_arr.length }, () => createInitialState.content_arr[0]),
     ];
     form.setValues({
       ...recordData,
