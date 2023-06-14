@@ -26,7 +26,9 @@ const AlertDialog: React.FC<Props> = ({ title = '', message = '', resolve, clean
 
   return (
     <Modal centered opened={open} onClose={handleCancel} title={title} withCloseButton={false}>
-      <Text align="center">{message}</Text>
+      <Text sx={{ whiteSpace: 'pre-wrap' }} align="center">
+        {message}
+      </Text>
       <Space h="lg" />
       <Group position="right" spacing="xs">
         <Button variant="subtle" color="gray" onClick={handleCancel}>
