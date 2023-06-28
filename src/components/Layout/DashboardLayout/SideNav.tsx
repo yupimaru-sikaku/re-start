@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import Link from 'next/link';
 import { useDisclosure } from '@mantine/hooks';
-import { createStyles, Navbar, Group, UnstyledButton, MediaQuery, ActionIcon } from '@mantine/core';
+import { createStyles, Navbar, Group, UnstyledButton, MediaQuery, ActionIcon, Tooltip } from '@mantine/core';
 import { Home, ArrowLeft, ArrowRight, User, Car, Friends, Walk, HomeHeart, Disabled2 } from 'tabler-icons-react';
 import { getPath } from '@/utils/const/getPath';
 import { ActiveLink } from '@/utils/next/active-link';
@@ -137,23 +137,27 @@ export const SideNav: FC<{ className?: string }> = ({ className }) => {
               <ActiveLink href={href} passHref key={label}>
                 {(isActive) => {
                   return (
-                    <a
-                      className={cx(classes.link, {
-                        [classes.linkActive]: isActive,
-                      })}
-                    >
-                      <Icon className={classes.linkIcon} />
-                      <span className={classes.linkLabel}>{label}</span>
-                    </a>
+                    <Tooltip label={label} color="blue" position="right" withArrow>
+                      <a
+                        className={cx(classes.link, {
+                          [classes.linkActive]: isActive,
+                        })}
+                      >
+                        <Icon className={classes.linkIcon} />
+                        <span className={classes.linkLabel}>{label}</span>
+                      </a>
+                    </Tooltip>
                   );
                 }}
               </ActiveLink>
             )
         )}
-        <a className={cx(classes.link)} onClick={handleLogout}>
-          <IconLogout className={classes.linkIcon} />
-          <span className={classes.linkLabel}>ログアウト</span>
-        </a>
+        <Tooltip label="ログアウト" color="blue" position="right" withArrow>
+          <a className={cx(classes.link)} onClick={handleLogout}>
+            <IconLogout className={classes.linkIcon} />
+            <span className={classes.linkLabel}>ログアウト</span>
+          </a>
+        </Tooltip>
         <ActionIcon
           className={cx(classes.link)}
           variant="outline"
