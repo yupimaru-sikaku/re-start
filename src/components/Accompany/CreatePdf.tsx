@@ -143,74 +143,74 @@ export const CreatePdf = async (pdfUrl: string, service: RecordServiceType) => {
   });
 
   // 位置計算用
-  const arr = Array.from({ length: 1000 }, (_, i) => ({
-    value: (i + 1) * 10,
-    x: (i + 1) * 10,
-    y: (i + 1) * 10,
-  }));
-  arr.map(({ value, x, y }) => {
-    firstPage.drawText(value.toString(), {
-      x: x,
-      y: y,
-      size: 10,
-      font: notoSansFont,
-      color: rgb(0, 0, 0),
-    });
-  });
-  arr.map(({ value, x, y }, index) => {
-    firstPage.drawText(value.toString(), {
-      x: 0,
-      y: y,
-      size: 10,
-      font: notoSansFont,
-      color: rgb(0, 0, 0),
-    });
-  });
-  arr.map(({ value, x, y }, index) => {
-    firstPage.drawText(value.toString(), {
-      x: 100,
-      y: y,
-      size: 10,
-      font: notoSansFont,
-      color: rgb(0, 0, 0),
-    });
-  });
-  arr.map(({ value, x, y }, index) => {
-    firstPage.drawText(value.toString(), {
-      x: 200,
-      y: y,
-      size: 10,
-      font: notoSansFont,
-      color: rgb(0, 0, 0),
-    });
-  });
-  arr.map(({ value, x, y }, index) => {
-    firstPage.drawText(value.toString(), {
-      x: 300,
-      y: y,
-      size: 10,
-      font: notoSansFont,
-      color: rgb(0, 0, 0),
-    });
-  });
-  arr.map(({ value, x, y }, index) => {
-    firstPage.drawText(value.toString(), {
-      x: 400,
-      y: y,
-      size: 10,
-      font: notoSansFont,
-      color: rgb(0, 0, 0),
-    });
-  });
-  arr.map(({ value, x, y }, index) => {
-    firstPage.drawText(value.toString(), {
-      x: 500,
-      y: y,
-      size: 10,
-      font: notoSansFont,
-      color: rgb(0, 0, 0),
-    });
-  });
+  // const arr = Array.from({ length: 1000 }, (_, i) => ({
+  //   value: (i + 1) * 10,
+  //   x: (i + 1) * 10,
+  //   y: (i + 1) * 10,
+  // }));
+  // arr.map(({ value, x, y }) => {
+  //   firstPage.drawText(value.toString(), {
+  //     x: x,
+  //     y: y,
+  //     size: 10,
+  //     font: notoSansFont,
+  //     color: rgb(0, 0, 0),
+  //   });
+  // });
+  // arr.map(({ value, x, y }, index) => {
+  //   firstPage.drawText(value.toString(), {
+  //     x: 0,
+  //     y: y,
+  //     size: 10,
+  //     font: notoSansFont,
+  //     color: rgb(0, 0, 0),
+  //   });
+  // });
+  // arr.map(({ value, x, y }, index) => {
+  //   firstPage.drawText(value.toString(), {
+  //     x: 100,
+  //     y: y,
+  //     size: 10,
+  //     font: notoSansFont,
+  //     color: rgb(0, 0, 0),
+  //   });
+  // });
+  // arr.map(({ value, x, y }, index) => {
+  //   firstPage.drawText(value.toString(), {
+  //     x: 200,
+  //     y: y,
+  //     size: 10,
+  //     font: notoSansFont,
+  //     color: rgb(0, 0, 0),
+  //   });
+  // });
+  // arr.map(({ value, x, y }, index) => {
+  //   firstPage.drawText(value.toString(), {
+  //     x: 300,
+  //     y: y,
+  //     size: 10,
+  //     font: notoSansFont,
+  //     color: rgb(0, 0, 0),
+  //   });
+  // });
+  // arr.map(({ value, x, y }, index) => {
+  //   firstPage.drawText(value.toString(), {
+  //     x: 400,
+  //     y: y,
+  //     size: 10,
+  //     font: notoSansFont,
+  //     color: rgb(0, 0, 0),
+  //   });
+  // });
+  // arr.map(({ value, x, y }, index) => {
+  //   firstPage.drawText(value.toString(), {
+  //     x: 500,
+  //     y: y,
+  //     size: 10,
+  //     font: notoSansFont,
+  //     color: rgb(0, 0, 0),
+  //   });
+  // });
 
   const pdfBytes = await pdfDoc.save();
   return pdfBytes;
