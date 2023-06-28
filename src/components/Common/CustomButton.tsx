@@ -1,7 +1,7 @@
 import { Button, MantineColor, MantineGradient } from '@mantine/core';
 import { NextPage } from 'next';
 import { ReactNode } from 'react';
-import { useMediaQuery } from 'src/libs/mantine/useMediaQuery';
+import { useMediaQuery } from '@/libs/mantine/useMediaQuery';
 
 type Props = {
   children: ReactNode;
@@ -13,14 +13,7 @@ type Props = {
   loading?: boolean;
   radius?: number | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  variant?:
-    | 'outline'
-    | 'white'
-    | 'light'
-    | 'default'
-    | 'filled'
-    | 'subtle'
-    | 'gradient';
+  variant?: 'outline' | 'white' | 'light' | 'default' | 'filled' | 'subtle' | 'gradient';
   onClick?: () => void;
   fullWidth?: boolean;
   type?: 'button' | 'reset' | 'submit';

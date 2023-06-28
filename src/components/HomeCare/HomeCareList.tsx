@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useSelector } from '@/ducks/store';
 import { useGetHomeCareListQuery, useUpdateHomeCareMutation } from '@/ducks/home-care/query';
-import { TableRecordList } from 'src/components/Common/TableRecordList';
+import { TableRecordList } from '@/components/Common/TableRecordList';
 
 export const HomeCareList = () => {
   const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);

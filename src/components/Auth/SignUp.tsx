@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import Link from 'next/link';
 import { Anchor, Paper, Title, Text, Space } from '@mantine/core';
 import { getPath } from '@/utils/const/getPath';
-import { AuthLayout } from 'src/components/Layout/AuthLayout/AuthLayout';
+import { AuthLayout } from '@/components/Layout/AuthLayout/AuthLayout';
 import { useForm } from '@mantine/form';
 import {
   CreateProviderWithSignUpParams,
@@ -10,13 +10,13 @@ import {
   UpdateProviderParams,
   UpdateProviderResult,
   createInitialState,
-} from 'src/ducks/provider/slice';
+} from '@/ducks/provider/slice';
 import { useFocusTrap } from '@mantine/hooks';
-import { CustomTextInput } from 'src/components/Common/CustomTextInput';
+import { CustomTextInput } from '@/components/Common/CustomTextInput';
 import { CustomPasswordInput } from '../Common/CustomPasswordInput';
-import { CustomButton } from 'src/components/Common/CustomButton';
+import { CustomButton } from '@/components/Common/CustomButton';
 import { validateCorporateName, validateOfficeName, validatePassword } from '@/utils/validate/provider';
-import { validateEmail } from 'src/utils/validate/common';
+import { validateEmail } from '@/utils/validate/common';
 import { useRouter } from 'next/router';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';

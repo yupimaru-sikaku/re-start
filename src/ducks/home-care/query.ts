@@ -1,6 +1,6 @@
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
-import { CreateHomeCareParams, DeleteHomeCareResult, UpdateHomeCareParams } from 'src/ducks/home-care/slice';
+import { CreateHomeCareParams, DeleteHomeCareResult, UpdateHomeCareParams } from '@/ducks/home-care/slice';
 
 export const homeCareApi = createApi({
   reducerPath: 'homeCareApi',

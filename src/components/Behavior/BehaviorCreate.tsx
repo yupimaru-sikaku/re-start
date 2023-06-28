@@ -1,11 +1,11 @@
 import React, { FC, useMemo, useState } from 'react';
 import { useFocusTrap } from '@mantine/hooks';
 import { useRouter } from 'next/router';
-import { CustomButton } from 'src/components/Common/CustomButton';
-import { CustomStepper } from 'src/components/Common/CustomStepper';
-import { RecordBasicInfo } from 'src/components/Common/RecordBasicInfo';
-import { RecordContentArray } from 'src/components/Common/RecordContentArray';
-import { CustomConfirm } from 'src/components/Common/CustomConfirm';
+import { CustomButton } from '@/components/Common/CustomButton';
+import { CustomStepper } from '@/components/Common/CustomStepper';
+import { RecordBasicInfo } from '@/components/Common/RecordBasicInfo';
+import { RecordContentArray } from '@/components/Common/RecordContentArray';
+import { CustomConfirm } from '@/components/Common/CustomConfirm';
 import { Divider, LoadingOverlay, Overlay, Paper, Space, Stack } from '@mantine/core';
 import { CreateBehaviorParams, createInitialState } from '@/ducks/behavior/slice';
 import { useGetUserListQuery } from '@/ducks/user/query';

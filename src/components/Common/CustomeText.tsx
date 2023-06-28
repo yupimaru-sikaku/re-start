@@ -1,7 +1,7 @@
 import { DefaultMantineColor, MantineGradient, Text } from '@mantine/core';
 import { NextPage } from 'next';
 import { ReactNode, useEffect, useState } from 'react';
-import { useMediaQuery } from 'src/libs/mantine/useMediaQuery';
+import { useMediaQuery } from '@/libs/mantine/useMediaQuery';
 
 type Props = {
   align?: 'start' | 'center' | 'end';

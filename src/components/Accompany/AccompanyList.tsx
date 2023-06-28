@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useSelector } from '@/ducks/store';
 import { useGetAccompanyListQuery, useUpdateAccompanyMutation } from '@/ducks/accompany/query';
-import { TableRecordList } from 'src/components/Common/TableRecordList';
+import { TableRecordList } from '@/components/Common/TableRecordList';
 
 export const AccompanyList = () => {
   const loginProviderInfo = useSelector((state) => state.provider.loginProviderInfo);

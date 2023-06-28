@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import { AuthLayout } from '@/components/Layout/AuthLayout/AuthLayout';
-import { ConfirmEmail } from 'src/components/Auth/ConfirmEmail';
+import { ConfirmEmail } from '@/components/Auth/ConfirmEmail';
 
 const ConfirmEmailPage: NextPage = () => {
   return (

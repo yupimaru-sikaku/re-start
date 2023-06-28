@@ -1,5 +1,5 @@
-import { AppMantineProvider } from 'src/libs/mantine/AppMantineProvider';
-import { GlobalStyleProvider } from 'src/libs/mantine/GlobalStyleProvider';
+import { AppMantineProvider } from '@/libs/mantine/AppMantineProvider';
+import { GlobalStyleProvider } from '@/libs/mantine/GlobalStyleProvider';
 import type { CustomAppPage } from 'next/app';
 import { Provider } from 'react-redux';
 import { persistor, store } from '@/ducks/store';

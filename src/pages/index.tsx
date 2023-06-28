@@ -1,7 +1,7 @@
 import type { CustomNextPage } from 'next';
 import Link from 'next/link';
 import { Paper, SimpleGrid } from '@mantine/core';
-import { DashboardLayout } from 'src/components/Layout/DashboardLayout/DashboardLayout';
+import { DashboardLayout } from '@/components/Layout/DashboardLayout/DashboardLayout';
 import { PageContainer } from '@/components/PageContainer';
 import { ITEMS } from '@/components/Layout/DashboardLayout/SideNav';
 import { useAuth } from '@/hooks/auth/useAuth';

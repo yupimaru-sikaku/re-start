@@ -4,7 +4,7 @@ import { createStyles, Paper, Title, Text, Group, Anchor, Center, Box } from '@m
 import { ArrowLeft } from 'tabler-icons-react';
 import { getPath } from '@/utils/const/getPath';
 import { useForm } from '@mantine/form';
-import { validateEmail } from 'src/utils/validate/common';
+import { validateEmail } from '@/utils/validate/common';
 import { CustomConfirm } from '../Common/CustomConfirm';
 import { CustomButton } from '../Common/CustomButton';
 import { useFocusTrap } from '@mantine/hooks';

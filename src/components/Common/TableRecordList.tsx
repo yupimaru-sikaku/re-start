@@ -5,9 +5,9 @@ import { PATH, getPath } from '@/utils/const/getPath';
 import { IconEdit } from '@tabler/icons';
 import { PAGE_SIZE, convertSupabaseTime, monthList, yearList } from '@/utils';
 import { DataTable } from 'mantine-datatable';
-import { OptionButton } from 'src/components/Common/OptionButton';
-import { CustomConfirm } from 'src/components/Common/CustomConfirm';
-import { CreatePdf } from 'src/components/Accompany/CreatePdf';
+import { OptionButton } from '@/components/Common/OptionButton';
+import { CustomConfirm } from '@/components/Common/CustomConfirm';
+import { CreatePdf } from '@/components/Accompany/CreatePdf';
 import { RecordServiceType, UpdateRecordType } from '@/ducks/common-service/slice';
 
 type Props = {

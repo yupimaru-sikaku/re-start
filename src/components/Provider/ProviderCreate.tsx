@@ -9,7 +9,7 @@ import { showNotification } from '@mantine/notifications';
 import { IconCheckbox } from '@tabler/icons';
 import { validate } from '@/utils/validate/provider';
 import { useGetProviderForm } from '@/hooks/form/useGetProviderForm';
-import { createInitialState } from 'src/ducks/provider/slice';
+import { createInitialState } from '@/ducks/provider/slice';
 import { CustomTextInput } from '../Common/CustomTextInput';
 import { CustomPasswordInput } from '../Common/CustomPasswordInput';
 

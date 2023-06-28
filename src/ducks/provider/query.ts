@@ -1,6 +1,6 @@
 import { getDb, supabase } from '@/libs/supabase/supabase';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
-import { CreateProviderWithSignUpParams, LoginParams, LoginResult, UpdateProviderParams } from 'src/ducks/provider/slice';
+import { CreateProviderWithSignUpParams, LoginParams, LoginResult, UpdateProviderParams } from '@/ducks/provider/slice';
 
 export const providerApi = createApi({
   reducerPath: 'providerApi',
