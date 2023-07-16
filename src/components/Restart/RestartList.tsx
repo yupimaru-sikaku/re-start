@@ -52,24 +52,22 @@ export const RestartList = () => {
             <Group spacing={4} position="center" noWrap>
               <Link href={`/restart/${service.id}/`}>
                 <a>
-                  <ActionIcon color="green">
-                    <IconEye size={20} />
-                  </ActionIcon>
+                  <Button color="cyan">詳細</Button>
                 </a>
               </Link>
             </Group>
           ),
         },
-        {
-          accessor: 'download',
-          title: 'ダウンロード',
-          width: 250,
-          render: (service: any) => (
-            <Button color="cyan" onClick={() => handlePDFDownload(service)}>
-              ダウンロード
-            </Button>
-          ),
-        },
+        // {
+        //   accessor: 'download',
+        //   title: 'ダウンロード',
+        //   width: 250,
+        //   render: (service: any) => (
+        //     <Button color="cyan" onClick={() => handlePDFDownload(service)}>
+        //       ダウンロード
+        //     </Button>
+        //   ),
+        // },
       ]}
     />
   );
