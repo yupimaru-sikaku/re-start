@@ -25,7 +25,7 @@ export const RestartDashboardLayout: CustomLayout = ({ children, title }) => {
       <AppShell
         styles={(theme) => ({
           body: { minHeight: '100vh' },
-          main: { backgroundColor: theme.colors.gray[0], padding: 0, minWidth: '900px', overflow: 'auto' },
+          main: { backgroundColor: theme.colors.gray[0], padding: 0 },
         })}
         navbar={
           <>
