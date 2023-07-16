@@ -7,14 +7,15 @@ import { Box, Checkbox, Paper, Space, Text, TextInput } from '@mantine/core';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 
+export const contentWidth = 900;
+export const serviceWidth = 150;
+export const subTitleWidth = 100;
+export const subContentWidth = 800;
+export const mainColor = '#228BE6';
+export const subColor = '#D0EBFF';
+
 const RestartIdPage = () => {
   useAuth();
-  const contentWidth = 900;
-  const serviceWidth = 150;
-  const subTitleWidth = 100;
-  const subContentWidth = 800;
-  const mainColor = '#228BE6';
-  const subColor = '#D0EBFF';
 
   const router = useRouter();
   const restartId = router.query.id;

@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import { useRouter } from 'next/router';
 import { CustomButton } from '@/components/Common/CustomButton';
-import { Checkbox, Divider, Paper, Select, SimpleGrid, Space, Stack, Textarea } from '@mantine/core';
+import { Box, Checkbox, Divider, Paper, Select, SimpleGrid, Space, Stack, Text, TextInput, Textarea } from '@mantine/core';
 import { useGetUserListQuery } from '@/ducks/user/query';
 import { useSelector } from '@/ducks/store';
 import { useForm } from '@mantine/form';
@@ -11,6 +11,7 @@ import { CustomConfirm } from '../Common/CustomConfirm';
 import { showNotification } from '@mantine/notifications';
 import { IconCheckbox, IconClock } from '@tabler/icons';
 import { TimeInput, TimeRangeInput } from '@mantine/dates';
+import { contentWidth, mainColor, serviceWidth, subColor, subContentWidth, subTitleWidth } from '@/pages/restart/[id]';
 
 const YEAR_LIST = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
 const MONTH_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -221,16 +222,74 @@ export const RestartCreate: FC<Props> = ({ type }) => {
   };
 
   return (
-    <Stack>
-      <form onSubmit={form.onSubmit(handleSubmit)}>
-        <Paper withBorder shadow="md" p={30} radius="md">
-          <SimpleGrid
-            breakpoints={[
-              { minWidth: 'sm', cols: 2 },
-              { minWidth: 'md', cols: 5 },
-              { minWidth: 'xl', cols: 6 },
-            ]}
+    <form onSubmit={form.onSubmit(handleSubmit)}>
+      <Paper p={10} sx={{ width: contentWidth, overflow: 'auto', margin: '0 auto' }}>
+        <Box sx={{ display: 'flex', gap: 30 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', width: '300px', justifyContent: 'space-between' }}>
+            <Text
+              sx={{
+                backgroundColor: mainColor,
+                width: '100%',
+                color: 'white',
+                fontSize: '24px',
+                fontWeight: 'bold',
+                textAlign: 'center',
+              }}
+            >
+              サービス実施記録
+            </Text>
+            <Select
+              label="利用者名"
+              required={true}
+              searchable
+              nothingFound="No Data"
+              data={USER_LIST.map((user) => ({
+                value: user,
+                label: user,
+              }))}
+              variant="filled"
+              {...form.getInputProps('user_name')}
+            />
+          </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
+            <TextInput
+              label="事業所名"
+              value="リスタート"
+              variant="unstyled"
+              sx={{ borderBottom: '1px solid' }}
+              styles={{ input: { textAlign: 'center' } }}
+            />
+            <Select
+              label="担当ヘルパー"
+              required={true}
+              searchable
+              nothingFound="No Data"
+              data={STAFF_LIST.map((staff) => ({
+                value: staff,
+                label: staff,
+              }))}
+              variant="filled"
+              {...form.getInputProps('staff_name')}
+            />
+          </Box>
+        </Box>
+        <Space h="xl" />
+        <Box sx={{ display: 'flex', alignItems: 'center', border: '1px solid' }}>
+          <Text
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              width: serviceWidth,
+              borderRight: '1px solid',
+              backgroundColor: mainColor,
+              color: 'white',
+              fontWeight: 'bold',
+              height: '61px',
+            }}
           >
+            サービス実施日時
+          </Text>
+          <Box sx={{ display: 'flex', alignItems: 'center', width: '270px', gap: 10, marginLeft: 10 }}>
             <Select
               label="西暦"
               required={true}
@@ -267,42 +326,8 @@ export const RestartCreate: FC<Props> = ({ type }) => {
               variant="filled"
               {...form.getInputProps('day')}
             />
-            <Select
-              label="利用者名"
-              required={true}
-              searchable
-              nothingFound="No Data"
-              data={USER_LIST.map((user) => ({
-                value: user,
-                label: user,
-              }))}
-              variant="filled"
-              {...form.getInputProps('user_name')}
-            />
-            <Select
-              label="スタッフ名"
-              required={true}
-              searchable
-              nothingFound="No Data"
-              data={STAFF_LIST.map((staff) => ({
-                value: staff,
-                label: staff,
-              }))}
-              variant="filled"
-              {...form.getInputProps('staff_name')}
-            />
-            <Select
-              label="サービスの種類"
-              required={true}
-              searchable
-              nothingFound="No Data"
-              data={SERVICE_CONTENT_LIST.map((service_content) => ({
-                value: service_content,
-                label: service_content,
-              }))}
-              variant="filled"
-              {...form.getInputProps('service_content')}
-            />
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', width: '400px', gap: 10, marginLeft: 10 }}>
             <TimeInput
               required
               label="開始時間"
@@ -317,28 +342,220 @@ export const RestartCreate: FC<Props> = ({ type }) => {
               variant="filled"
               {...form.getInputProps('end_time')}
             />
-          </SimpleGrid>
-          <Space h="lg" />
-          <Divider variant="dotted" />
-          <Space h="lg" />
-          {CHECK_LIST.map((check) => (
-            <Checkbox key={check.order} value={check.order} label={check.name} onChange={(e) => handleCheck(e, check.order)} />
-          ))}
-          <Space h="lg" />
+            <Select
+              label="サービスの種類"
+              required={true}
+              searchable
+              nothingFound="No Data"
+              data={SERVICE_CONTENT_LIST.map((service_content) => ({
+                value: service_content,
+                label: service_content,
+              }))}
+              variant="filled"
+              {...form.getInputProps('service_content')}
+            />
+          </Box>
+        </Box>
+
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            padding: '5px',
+            backgroundColor: mainColor,
+            color: 'white',
+            fontWeight: 'bold',
+          }}
+        >
+          <Text>身体介護</Text>
+        </Box>
+        <Box sx={{ display: 'flex', border: '1px solid' }}>
+          <Text sx={{ width: subTitleWidth, borderRight: '1px solid', backgroundColor: subColor }}>排泄</Text>
+          <Box sx={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: subContentWidth, padding: 5 }}>
+            {CHECK_LIST.slice(0, 8).map((content) => (
+              <Checkbox
+                key={content.order}
+                value={content.order}
+                label={content.name}
+                onChange={(e) => handleCheck(e, content.order)}
+              />
+            ))}
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', border: '1px solid', borderTop: 'none' }}>
+          <Text sx={{ width: subTitleWidth, borderRight: '1px solid', backgroundColor: subColor }}>食事</Text>
+          <Box sx={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: subContentWidth, padding: 5 }}>
+            {CHECK_LIST.slice(8, 13).map((content) => (
+              <Checkbox
+                key={content.order}
+                value={content.order}
+                label={content.name}
+                onChange={(e) => handleCheck(e, content.order)}
+              />
+            ))}
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', border: '1px solid', borderTop: 'none' }}>
+          <Text sx={{ width: subTitleWidth, borderRight: '1px solid', backgroundColor: subColor }}>清拭・入浴</Text>
+          <Box sx={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: subContentWidth, padding: 5 }}>
+            {CHECK_LIST.slice(13, 16).map((content) => (
+              <Checkbox
+                key={content.order}
+                value={content.order}
+                label={content.name}
+                onChange={(e) => handleCheck(e, content.order)}
+              />
+            ))}
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', border: '1px solid', borderTop: 'none' }}>
+          <Text sx={{ width: subTitleWidth, borderRight: '1px solid', backgroundColor: subColor }}>身体整容</Text>
+          <Box sx={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: subContentWidth, padding: 5 }}>
+            {CHECK_LIST.slice(16, 20).map((content) => (
+              <Checkbox
+                key={content.order}
+                value={content.order}
+                label={content.name}
+                onChange={(e) => handleCheck(e, content.order)}
+              />
+            ))}
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', border: '1px solid', borderTop: 'none' }}>
+          <Text sx={{ width: subTitleWidth, borderRight: '1px solid', backgroundColor: subColor }}>移動</Text>
+          <Box sx={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: subContentWidth, padding: 5 }}>
+            {CHECK_LIST.slice(20, 27).map((content) => (
+              <Checkbox
+                key={content.order}
+                value={content.order}
+                label={content.name}
+                onChange={(e) => handleCheck(e, content.order)}
+              />
+            ))}
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', border: '1px solid', borderTop: 'none' }}>
+          <Text sx={{ width: subTitleWidth, borderRight: '1px solid', backgroundColor: subColor }}>起床就寝</Text>
+          <Box sx={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: subContentWidth, padding: 5 }}>
+            {CHECK_LIST.slice(27, 29).map((content) => (
+              <Checkbox
+                key={content.order}
+                value={content.order}
+                label={content.name}
+                onChange={(e) => handleCheck(e, content.order)}
+              />
+            ))}
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', border: '1px solid', borderTop: 'none' }}>
+          <Text sx={{ width: subTitleWidth, borderRight: '1px solid', backgroundColor: subColor }}>服薬その他</Text>
+          <Box sx={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: subContentWidth, padding: 5 }}>
+            {CHECK_LIST.slice(29, 31).map((content) => (
+              <Checkbox
+                key={content.order}
+                value={content.order}
+                label={content.name}
+                onChange={(e) => handleCheck(e, content.order)}
+              />
+            ))}
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', border: '1px solid', borderTop: 'none' }}>
+          <Text sx={{ width: subTitleWidth, borderRight: '1px solid', backgroundColor: subColor }}>自立支援</Text>
+          <Box sx={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: subContentWidth, padding: 5 }}>
+            {CHECK_LIST.slice(31, 34).map((content) => (
+              <Checkbox
+                key={content.order}
+                value={content.order}
+                label={content.name}
+                onChange={(e) => handleCheck(e, content.order)}
+              />
+            ))}
+          </Box>
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            padding: '5px',
+            backgroundColor: mainColor,
+            color: 'white',
+            fontWeight: 'bold',
+          }}
+        >
+          <Text>生活援助</Text>
+        </Box>
+        <Box sx={{ display: 'flex', border: '1px solid', borderTop: 'none' }}>
+          <Text sx={{ width: subTitleWidth, borderRight: '1px solid', backgroundColor: subColor }}>清掃</Text>
+          <Box sx={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: subContentWidth, padding: 5 }}>
+            {CHECK_LIST.slice(34, 41).map((content) => (
+              <Checkbox
+                key={content.order}
+                value={content.order}
+                label={content.name}
+                onChange={(e) => handleCheck(e, content.order)}
+              />
+            ))}
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', border: '1px solid', borderTop: 'none' }}>
+          <Text sx={{ width: subTitleWidth, borderRight: '1px solid', backgroundColor: subColor }}>洗濯</Text>
+          <Box sx={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: subContentWidth, padding: 5 }}>
+            {CHECK_LIST.slice(41, 45).map((content) => (
+              <Checkbox
+                key={content.order}
+                value={content.order}
+                label={content.name}
+                onChange={(e) => handleCheck(e, content.order)}
+              />
+            ))}
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', border: '1px solid', borderTop: 'none' }}>
+          <Text sx={{ width: subTitleWidth, borderRight: '1px solid', backgroundColor: subColor }}>調理</Text>
+          <Box sx={{ display: 'flex', gap: 10, flexWrap: 'wrap', width: subContentWidth, padding: 5 }}>
+            {CHECK_LIST.slice(45, 48).map((content) => (
+              <Checkbox
+                key={content.order}
+                value={content.order}
+                label={content.name}
+                onChange={(e) => handleCheck(e, content.order)}
+              />
+            ))}
+          </Box>
+        </Box>
+
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            padding: '5px',
+            backgroundColor: mainColor,
+            color: 'white',
+            fontWeight: 'bold',
+          }}
+        >
+          <Text>特記・連絡事項</Text>
+        </Box>
+        <Box sx={{ display: 'flex', border: '1px solid', borderTop: 'none' }}>
           <Textarea
+            sx={{ width: '100%' }}
             required={true}
             variant="filled"
-            label="特記・連絡事項"
             autosize
             minRows={5}
             {...form.getInputProps('comment')}
           />
-          <Space h="xl" />
-          <CustomButton type="submit" fullWidth loading={isLoading}>
-            {TITLE}
-          </CustomButton>
-        </Paper>
-      </form>
-    </Stack>
+          {/* <Text sx={{ textAlign: 'center', margin: '0 auto' }}>{restartData.comment}</Text> */}
+        </Box>
+        <Box>
+          <Text color="gray">※介護者には守秘義務があります。この日誌は適正に管理し、業務以外に使用することはありません。</Text>
+        </Box>
+        <Space h="xl" />
+        <CustomButton type="submit" fullWidth loading={isLoading}>
+          {TITLE}
+        </CustomButton>
+      </Paper>
+    </form>
   );
 };
