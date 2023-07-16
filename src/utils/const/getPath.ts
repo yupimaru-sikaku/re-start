@@ -38,6 +38,9 @@ export const PATH = {
   MOBILITY: '/mobility',
   MOBILITY_CREATE: '/mobility/create',
   MOBILITY_EDIT: '/mobility/[id]/edit',
+  // リスタート
+  RESTART: '/restart',
+  RESTART_CREATE: '/restart/create',
 } as const;
 
 export const getPath = (pathKey: keyof typeof PATH, ...args: string[]) => {

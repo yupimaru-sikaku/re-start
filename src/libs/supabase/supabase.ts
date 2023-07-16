@@ -14,6 +14,7 @@ const DB = {
   ACCOMPANY: 'accompany',
   BEHAVIOR: 'behavior',
   MOBILITY: 'mobility',
+  RESTART: 'restart',
 } as const;
 
 export const getDb = (db: keyof typeof DB) => {

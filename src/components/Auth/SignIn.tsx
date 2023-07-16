@@ -52,7 +52,7 @@ export const SignIn = () => {
         icon: <IconCheck />,
         message: 'ログインに成功しました！',
       });
-      router.push(getPath('INDEX'));
+      router.push('/restart');
     } catch (error: any) {
       await CustomConfirm(error.message, 'Caution');
       setIsLoading(false);

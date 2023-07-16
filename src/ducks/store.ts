@@ -14,11 +14,24 @@ import { scheduleApi } from './schedule/query';
 import { accompanyApi } from './accompany/query';
 import { homeCareApi } from './home-care/query';
 import { authApi } from './auth/query';
+import { restartApi } from './restart/query';
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['global', 'auth', 'provider', 'staff', 'user', 'homeCare', 'behavior', 'mobility', 'accompany', 'schedule'],
+  whitelist: [
+    'global',
+    'auth',
+    'provider',
+    'staff',
+    'user',
+    'homeCare',
+    'behavior',
+    'mobility',
+    'accompany',
+    'schedule',
+    'restart',
+  ],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
@@ -39,7 +52,8 @@ export const store = configureStore({
       behaviorApi.middleware,
       homeCareApi.middleware,
       mobilityApi.middleware,
-      scheduleApi.middleware
+      scheduleApi.middleware,
+      restartApi.middleware
     ),
 });
 

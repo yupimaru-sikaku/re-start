@@ -6,9 +6,16 @@ import { PageContainer } from '@/components/PageContainer';
 import { ITEMS } from '@/components/Layout/DashboardLayout/SideNav';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { TOP } from '@/utils';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 const Index: CustomNextPage = () => {
+  const router = useRouter();
   useAuth();
+  useEffect(() => {
+    router.push('/restart');
+  }, []);
+
   return (
     <DashboardLayout title={TOP}>
       <PageContainer title={TOP} fluid>
