@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/libs/supabase/supabase';
 import { DataTable } from 'mantine-datatable';
 import { ActionIcon, Button, Group } from '@mantine/core';
@@ -8,12 +8,39 @@ import { CreatePdf } from './CreatePdf';
 import { CustomConfirm } from '../Common/CustomConfirm';
 
 export const RestartList = () => {
+  const currentDate = new Date();
   const [page, setPage] = useState(1);
   const [restartList, setRestartList] = useState([]);
+  const from = useMemo(() => {
+    return restartList ? (page - 1) * 10 : 0;
+  }, [page, restartList]);
+  const to = useMemo(() => {
+    return restartList?.length ? from + 10 : 0;
+  }, [from, restartList]);
+  const originalRecordList = useMemo(() => {
+    return restartList?.slice(from, to) || [];
+  }, [from, to, restartList]);
+  const [records, setRecords] = useState(originalRecordList);
 
   useEffect(() => {
     getList();
   }, []);
+  const [searchParamObj, setSearchParamObj] = useState({
+    year: currentDate.getFullYear(),
+    month: currentDate.getMonth() + 1,
+    userName: '',
+  });
+
+  useEffect(() => {
+    let filteredRecords = originalRecordList;
+    filteredRecords = filteredRecords.filter(
+      (record: any) =>
+        record.year.toString().includes(searchParamObj.year.toString()) &&
+        record.month.toString().includes(searchParamObj.month.toString()) &&
+        record.user_name.includes(searchParamObj.userName)
+    );
+    setRecords(filteredRecords);
+  }, [restartList, searchParamObj, originalRecordList]);
 
   const getList = async () => {
     const { data } = (await supabase
@@ -42,16 +69,34 @@ export const RestartList = () => {
     link.click();
   };
 
+  const handleChangeSearchObj = useCallback((value: string, field: keyof typeof searchParamObj) => {
+    setSearchParamObj((prevState) => ({
+      ...prevState,
+      [field]: value,
+    }));
+  }, []);
+
+  useEffect(() => {
+    let filteredRecords = originalRecordList;
+    filteredRecords = filteredRecords.filter(
+      (record: any) =>
+        record.year.toString().includes(searchParamObj.year.toString()) &&
+        record.month.toString().includes(searchParamObj.month.toString()) &&
+        record.user_name.includes(searchParamObj.userName)
+    );
+    setRecords(filteredRecords);
+  }, [restartList, searchParamObj, originalRecordList]);
+
   return (
     <DataTable
       noRecordsText="対象のデータがありません"
       striped
       highlightOnHover
       withBorder
-      records={restartList}
+      records={records}
       recordsPerPage={10}
       totalRecords={restartList?.length || 0}
-      page={1}
+      page={page}
       onPageChange={(p) => setPage(p)}
       columns={[
         { accessor: 'year', title: '西暦', width: 60 },
@@ -81,6 +126,13 @@ export const RestartList = () => {
               <ActionIcon color="red" onClick={() => handleDelete(service.id)}>
                 <IconTrash size={20} />
               </ActionIcon>
+              {/* <Link href={`/restart/${service.id}/edit`}>
+                <a>
+                  <ActionIcon color="blue">
+                    <IconEdit size={20} />
+                  </ActionIcon>
+                </a>
+              </Link> */}
             </Group>
           ),
         },
