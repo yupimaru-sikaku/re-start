@@ -12,10 +12,10 @@ export const RestartList = () => {
   const [page, setPage] = useState(1);
   const [restartList, setRestartList] = useState([]);
   const from = useMemo(() => {
-    return restartList ? (page - 1) * 10 : 0;
+    return restartList ? (page - 1) * 5 : 0;
   }, [page, restartList]);
   const to = useMemo(() => {
-    return restartList?.length ? from + 10 : 0;
+    return restartList?.length ? from + 5 : 0;
   }, [from, restartList]);
   const originalRecordList = useMemo(() => {
     return restartList?.slice(from, to) || [];
@@ -94,7 +94,7 @@ export const RestartList = () => {
       highlightOnHover
       withBorder
       records={records}
-      recordsPerPage={10}
+      recordsPerPage={5}
       totalRecords={restartList?.length || 0}
       page={page}
       onPageChange={(p) => setPage(p)}
