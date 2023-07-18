@@ -15,7 +15,7 @@ export const RestartList = () => {
   }, []);
 
   const getList = async () => {
-    const { data } = (await supabase.from('restart').select('*')) as any;
+    const { data } = (await supabase.from('restart').select('*').order('updated_at', { ascending: false })) as any;
     setRestartList(data);
   };
 
