@@ -22,6 +22,7 @@ type Restart = {
     | '';
   check_list: number[];
   comment: string;
+  is_display: boolean;
   created_at: string; // 作成日時
   updated_at: string; // 更新日時
 };
@@ -53,6 +54,7 @@ export const createInitialState: CreateRestartParams = {
   service_content: '',
   check_list: [],
   comment: '',
+  is_display: true,
 };
 
 const initialState = {

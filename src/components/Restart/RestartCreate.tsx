@@ -191,6 +191,7 @@ export const RestartCreate: FC<Props> = ({ type }) => {
         service_content: form.values.service_content,
         check_list: form.values.check_list,
         comment: form.values.comment,
+        is_display: form.values.is_display,
       });
       if (error) throw new Error('登録に失敗しました。');
 
@@ -552,7 +553,7 @@ export const RestartCreate: FC<Props> = ({ type }) => {
           <Text color="gray">※介護者には守秘義務があります。この日誌は適正に管理し、業務以外に使用することはありません。</Text>
         </Box>
         <Space h="xl" />
-        <CustomButton type="submit" fullWidth loading={isLoading}>
+        <CustomButton type="submit" fullWidth loading={isLoading} disabled={!form.values.start_time || !form.values.end_time}>
           {TITLE}
         </CustomButton>
       </Paper>

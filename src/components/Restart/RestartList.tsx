@@ -3,8 +3,9 @@ import { supabase } from '@/libs/supabase/supabase';
 import { DataTable } from 'mantine-datatable';
 import { ActionIcon, Button, Group } from '@mantine/core';
 import Link from 'next/link';
-import { IconEdit, IconEye } from '@tabler/icons';
+import { IconEdit, IconEye, IconTrash } from '@tabler/icons';
 import { CreatePdf } from './CreatePdf';
+import { CustomConfirm } from '../Common/CustomConfirm';
 
 export const RestartList = () => {
   const [page, setPage] = useState(1);
@@ -15,8 +16,21 @@ export const RestartList = () => {
   }, []);
 
   const getList = async () => {
-    const { data } = (await supabase.from('restart').select('*').order('updated_at', { ascending: false })) as any;
+    const { data } = (await supabase
+      .from('restart')
+      .select('*')
+      .eq('is_display', true)
+      .order('updated_at', { ascending: false })) as any;
     setRestartList(data);
+  };
+
+  const handleDelete = async (id: string) => {
+    const isOK = await CustomConfirm(`記録票を削除しますよろしいですか？`, '確認画面');
+    if (!isOK) {
+      return;
+    }
+    const { error } = await supabase.from('restart').update({ is_display: false }).eq('id', id);
+    getList();
   };
 
   const handlePDFDownload = async (service: any) => {
@@ -55,6 +69,18 @@ export const RestartList = () => {
                   <Button color="cyan">詳細</Button>
                 </a>
               </Link>
+            </Group>
+          ),
+        },
+        {
+          accessor: 'delete',
+          title: '',
+          width: 90,
+          render: (service: any) => (
+            <Group spacing={4} position="center" noWrap>
+              <ActionIcon color="red" onClick={() => handleDelete(service.id)}>
+                <IconTrash size={20} />
+              </ActionIcon>
             </Group>
           ),
         },
