@@ -126,13 +126,13 @@ export const RestartList = () => {
               <ActionIcon color="red" onClick={() => handleDelete(service.id)}>
                 <IconTrash size={20} />
               </ActionIcon>
-              {/* <Link href={`/restart/${service.id}/edit`}>
+              <Link href={`/restart/${service.id}/edit`}>
                 <a>
                   <ActionIcon color="blue">
                     <IconEdit size={20} />
                   </ActionIcon>
                 </a>
-              </Link> */}
+              </Link>
             </Group>
           ),
         },
